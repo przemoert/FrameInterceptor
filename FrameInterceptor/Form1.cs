@@ -4,6 +4,8 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,6 +21,8 @@ namespace FrameInterceptor
         private static readonly object _syncRoot = new object();
         ManualResetEvent ShouldRun = new ManualResetEvent(true);
         TcpServer tcp;
+        Communication.TcpClient client;
+        NetworkStream stream = null;
 
         public Form1()
         {
@@ -61,11 +65,22 @@ namespace FrameInterceptor
             //    }
             //}).Start();
 
-            tcp = new TcpServer(new byte[] { 192, 168, 2, 2 }, 4545);
-            tcp.DataReceived -= new EventHandler(this.TcpDataReceived);
-            tcp.DataReceived += new EventHandler(this.TcpDataReceived);
+            //tcp = new TcpServer(new byte[] { 192, 168, 2, 2 }, 4545);
+            //tcp.DataReceived -= new EventHandler(this.TcpDataReceived);
+            //tcp.DataReceived += new EventHandler(this.TcpDataReceived);
 
-            tcp.StartListener();
+            //tcp.StartListener();
+
+
+            client = new Communication.TcpClient();
+            client.Connect(new byte[] { 192, 168, 2, 2 }, 4545);
+
+            client.Write("Test message");
+
+            client.Connect(new byte[] { 192, 168, 2, 2 }, 4545);
+
+            client.Write("Test message");
+
         }
 
         protected void TcpDataReceived(object sender, EventArgs e)
@@ -94,10 +109,8 @@ namespace FrameInterceptor
 
         private void button1_Click(object sender, EventArgs e)
         {
-            //string test = "Test message";
-            //byte[] bytes = Encoding.UTF8.GetBytes(test);
-            //tcp.Send(bytes);
-            tcp.Close();
+            byte[] buffer = new byte[1024];
+            int length = stream.Read(buffer, 0, buffer.Length);
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -111,7 +124,8 @@ namespace FrameInterceptor
 
         private void button3_Click(object sender, EventArgs e)
         {
-            tcp.Send(Encoding.UTF8.GetBytes("Test Message"));
+            byte[] data = Encoding.UTF8.GetBytes("Test message");
+            stream.Write(data, 0, data.Length);
         }
     }
 }
