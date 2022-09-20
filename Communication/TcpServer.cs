@@ -6,38 +6,29 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Globals;
 
 namespace Communication
 {
-    public class TcpServer : IDisposable
+    public class TcpServer : TcpBase
     {
         const int BUFFER_SIZE = 1024;
 
-        public EventHandler DataReceived;
-
-        private IPAddress _ipAddress;
-        private IPEndPoint _localEndPoint;
+        private IPEndPoint _endPoint;
         private Socket _listener = null;
         private Socket _handler = null;
         private int _listenPort;
-        private byte[] _byteData = null;
-        private int _bufferSize = -1;
-        private byte[] _internalBuffer = null;
-        private int _internalBufferSize;
         private ManualResetEvent _shouldRun = new ManualResetEvent(true);
         private bool _bufferSizeCanBeChanged = true;
-        private static readonly object _syncRoot = new object();
-        private int _disposed;
+
 
         public TcpServer(byte[] iIpAddress, int iPort)
         {
             if (iIpAddress.Length == 4 && iPort > 0)
             {
-                this._ipAddress = new IPAddress(iIpAddress);
+                base._ipAddress = new IPAddress(iIpAddress);
                 this._listenPort = iPort;
-                this._localEndPoint = new IPEndPoint(this._ipAddress, this._listenPort);
-                this._bufferSize = BUFFER_SIZE;
+                this._endPoint = new IPEndPoint(base._ipAddress, this._listenPort);
+                base._bufferSize = BUFFER_SIZE;
             }
             else
             {
@@ -48,18 +39,18 @@ namespace Communication
 
         public void StartListener()
         {
-            if (this._ipAddress != null && this._localEndPoint != null && this._listenPort > 0)
+            if (this._ipAddress != null && this._endPoint != null && this._listenPort > 0)
             {
                 bool noError = false;
 
                 try
                 {
-                    this._internalBuffer = new byte[this._bufferSize];
-                    this._internalBufferSize = 0;
+                    base._internalBuffer = new byte[this._bufferSize];
+                    base._internalBufferSize = 0;
                     this._bufferSizeCanBeChanged = false;
 
                     this._listener = new Socket(this._ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-                    this._listener.Bind(this._localEndPoint);
+                    this._listener.Bind(this._endPoint);
                     this._listener.Listen(1);
 
                     noError = true;
@@ -80,17 +71,19 @@ namespace Communication
                         {
                             try
                             {
-                                if (this.Disposed)
+                                if (base.Disposed)
                                     break;
 
                                 this._shouldRun.WaitOne(0);
 
-                                this.ClearBuffer();
+                                base.ClearBuffer();
                                 this._handler = this._listener.Accept();
+                                this._handler.ReceiveTimeout = base._IOTimeout;
+                                this._handler.SendTimeout = base._IOTimeout;
 
                                 if (this._handler != null)
                                 {
-                                    Console.WriteLine($"Got connection: {((IPEndPoint)this._handler.RemoteEndPoint).Address.ToString()}:{((IPEndPoint)this._handler.RemoteEndPoint).Port.ToString()} <- {((IPEndPoint)this._localEndPoint).Address.ToString()}:{((IPEndPoint)this._localEndPoint).Port.ToString()}");
+                                    Console.WriteLine($"Got connection: {((IPEndPoint)this._handler.RemoteEndPoint).Address.ToString()}:{((IPEndPoint)this._handler.RemoteEndPoint).Port.ToString()} <- {((IPEndPoint)this._endPoint).Address.ToString()}:{((IPEndPoint)this._endPoint).Port.ToString()}");
                                 }
 
                                 this.RunServer();
@@ -118,7 +111,7 @@ namespace Communication
                             }
                             finally
                             {
-                                if (!this.Disposed)
+                                if (!base.Disposed)
                                 {
                                     this._handler.Shutdown(SocketShutdown.Both);
                                     this._handler.Close();
@@ -142,113 +135,34 @@ namespace Communication
             {
                 if (!this.Disposed)
                 {
-                    this._byteData = new byte[this._bufferSize];
-                    int bytesLength = this._handler.Receive(this._byteData);
+                    base._byteData = new byte[base._bufferSize];
+                    int bytesLength = this._handler.Receive(base._byteData);
 
-                    this.AddToBuffer(this._byteData, bytesLength);
+                    base.AddToBuffer(base._byteData, bytesLength);
                 }
             }
         }
 
-        public void Close() => this.Dispose();
-
-        public int Send(byte[] data)
+        public int Write(byte[] data)
         {
-            if (this.IsConnected)
+            if (!this.IsConnected)
+                return -1;
+
+            try
             {
                 int bytesSent = this._handler.Send(data);
 
                 return bytesSent;
             }
-
-            return -1;
-        }
-
-        public int Read(byte[] buffer, int offset, int numBytes)
-        {
-            if (this._internalBufferSize == 0)
-                return 0;
-
-            int bytesRead = 0;
-
-            lock (_syncRoot)
+            catch (Exception)
             {
-                int bytesToRead = Math.Min(this._internalBufferSize - offset, numBytes);
-
-                for (int i = offset; i < offset + bytesToRead; i++)
-                {
-                    buffer[bytesRead] = this._internalBuffer[i];
-                    bytesRead++;
-                }
-
-                this.ShiftLeft(offset + bytesToRead);
-            }
-
-            return bytesRead;
-        }
-
-        private int ShiftLeft(int offset)
-        {
-            if (offset >= this._internalBufferSize)
-            {
-                this.ClearBuffer();
-                return 0;
-            }
-
-            //byte[] tempArray = new byte[this._bufferSize];
-            int tempPtr = offset;
-
-            while (tempPtr > 0)
-            {
-                for (int i = tempPtr; i < this._internalBufferSize; i++)
-                {
-                    this._internalBuffer[i - 1] = this._internalBuffer[i];
-                }
-
-                this._internalBufferSize--;
-                tempPtr--;
-            }
-
-            return this._internalBufferSize;
-        }
-
-        private void ClearBuffer()
-        {
-            this._internalBuffer = new byte[this._bufferSize];
-            this._internalBufferSize = 0;
-        }
-
-        private void AddToBuffer(byte[] iData, int numBytes)
-        {
-            if (numBytes == 0)
-                return;
-
-            lock (_syncRoot)
-            {
-                if (iData.Length < numBytes)
-                    throw new IndexOutOfRangeException("Input length is less than bytes to read");
-
-                if (this._internalBufferSize + numBytes > this._bufferSize)
-                    throw new IndexOutOfRangeException("Buffer size exceeded");
-
-                for (int i = 0; i < numBytes; i++)
-                {
-                    this._internalBuffer[this._internalBufferSize] = iData[i];
-                    this._internalBufferSize++;
-                }
-
-                this.OnDataReceived();
+                return -1;
             }
         }
 
-        private void OnDataReceived()
+        public override void Dispose()
         {
-            this.DataReceived?.Invoke(this, new EventArgs());
-        }
-
-        public void Dispose()
-        {
-            if (Interlocked.CompareExchange(ref this._disposed, 1, 0) == 0)
+            if (Interlocked.CompareExchange(ref base._disposed, 1, 0) == 0)
             {
                 if (this._handler != null)
                 {
@@ -269,16 +183,14 @@ namespace Communication
             }
         }
 
-        public bool Disposed { get => this._disposed != 0; }
-        public int BytesToRead { get => this._internalBufferSize; }
         public int BufferSize 
         { 
-            get => this._bufferSize;
+            get => base._bufferSize;
             set
             {
                 if (this._bufferSizeCanBeChanged)
                 {
-                    this._bufferSize = value;
+                    base._bufferSize = value;
                 }
                 else
                 {

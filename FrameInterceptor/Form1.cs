@@ -23,6 +23,8 @@ namespace FrameInterceptor
         TcpServer tcp;
         Communication.TcpClient client;
         NetworkStream stream = null;
+        int threadLockTest = 0;
+        int threadLockTest2 = 0;
 
         public Form1()
         {
@@ -47,21 +49,10 @@ namespace FrameInterceptor
             //{
             //    Thread.CurrentThread.IsBackground = true;
 
-            //    while (true)
+            //    lock(_syncRoot)
             //    {
-            //        Console.WriteLine("Before thread lock");
-            //        //ShouldRun.WaitOne();
-
-            //        lock (_bytes)
-            //        {
-            //            _bytes[0] = 2;
-            //            Console.WriteLine(_bytes[0]);
-            //        }
-            //        Console.WriteLine("After thread lock");
-
-            //        ShouldRun.Reset();
-
-            //        Thread.Sleep(1000);
+            //        Thread.Sleep(10000);
+            //        threadLockTest = 1;
             //    }
             //}).Start();
 
@@ -73,20 +64,39 @@ namespace FrameInterceptor
 
 
             client = new Communication.TcpClient();
-            client.Connect(new byte[] { 192, 168, 2, 2 }, 4545);
 
-            client.Write("Test message");
+            client.Connect(new byte[] { 193, 168, 2, 2 }, 4545);
+            client.DataReceived -= new EventHandler(TcpDataReceived);
+            client.DataReceived += new EventHandler(TcpDataReceived);
 
-            client.Connect(new byte[] { 192, 168, 2, 2 }, 4545);
+            try
+            {
+                client.StartTalking();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
 
-            client.Write("Test message");
+            //client.Close();
+
+            //int test = client.Write("Test message");
+
+            //client.Connect(new byte[] { 192, 168, 2, 2 }, 4545);
+
+            //client.Write("Test message");
+
+            //client.Connect(new byte[] { 192, 168, 2, 2 }, 4545);
+            //client.Read(0, 1024);
 
         }
 
         protected void TcpDataReceived(object sender, EventArgs e)
         {
-            byte[] bytes = new byte[tcp.BytesToRead];
-            tcp.Read(bytes, 2, 2);
+            byte[] bytes = new byte[client.BytesToRead];
+            client.Read(bytes, 0, bytes.Length);
+
+            Console.WriteLine(Encoding.UTF8.GetString(bytes));
         }
 
         protected void OnDataReceived(object sender, DataReceivedEventArgs e)
@@ -109,8 +119,7 @@ namespace FrameInterceptor
 
         private void button1_Click(object sender, EventArgs e)
         {
-            byte[] buffer = new byte[1024];
-            int length = stream.Read(buffer, 0, buffer.Length);
+            client.Close();
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -125,7 +134,7 @@ namespace FrameInterceptor
         private void button3_Click(object sender, EventArgs e)
         {
             byte[] data = Encoding.UTF8.GetBytes("Test message");
-            stream.Write(data, 0, data.Length);
+            client.Write("Test message");
         }
     }
 }
