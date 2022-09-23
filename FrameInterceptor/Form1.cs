@@ -64,19 +64,22 @@ namespace FrameInterceptor
 
 
             client = new Communication.TcpClient();
+            client.AutoReconnect = true;
 
-            client.Connect(new byte[] { 193, 168, 2, 2 }, 4545);
+            client.Connect(new byte[] { 192, 168, 2, 2 }, 4545);
             client.DataReceived -= new EventHandler(TcpDataReceived);
             client.DataReceived += new EventHandler(TcpDataReceived);
+            client.ConnectionRefused -= new EventHandler(ConnectionRefused);
+            client.ConnectionRefused += new EventHandler(ConnectionRefused);
 
-            try
-            {
-                client.StartTalking();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
+            //try
+            //{
+            //    client.StartTalking();
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine(ex.ToString());
+            //}
 
             //client.Close();
 
@@ -97,6 +100,11 @@ namespace FrameInterceptor
             client.Read(bytes, 0, bytes.Length);
 
             Console.WriteLine(Encoding.UTF8.GetString(bytes));
+        }
+
+        protected void ConnectionRefused(object sender, EventArgs e)
+        {
+            Console.WriteLine("Connection refused by remote host");
         }
 
         protected void OnDataReceived(object sender, DataReceivedEventArgs e)

@@ -6,11 +6,15 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Communication
 {
     public class TcpClient : TcpBase
     {
+        public EventHandler ConnectionRefused;
+        public EventHandler ConnectionEnd;
+
         const int BUFFER_SIZE = 2048;
 
         private Socket _client;
@@ -19,6 +23,7 @@ namespace Communication
         private NetworkStream _stream = null;
         private byte[] _remoteAddress = new byte[4];
         private bool _clientHasSentZeroLengthByte = false;
+        private bool _autoReconnect;
 
 
         public TcpClient() : this(AddressFamily.InterNetwork) 
@@ -33,7 +38,7 @@ namespace Communication
             //this._client = new Socket(family, SocketType.Stream, ProtocolType.Tcp);
         }
 
-        public bool Connect(byte[] iIpAddress, int iPort)
+        public bool Connect(byte[] iIpAddress, int iPort, bool iAsync = false)
         {
             this._internalBuffer = new byte[this._bufferSize];
 
@@ -52,7 +57,7 @@ namespace Communication
             
             if (!this.IsConnected)
             {
-                if (!this.EstablishConnection())
+                if (!this.EstablishConnection(iAsync))
                 {
                     return false;
                 }
@@ -61,68 +66,78 @@ namespace Communication
             return true;
         }
 
-        private bool EstablishConnection()
+        private bool EstablishConnection(bool iAsync)
         {
+            if (this._family == null)
+                throw new NullReferenceException();
 
-            if (this._client == null && this._family != null)
-            {
-                this.InitializeClient();
-            }
 
-            if (this._client != null && this._family != null && this._client.RemoteEndPoint != null)
-            {
-                if (!this.IsConnected)
-                {
-                    this.InitializeClient();
-                }
-            }
-
-            if (!this.IsConnected)
-            {
-                try
-                {
-                    //this._client.Connect(base._ipAddress, this._remotePort);
-
-                    State state = new State { Success = true };
-
-                    IAsyncResult ar = this._client.BeginConnect(base._ipAddress, this._remotePort, this.EndConnect, state);
-                    state.Success = ar.AsyncWaitHandle.WaitOne(base._connetionTimeout, false);
-
-                    if (!state.Success || !this.IsConnected)
-                    {
-                        return false;
-                    }
-                }
-                catch (SocketException)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        private void EndConnect(IAsyncResult ar)
-        {
-            State state = (State)ar.AsyncState;
+            this.InitializeClient();
 
             try
             {
-                this._client.EndConnect(ar);
+                if (iAsync)
+                    this._client.Connect(base._ipAddress, this._remotePort);
+                else
+                    this.ConnectAsync();
+
             }
-            catch { }
+            catch (SocketException)
+            {
+                return false;
+            }
 
-            if (this.IsConnected)
-                return;
-
-            this._client.Dispose();
+            return true;
         }
 
-        public void StartTalking()
+        private void ConnectAsync()
         {
-            if (this._client == null || !this.IsConnected)
-                throw new NullReferenceException();
+            try
+            {
+                Task.Factory.FromAsync(this.BeginConnect, this.EndConnect, null);
+            }
+            catch
+            {
 
+            }
+        }
+
+        private IAsyncResult BeginConnect(AsyncCallback callBack, object state)
+        {
+            IAsyncResult result = null; 
+            try
+            {
+                result = this._client.BeginConnect(base._ipAddress, this._remotePort, this.EndConnect, null);
+            }
+            catch
+            {
+
+            }
+
+            return result;
+        }
+
+        private void EndConnect(IAsyncResult iAsyncResult)
+        {
+            try
+            {
+                this._client.EndConnect(iAsyncResult);
+
+                if (this.IsConnected)
+                {
+                    Console.WriteLine("CONNECTED!!!");
+                    this.StartTalking();
+                }
+            }
+            catch (SocketException ex)
+            {
+                if (ex.ErrorCode == 10061)
+                    this.OnConnectionRefused();
+            }
+        }
+
+        private void StartTalking()
+        {
             this.CompareStream();
 
             new Thread(() =>
@@ -229,25 +244,43 @@ namespace Communication
             {
                 return -1;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return -1;
             }
 
         }
 
-        public int Read(int offset, int numBytes)
+        public void OnConnectionRefused()
         {
-            //this.CompareStream();
+            this.ConnectionRefused?.Invoke(this, new EventArgs());
 
-            int bytesRead = this._stream.Read(this._internalBuffer, offset, numBytes);
+            if (this._autoReconnect)
+            {
+                Thread.Sleep(5000);
+                this.ConnectAsync();
+            }
+        }
 
-            return 0;
+        public void OnConnectionEnd()
+        {
+            this.ConnectionEnd?.Invoke(this, new EventArgs());
         }
 
         public override void Close()
         {
-            this._client.Shutdown(SocketShutdown.Send);
+            if (!this.Disposed)
+            {
+                if (this.IsConnected)
+                {
+                    this._clientHasSentZeroLengthByte = true;
+                    this._client.Shutdown(SocketShutdown.Send);
+                }
+                else
+                {
+                    this.Dispose();
+                }
+            }   
         }
 
         public override void Dispose()
@@ -310,5 +343,6 @@ namespace Communication
         }
 
         public object State { get; private set; }
+        public bool AutoReconnect { get => _autoReconnect; set => _autoReconnect = value; }
     }
 }
