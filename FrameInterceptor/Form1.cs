@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
-using System.Net;
-using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,15 +15,9 @@ namespace FrameInterceptor
 {
     public partial class Form1 : Form
     {
-        private int _test;
-        private byte[] _bytes = new byte[10000];
-        private static readonly object _syncRoot = new object();
-        ManualResetEvent ShouldRun = new ManualResetEvent(true);
-        TcpServer tcp;
-        Communication.TcpClient client;
-        NetworkStream stream = null;
-        int threadLockTest = 0;
-        int threadLockTest2 = 0;
+        private TcpClient _tcpClient;
+        private string _clientIpAddress = String.Empty;
+        private string _clientPort = String.Empty;
 
         public Form1()
         {
@@ -63,14 +56,14 @@ namespace FrameInterceptor
             //tcp.StartListener();
 
 
-            client = new Communication.TcpClient();
-            client.AutoReconnect = true;
+            //client = new Communication.TcpClient();
+            //client.AutoReconnect = true;
 
-            client.Connect(new byte[] { 192, 168, 2, 2 }, 4545);
-            client.DataReceived -= new EventHandler(TcpDataReceived);
-            client.DataReceived += new EventHandler(TcpDataReceived);
-            client.ConnectionRefused -= new EventHandler(ConnectionRefused);
-            client.ConnectionRefused += new EventHandler(ConnectionRefused);
+            //client.Connect(new byte[] { 192, 168, 2, 2 }, 4545);
+            //client.DataReceived -= new EventHandler(TcpDataReceived);
+            //client.DataReceived += new EventHandler(TcpDataReceived);
+            //client.ConnectionRefused -= new EventHandler(ConnectionRefused);
+            //client.ConnectionRefused += new EventHandler(ConnectionRefused);
 
             //try
             //{
@@ -94,55 +87,43 @@ namespace FrameInterceptor
 
         }
 
-        protected void TcpDataReceived(object sender, EventArgs e)
+        private void btnClientConnect_Click(object sender, EventArgs e)
         {
-            byte[] bytes = new byte[client.BytesToRead];
-            client.Read(bytes, 0, bytes.Length);
+            this._clientIpAddress = tbClientIp.Text;
+            this._clientPort = tbClientPort.Text;
 
-            Console.WriteLine(Encoding.UTF8.GetString(bytes));
-        }
-
-        protected void ConnectionRefused(object sender, EventArgs e)
-        {
-            Console.WriteLine("Connection refused by remote host");
-        }
-
-        protected void OnDataReceived(object sender, DataReceivedEventArgs e)
-        {
-            Console.WriteLine(e.Data.ToString());
-        }
-
-        private void ThreadTest()
-        {
-
-            while (true)
+            if (!String.IsNullOrEmpty(this._clientIpAddress) && !String.IsNullOrEmpty(this._clientPort))
             {
-                Console.WriteLine("Test");
+                this._tcpClient = new TcpClient();
+                this._tcpClient.Connected -= new EventHandler(this.OnTcpClientConnected);
+                this._tcpClient.Connected += new EventHandler(this.OnTcpClientConnected);
 
-                ShouldRun.WaitOne();
-
-                Thread.Sleep(100);
+                if (!this._tcpClient.Connect(this._clientIpAddress, this._clientPort, true))
+                {
+                    this.TcpClientLog("Connection failed");
+                }
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void OnTcpClientConnected(object sender, EventArgs e)
         {
-            client.Close();
+            this.TcpClientLog("Connected to: " + this._clientIpAddress);
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void TcpClientLog(string msg)
         {
-            tcp = new TcpServer(new byte[] { 192, 168, 2, 2 }, 4545);
-            tcp.DataReceived -= new EventHandler(this.TcpDataReceived);
-            tcp.DataReceived += new EventHandler(this.TcpDataReceived);
+            if (InvokeRequired)
+            {
+                this.Invoke(new Action<string>(TcpClientLog), new object[] { msg });
+                return;
+            }
 
-            tcp.StartListener();
+            this.tbTcpClientLog.Text += msg + "\r\n";
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void btnClientSend_Click(object sender, EventArgs e)
         {
-            byte[] data = Encoding.UTF8.GetBytes("Test message");
-            client.Write("Test message");
+            int bytes = this._tcpClient.Write(this.tbClientSend.Text);
         }
     }
 }

@@ -14,6 +14,7 @@ namespace Communication
     {
         public EventHandler ConnectionRefused;
         public EventHandler ConnectionEnd;
+        public EventHandler Connected;
 
         const int BUFFER_SIZE = 2048;
 
@@ -36,6 +37,21 @@ namespace Communication
         {
             this._family = family;
             //this._client = new Socket(family, SocketType.Stream, ProtocolType.Tcp);
+        }
+
+        public bool Connect(string iIpAddress, string iPort, bool iAsync = false)
+        {
+            if (!base.ValidateIp(iIpAddress))
+                return false;
+
+            int remotePort = 0;
+
+            if (!Int32.TryParse(iPort, out remotePort))
+                return false;
+
+            byte[] ipAddress = base.ConvertStringIpToByte(iIpAddress);
+
+            return this.Connect(ipAddress, remotePort, iAsync);
         }
 
         public bool Connect(byte[] iIpAddress, int iPort, bool iAsync = false)
@@ -76,7 +92,7 @@ namespace Communication
 
             try
             {
-                if (iAsync)
+                if (!iAsync)
                     this._client.Connect(base._ipAddress, this._remotePort);
                 else
                     this.ConnectAsync();
@@ -125,7 +141,7 @@ namespace Communication
 
                 if (this.IsConnected)
                 {
-                    Console.WriteLine("CONNECTED!!!");
+                    this.OnConnected();
                     this.StartTalking();
                 }
             }
@@ -249,6 +265,11 @@ namespace Communication
                 return -1;
             }
 
+        }
+
+        public void OnConnected()
+        {
+            this.Connected?.Invoke(this, new EventArgs());
         }
 
         public void OnConnectionRefused()
