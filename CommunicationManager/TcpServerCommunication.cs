@@ -25,7 +25,7 @@ namespace CommunicationManager
 
         public void Close()
         {
-            throw new NotImplementedException();
+            this._tcpServer.Close();
         }
 
         public bool IsOpen()
@@ -62,5 +62,6 @@ namespace CommunicationManager
         }
 
         public bool IsConnected => throw new NotImplementedException();
+        public TcpServer TcpServer { get => this._tcpServer; }
     }
 }

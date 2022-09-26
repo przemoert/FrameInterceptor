@@ -35,53 +35,6 @@ namespace FrameInterceptor
 
         }
 
-        private async void ClientConnect()
-        {
-            this._comManager = new ComManager(this.tbClientIp.Text, this.tbClientPort.Text, true);
-            this._comManager.DataRecieved -= new EventHandler<DataReceivedEventArgs>(this.OnDataReceived);
-            this._comManager.DataRecieved += new EventHandler<DataReceivedEventArgs>(this.OnDataReceived);
-
-            ManagerConnectionResult result = await this._comManager.Open();
-
-            this.Log("Connection completed with result code: " + (int)result + " " + result.ToString());
-
-            if ((int)result != -1)
-            {
-                if (!this._abort)
-                { 
-                    this.Log("Waiting...");
-
-                    await Task.Delay(5000);
-
-                    this.Log("Retrying...");
-                    this.ClientConnect();
-                }
-                else
-                {
-                    this.SetButtonToConnect();
-                }
-
-
-                return;
-            }
-
-            this.SetButtonToDisconnect();
-        }
-
-        private async void RunServer()
-        {
-            if (String.IsNullOrEmpty(this.tbServerIp.Text))
-            {
-                this._comManager = new ComManager(this.tbServerPort.Text);
-            }
-            else
-            {
-                this._comManager = new ComManager(this.tbServerIp.Text, this.tbServerPort.Text, false);
-            }
-
-            ManagerConnectionResult result = await this._comManager.Open();
-        }
-
         private async void OpenCommunication()
         {
             if (this._abort)
@@ -138,6 +91,15 @@ namespace FrameInterceptor
             {
                 this.SetButtonToDisconnect();
                 //When connected, opened or whatever
+
+                if (this._comManager.Communication is TcpClientCommunication c)
+                {
+                    Log($"Connected to {c.Client.RemoteAddress}:{c.Client.RemotePort}");
+                }
+                else if (this._comManager.Communication is TcpServerCommunication s)
+                {
+                    Log($"Connection from {s.TcpServer.RemoteIpAddress}:{s.TcpServer.RemotePort}");
+                }
             }
         }
 
@@ -150,6 +112,8 @@ namespace FrameInterceptor
             else
             {
                 this.Log("Connection has ended with result code: " + e.DataLength + " " + ((ManagerConnectionResult)e.DataLength).ToString());
+                //this._comManager.Dispose();
+                this.SetButtonToConnect();
             }
         }
 

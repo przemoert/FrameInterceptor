@@ -13,11 +13,12 @@ namespace Communication
     {
         const int BUFFER_SIZE = 1024;
 
+        public EventHandler<TcpDataEventArgs> TcpDataReceived;
+
         private IPEndPoint _endPoint;
         private Socket _listener = null;
         private Socket _handler = null;
         private int _listenPort;
-        private ManualResetEvent _shouldRun = new ManualResetEvent(true);
         private bool _bufferSizeCanBeChanged = true;
 
 
@@ -137,6 +138,33 @@ namespace Communication
             return ar;
         }
 
+        public void ReadAsync(Socket socket)
+        {
+            if (this.Disposed)
+                throw new ObjectDisposedException(this.GetType().FullName);
+
+            if (socket == null)
+                throw new NullReferenceException();
+
+            byte[] tmpBuffer = new byte[this._bufferSize];
+
+            SocketAsyncEventArgs ar = new SocketAsyncEventArgs();
+            ar.SetBuffer(tmpBuffer, 0, this._bufferSize);
+            ar.Completed += this.OnDataReceived;
+
+            this._handler.ReceiveAsync(ar);
+        }
+
+        private void OnDataReceived(object sender, EventArgs e)
+        {
+            if (sender is Socket s)
+            {
+                TcpDataEventArgs args = new TcpDataEventArgs();
+
+                this.ReadAsync(s);
+            }
+        }
+
         public int Write(byte[] data)
         {
             if (!this.IsConnected)
@@ -193,6 +221,27 @@ namespace Communication
             }
         }
 
+        public Socket Handler { get => this._handler; }
+        public string RemoteIpAddress 
+        {
+            get
+            {
+                if (this._handler == null)
+                    return null;
+
+                return ((IPEndPoint)this._handler.RemoteEndPoint).Address.ToString();
+            }
+        }
+        public string RemotePort
+        {
+            get
+            {
+                if (this._handler == null)
+                    return null;
+
+                return ((IPEndPoint)this._handler.RemoteEndPoint).Port.ToString();
+            }
+        }
         public bool IsConnected
         {
             get
@@ -220,5 +269,11 @@ namespace Communication
                 }
             }
         }
+    }
+
+    public class TcpDataEventArgs : EventArgs
+    {
+        Socket socket;
+        int Length;
     }
 }
