@@ -15,6 +15,20 @@ namespace Communication
         Out
     }
 
+    public enum ConnectionResult
+    {
+        Connected = -1,
+        RefusedByRemoteHost = -2,
+        Timeout = -3,
+        Failed = -4,
+        ForciblyClosed = -5,
+        GracefulyClosed = -6,
+        ClosedNoReason = -7,
+        ZeroLengthByteIgnored = -8,
+        Listening = -9,
+        IpAddressContextUnknown = -10
+    }
+
     public abstract class TcpBase : IDisposable
     {
         public EventHandler DataReceived;
@@ -31,7 +45,8 @@ namespace Communication
         protected int _disposed = 0;
         protected DirectionPriority _directionPriority = DirectionPriority.None;
         protected int _IOTimeout = Timeout.Infinite;
-        protected int _connetionTimeout = 50000;
+        protected int _connetionTimeout = 5000;
+        protected bool _clearBufferOnRead = false;
 
 
         public virtual int Read(byte[] buffer, int offset, int numBytes)
@@ -51,7 +66,14 @@ namespace Communication
                     bytesRead++;
                 }
 
-                this.ShiftLeft(offset + bytesToRead);
+                if (this._clearBufferOnRead)
+                {
+                    this.ClearBuffer();
+                }
+                else
+                {
+                    this.ShiftLeft(offset + bytesToRead);
+                }
             }
 
             return bytesRead;
@@ -105,6 +127,20 @@ namespace Communication
             }
         }
 
+        protected virtual IPAddress GetLocalIpAddress()
+        {
+            IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
+
+            foreach (IPAddress ip in host.AddressList)
+            {
+                if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                {
+                    return ip;
+                }
+            }
+
+            throw new Exception("No IPv4 adapters found");
+        }
         protected virtual bool ValidateIp(string iIpAddress)
         {
             string[] parts = iIpAddress.Split('.');
@@ -156,8 +192,10 @@ namespace Communication
 
         public virtual bool Disposed { get => this._disposed != 0; }
         public virtual int BytesToRead { get => this._internalBufferSize; }
-        public DirectionPriority DirectionPriority { get => _directionPriority; set => _directionPriority = value; }
-        protected int IOTimeout { get => _IOTimeout; set => _IOTimeout = value; }
-        protected int ConnetionTimeout { get => _connetionTimeout; set => _connetionTimeout = value; }
+        public DirectionPriority DirectionPriority { get => this._directionPriority; set => this._directionPriority = value; }
+        protected int IOTimeout { get => this._IOTimeout; set => this._IOTimeout = value; }
+        public int ConnetionTimeout { get => this._connetionTimeout; set => this._connetionTimeout = value; }
+        public IPAddress IpAddress { get => this._ipAddress; }
+        public bool ClearBufferOnRead { get => this._clearBufferOnRead; set => this._clearBufferOnRead = value; }
     }
 }

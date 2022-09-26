@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO.Ports;
 
-namespace Communication
+namespace CommunicationManager
 {
     internal class SerialCommunication : CommunicationBase
     {

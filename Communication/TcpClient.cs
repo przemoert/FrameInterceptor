@@ -12,19 +12,15 @@ namespace Communication
 {
     public class TcpClient : TcpBase
     {
-        public EventHandler ConnectionRefused;
-        public EventHandler ConnectionEnd;
-        public EventHandler Connected;
-
         const int BUFFER_SIZE = 2048;
 
         private Socket _client;
+        private IPEndPoint _ipEndPoint;
         private int _remotePort = 0;
         private AddressFamily? _family = null;
         private NetworkStream _stream = null;
         private byte[] _remoteAddress = new byte[4];
-        private bool _clientHasSentZeroLengthByte = false;
-        private bool _autoReconnect;
+        private bool _zeroLengthByteSent = false;
 
 
         public TcpClient() : this(AddressFamily.InterNetwork) 
@@ -39,156 +35,229 @@ namespace Communication
             //this._client = new Socket(family, SocketType.Stream, ProtocolType.Tcp);
         }
 
-        public bool Connect(string iIpAddress, string iPort, bool iAsync = false)
+        public void SetRemoteEndPoint(string iIpAddress, string iPort)
         {
             if (!base.ValidateIp(iIpAddress))
-                return false;
+                throw new ArgumentException();
 
             int remotePort = 0;
 
             if (!Int32.TryParse(iPort, out remotePort))
-                return false;
+                throw new ArgumentException();
 
             byte[] ipAddress = base.ConvertStringIpToByte(iIpAddress);
 
-            return this.Connect(ipAddress, remotePort, iAsync);
+            this.SetRemoteEndPoint(ipAddress, remotePort);
         }
 
-        public bool Connect(byte[] iIpAddress, int iPort, bool iAsync = false)
+        public void SetRemoteEndPoint(byte[] iIpAddress, int iPort)
+        {
+            this._remoteAddress = iIpAddress;
+            this._remotePort = iPort;
+            base._ipAddress = new IPAddress(this._remoteAddress);
+            this._ipEndPoint = new IPEndPoint(base._ipAddress, this._remotePort);
+        }
+
+        public ConnectionResult Connect()
         {
             this._internalBuffer = new byte[this._bufferSize];
 
-            if (this.Disposed)
-                throw new ObjectDisposedException(this.GetType().FullName);
-
-            this._remoteAddress = iIpAddress;
-            this._remotePort = iPort;
-
             if (this._family == null)
-            {
                 throw new NullReferenceException();
-            }
 
-            base._ipAddress = new IPAddress(this._remoteAddress);
             
             if (!this.IsConnected)
             {
-                if (!this.EstablishConnection(iAsync))
+                try
                 {
-                    return false;
+                    this.InitializeClient();
+                    this._client.Connect(base._ipAddress, this._remotePort);
+
+                    //this.StartTalking();
+                }
+                catch (SocketException ex)
+                {
+                    if (ex.ErrorCode == 10061)
+                        return ConnectionResult.RefusedByRemoteHost;
+                    else if (ex.ErrorCode == 10060)
+                        return ConnectionResult.Timeout;
+                    else
+                        return ConnectionResult.Failed;
+                }
+                catch (Exception)
+                {
+                    throw;
                 }
             }
 
-            return true;
+            return ConnectionResult.Connected;
         }
 
-        private bool EstablishConnection(bool iAsync)
+        public async Task<ConnectionResult> ConnectAsync()
         {
+            this._internalBuffer = new byte[this._bufferSize];
+
             if (this._family == null)
                 throw new NullReferenceException();
 
-
-            this.InitializeClient();
-
-            try
+            if (!this.IsConnected)
             {
-                if (!iAsync)
-                    this._client.Connect(base._ipAddress, this._remotePort);
-                else
-                    this.ConnectAsync();
-
-            }
-            catch (SocketException)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        private void ConnectAsync()
-        {
-            try
-            {
-                Task.Factory.FromAsync(this.BeginConnect, this.EndConnect, null);
-            }
-            catch
-            {
-
-            }
-        }
-
-        private IAsyncResult BeginConnect(AsyncCallback callBack, object state)
-        {
-            IAsyncResult result = null; 
-            try
-            {
-                result = this._client.BeginConnect(base._ipAddress, this._remotePort, this.EndConnect, null);
-            }
-            catch
-            {
-
-            }
-
-            return result;
-        }
-
-        private void EndConnect(IAsyncResult iAsyncResult)
-        {
-            try
-            {
-                this._client.EndConnect(iAsyncResult);
-
-                if (this.IsConnected)
-                {
-                    this.OnConnected();
-                    this.StartTalking();
-                }
-            }
-            catch (SocketException ex)
-            {
-                if (ex.ErrorCode == 10061)
-                    this.OnConnectionRefused();
-            }
-        }
-
-        private void StartTalking()
-        {
-            this.CompareStream();
-
-            new Thread(() =>
-            {
-                Thread.CurrentThread.IsBackground = true;
-
                 try
                 {
-                    while (true)
-                    {
-                        if (this.Disposed)
-                            break;
+                    this.InitializeClient();
 
-                        this.ReadStreamData();
-                    }
+                    IAsyncResult ar = await this.InternalConnectAsync(true);
+                    this._client.EndConnect(ar);
                 }
-                catch (Exception ex)
+                catch (SocketException ex)
                 {
-                    if (ex.InnerException != null && ex.InnerException is SocketException s && s.ErrorCode == 10054)
-                    {
-                        this._violatedByRemoteHost = true;
-                    }
+                    if (ex.ErrorCode == 10061)
+                        return ConnectionResult.RefusedByRemoteHost;
+                    else if (ex.ErrorCode == 10060)
+                        return ConnectionResult.Timeout;
                     else
-                    {
-                        _violatedFromOutside = true;
-                    }
+                        return ConnectionResult.Failed;
                 }
-                finally
+                catch (Exception)
                 {
-                    if (!this.Disposed)
-                        this.Dispose();
+                    throw;
+                }
+            }
+
+            return ConnectionResult.Connected;
+        }
+
+        private async Task<IAsyncResult> InternalConnectAsync(bool e)
+        {
+            IAsyncResult ar = null;
+
+            await Task<IAsyncResult>.Run(() =>
+            {
+                ar = this._client.BeginConnect(this._ipEndPoint, null, null);
+                ar.AsyncWaitHandle.WaitOne(base.ConnetionTimeout, true);
+            });
+
+            return ar;
+        }
+
+        public async Task<int> ReadStreamAsync()
+        {
+            if (this.Disposed)
+                throw new ObjectDisposedException(this.GetType().FullName);
+
+            if (this._client == null)
+                throw new NullReferenceException("Client has not been initialized");
+
+            if (!this.IsConnected)
+                throw new Exception("Client is not connected to a remote host");
+
+            this.CompareStream();
+
+            byte[] tmpBuffer = new byte[this._bufferSize];
+            int bytesToRead = 0;
+
+            try
+            {
+                bytesToRead = await this._stream.ReadAsync(tmpBuffer, 0, tmpBuffer.Length);
+            }
+            catch (ObjectDisposedException)
+            {
+                if (this._zeroLengthByteSent)
+                {
+                    return (int)ConnectionResult.ZeroLengthByteIgnored;
+                }
+            }
+            catch (Exception ex)
+            {
+                this.Close();
+
+                if (ex.InnerException != null && ex.InnerException is SocketException s && s.ErrorCode == 10054)
+                    return (int)ConnectionResult.ForciblyClosed;
+                else
+                    return (int)ConnectionResult.ClosedNoReason;
+
+            }
+
+            if (bytesToRead > 0)
+            {
+                this.AddToBuffer(tmpBuffer, bytesToRead);
+            }
+            else if (bytesToRead == 0)
+            {
+                if (!this._zeroLengthByteSent)
+                {
+                    this._client.Shutdown(SocketShutdown.Both);
+                    this.Close();
+                }
+                else
+                {
+                    this._client.Shutdown(SocketShutdown.Receive);
                 }
 
-            }).Start();
-        } 
+                return (int)ConnectionResult.GracefulyClosed;
+            }
+
+            return bytesToRead;
+        }
+
+        public int ReadStream()
+        {
+            if (this.Disposed)
+                throw new ObjectDisposedException(this.GetType().FullName);
+
+            if (this._client == null)
+                throw new NullReferenceException("Client has not been initialized");
+
+            if (!this.IsConnected)
+                throw new Exception("Client is not connected to a remote host");
+
+            this.CompareStream();
+
+            byte[] tmpBuffer = new byte[this._bufferSize];
+            int bytesToRead = 0;
+            try
+            {
+                bytesToRead = this._stream.Read(tmpBuffer, 0, tmpBuffer.Length);
+            }
+            catch (ObjectDisposedException ex)
+            {
+                if (this._zeroLengthByteSent)
+                {
+                    return (int)ConnectionResult.ZeroLengthByteIgnored;
+                }
+            }
+            catch (Exception ex)
+            {
+                this.Close();
+
+                if (ex.InnerException != null && ex.InnerException is SocketException s && s.ErrorCode == 10054)
+                    return (int)ConnectionResult.ForciblyClosed;
+                else
+                    return (int)ConnectionResult.ClosedNoReason;
+
+            }
+
+            if (bytesToRead > 0)
+            {
+                this.AddToBuffer(tmpBuffer, bytesToRead);
+            }
+            else if (bytesToRead == 0)
+            {
+                if (!this._zeroLengthByteSent)
+                {
+                    this._client.Shutdown(SocketShutdown.Both);
+                    this.Close();
+                }
+                else
+                {
+                    this._client.Shutdown(SocketShutdown.Receive);
+                }
+
+                return (int)ConnectionResult.GracefulyClosed;
+            }
+
+            return bytesToRead;
+        }
 
         private void InitializeClient()
         {
@@ -212,38 +281,12 @@ namespace Communication
             }
         }
 
-        private void ReadStreamData()
-        {
-            //this.CompareStream();
-
-            byte[] tmpBuffer = new byte[this._bufferSize];
-            int bytesRead = this._stream.Read(tmpBuffer, 0, base._bufferSize);
-
-            if (bytesRead > 0)
-            {
-                this.AddToBuffer(tmpBuffer, bytesRead);
-            }
-            else if (bytesRead == 0)
-            {
-                this._terminatedGracefuly = true;
-
-                if (!this._clientHasSentZeroLengthByte)
-                {
-                    this._client.Shutdown(SocketShutdown.Send);
-                }
-
-                this.Dispose();
-            }
-        }
-
-        public int Write(string message)
+        public int Write(byte[] iData)
         {
             if (!this.IsConnected)
             {
                 return -1;
             }
-            
-            byte[] data = Encoding.UTF8.GetBytes(message);
 
             try
             {
@@ -252,9 +295,9 @@ namespace Communication
                     return 0;
                 }
 
-                this._stream.Write(data, 0, data.Length);
+                this._stream.Write(iData, 0, iData.Length);
 
-                return data.Length;
+                return iData.Length;
             }
             catch (SocketException)
             {
@@ -267,35 +310,18 @@ namespace Communication
 
         }
 
-        public void OnConnected()
-        {
-            this.Connected?.Invoke(this, new EventArgs());
-        }
-
-        public void OnConnectionRefused()
-        {
-            this.ConnectionRefused?.Invoke(this, new EventArgs());
-
-            if (this._autoReconnect)
-            {
-                Thread.Sleep(5000);
-                this.ConnectAsync();
-            }
-        }
-
-        public void OnConnectionEnd()
-        {
-            this.ConnectionEnd?.Invoke(this, new EventArgs());
-        }
-
-        public override void Close()
+        public override async void Close()
         {
             if (!this.Disposed)
             {
                 if (this.IsConnected)
                 {
-                    this._clientHasSentZeroLengthByte = true;
                     this._client.Shutdown(SocketShutdown.Send);
+                    this._zeroLengthByteSent = true;
+
+                    await Task.Delay(2000);
+
+                    this.Dispose();
                 }
                 else
                 {
@@ -363,7 +389,7 @@ namespace Communication
             }
         }
 
-        public object State { get; private set; }
-        public bool AutoReconnect { get => _autoReconnect; set => _autoReconnect = value; }
+        public string RemoteAddress { get => this._ipEndPoint.Address.ToString(); }
+        public int RemotePort { get => this._ipEndPoint.Port; }
     }
 }

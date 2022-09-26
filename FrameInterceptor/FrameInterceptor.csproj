@@ -83,6 +83,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CommunicationManager\CommunicationManager.csproj">
+      <Project>{0bb02477-d12e-47de-947d-2374630f1862}</Project>
+      <Name>CommunicationManager</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Communication\Communication.csproj">
       <Project>{492f454d-5754-46e5-8bec-890a03d6eb73}</Project>
       <Name>Communication</Name>

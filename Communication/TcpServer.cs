@@ -37,110 +37,104 @@ namespace Communication
 
         }
 
-        public void StartListener()
+        public TcpServer(string iIpAddress, string iPort)
         {
-            if (this._ipAddress != null && this._endPoint != null && this._listenPort > 0)
-            {
-                bool noError = false;
+            if (!base.ValidateIp(iIpAddress))
+                throw new ArgumentException();
 
-                try
-                {
-                    base._internalBuffer = new byte[this._bufferSize];
-                    base._internalBufferSize = 0;
-                    this._bufferSizeCanBeChanged = false;
+            int listenPort = 0;
 
-                    this._listener = new Socket(this._ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-                    this._listener.Bind(this._endPoint);
-                    this._listener.Listen(1);
+            if (!Int32.TryParse(iPort, out listenPort))
+                throw new ArgumentException();
 
-                    noError = true;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.ToString());
-                    noError = false;
-                }
+            byte[] ipAddress = base.ConvertStringIpToByte(iIpAddress);
 
-                if (noError)
-                {
-                    new Thread(() =>
-                    {
-                        Thread.CurrentThread.IsBackground = true;
+            base._ipAddress = new IPAddress(ipAddress);
+            this._listenPort = listenPort;
 
-                        while (true)
-                        {
-                            try
-                            {
-                                if (base.Disposed)
-                                    break;
-
-                                this._shouldRun.WaitOne(0);
-
-                                base.ClearBuffer();
-                                this._handler = this._listener.Accept();
-                                this._handler.ReceiveTimeout = base._IOTimeout;
-                                this._handler.SendTimeout = base._IOTimeout;
-
-                                if (this._handler != null)
-                                {
-                                    Console.WriteLine($"Got connection: {((IPEndPoint)this._handler.RemoteEndPoint).Address.ToString()}:{((IPEndPoint)this._handler.RemoteEndPoint).Port.ToString()} <- {((IPEndPoint)this._endPoint).Address.ToString()}:{((IPEndPoint)this._endPoint).Port.ToString()}");
-                                }
-
-                                this.RunServer();
-
-                                this._shouldRun.Reset();
-                            }
-                            catch (SocketException ex)
-                            {
-                                if (ex.ErrorCode == 10054)
-                                {
-                                    Console.WriteLine("Connection has been broken from client side.");
-                                }
-                                else if (ex.ErrorCode == 10004)
-                                {
-                                    Console.WriteLine("Listener disposed while waiting for client");
-                                }
-                                else
-                                {
-                                    Console.WriteLine("SOCKET EXCEPTION INTERCEPTED: " + ex.ToString());
-                                }
-                            } 
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine(ex.ToString());
-                            }
-                            finally
-                            {
-                                if (!base.Disposed)
-                                {
-                                    this._handler.Shutdown(SocketShutdown.Both);
-                                    this._handler.Close();
-
-                                    this._shouldRun.Set();
-                                }
-                            }
-                        }
-                    }).Start();
-                }
-                else
-                {
-                    Console.WriteLine("Could not run server");
-                }
-            }
+            this._endPoint = new IPEndPoint(base._ipAddress, this._listenPort);
         }
 
-        private void RunServer()
+        public TcpServer(int iPort)
         {
-            while (true)
-            {
-                if (!this.Disposed)
-                {
-                    base._byteData = new byte[base._bufferSize];
-                    int bytesLength = this._handler.Receive(base._byteData);
+            if (iPort < 1)
+                throw new ArgumentException("Bad input provided");
 
-                    base.AddToBuffer(base._byteData, bytesLength);
-                }
+            try
+            {
+                base._ipAddress = base.GetLocalIpAddress();
+            } 
+            catch (Exception)
+            {
+                throw;
             }
+
+            this._listenPort = iPort;
+
+            this._endPoint = new IPEndPoint(base._ipAddress, this._listenPort);
+        }
+
+        public TcpServer(IPAddress iIpAddress, int iPort)
+        {
+            if (iPort < 1)
+                throw new ArgumentException("Bad input provided");
+
+            base._ipAddress = iIpAddress;
+            this._listenPort = iPort;
+
+            this._endPoint = new IPEndPoint(base._ipAddress, this._listenPort);
+        }
+
+        public ConnectionResult InitListener()
+        {
+            try
+            {
+                this._listener = new Socket(this._endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+                this._listener.Bind(this._endPoint);
+                this._listener.Listen(1);
+            }
+            catch (SocketException ex)
+            {
+                if (ex.ErrorCode == 10049)
+                    return ConnectionResult.IpAddressContextUnknown;
+            }
+            catch (Exception ex)
+            {
+                return ConnectionResult.Failed;
+            }
+
+            return ConnectionResult.Listening;
+        }
+
+        public async Task<ConnectionResult> ListenForClient()
+        {
+            try
+            {
+                IAsyncResult ar = await this.InternalListenForClient();
+
+                this._handler = this._listener.EndAccept(ar);
+            }
+            catch (SocketException ex)
+            {
+                return ConnectionResult.Failed;
+            }
+
+            return ConnectionResult.Connected;
+        }
+
+        private async Task<IAsyncResult> InternalListenForClient()
+        {
+            IAsyncResult ar = null;
+
+            await Task<IAsyncResult>.Run(() =>
+            {
+                ManualResetEvent allDone = new ManualResetEvent(false);
+
+                ar = this._listener.BeginAccept(null, null);
+                ar.AsyncWaitHandle.WaitOne(Timeout.Infinite, true);
+            });
+
+            return ar;
         }
 
         public int Write(byte[] data)

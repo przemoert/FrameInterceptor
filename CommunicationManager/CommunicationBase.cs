@@ -5,8 +5,35 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Communication
+namespace CommunicationManager
 {
+    public enum ManagerConnectionResult
+    {
+        Connected = -1,
+        RefusedByRemoteHost = -2,
+        Timeout = -3,
+        Failed = -4,
+        ForciblyClosed = -5,
+        GracefulyClosed = -6,
+        ClosedNoReason = -7,
+        ZeroLengthByteIgnored = -8,
+        HandlerDisposed = -1001
+    }
+
+    public interface iCommunication
+    {
+        event EventHandler<DataReceivedEventArgs> DataRecieved;
+
+        Task<ManagerConnectionResult> Open();
+        void Close();
+        int SendData(byte[] iData);
+        bool IsOpen();
+        void OnDataRecieved(DataReceivedEventArgs e);
+        void Dispose();
+
+        bool IsConnected { get; }
+    }
+
     internal abstract class CommunicationBase
     {
         internal abstract event EventHandler<DataReceivedEventArgs> DataRecieved;
@@ -36,5 +63,6 @@ namespace Communication
     public class DataReceivedEventArgs : EventArgs
     {
         public byte[] Data;
+        public int DataLength;
     }
 }
