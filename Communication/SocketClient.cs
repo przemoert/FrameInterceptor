@@ -12,10 +12,13 @@ namespace Communication
     public sealed class SocketClient : IDisposable
     {
         private int _disposed = 0;
-        private AddressFamily _family;
+        private AddressFamily? _family = null;
+        private NetworkStream _stream = null;
+        private object _syncRoot = new object();
 
-        public Socket Client { get; set; }
-        public TcpServer Owner { get; private set; }
+        private Socket _client;
+        public Socket Client { get => _client; set => _client = value; }
+        public SocketServer Owner { get; private set; }
         public IPAddress IPAddress
         {
             get
@@ -37,7 +40,7 @@ namespace Communication
             }
         }
         public byte[] Buffer { get; private set; }
-        public int BufferSize { get; }
+        public int BufferSize { get; } = 1024;
         public int BufferLength { get; private set; }
         public bool Disposed { get => this._disposed != 0; }
         public bool Connected
@@ -69,7 +72,7 @@ namespace Communication
         }
 
 
-        public SocketClient(TcpServer iOwner, int iBufferSize) : this(AddressFamily.InterNetwork)
+        public SocketClient(SocketServer iOwner, int iBufferSize)
         {
             this.Owner = iOwner;
             this.BufferSize = iBufferSize;
@@ -77,9 +80,82 @@ namespace Communication
             this.BufferLength = 0;
         }
 
+        public SocketClient(int iBufferSize = 1024) : this(AddressFamily.InterNetwork) 
+        {
+            this.BufferSize = iBufferSize;
+            this.Buffer = new byte[this.BufferSize];
+        }
+
         private SocketClient(AddressFamily family)
         {
             this._family = family;
+        }
+
+        public bool Connect(byte[] iIpAddress, int iPort)
+        {
+            if (!Validation.ValidateIp(iIpAddress))
+                throw new ArgumentOutOfRangeException("iIpAddress");
+
+            return this.Connect(new IPAddress(iIpAddress), iPort);
+        }
+
+        public bool Connect(IPAddress iIpAddress, int iPort)
+        {
+            if (this.Disposed)
+                throw new ObjectDisposedException(this.GetType().FullName);
+
+            if (this._family == null)
+                throw new ArgumentNullException("family");
+
+            if (this.Connected)
+                throw new SocketException((int)SocketError.IsConnected);
+
+            if (!Validation.ValidatePort(iPort))
+                throw new ArgumentOutOfRangeException("iPort");
+
+            return this.Connect(new IPEndPoint(iIpAddress, iPort));
+        }
+
+        public bool Connect(IPEndPoint iRemoteEP)
+        {
+            if (this.Disposed)
+                throw new ObjectDisposedException(this.GetType().FullName);
+
+            if (iRemoteEP == null)
+                throw new ArgumentNullException("iRemoteEP");
+
+            if (this._family == null)
+                throw new ArgumentNullException("family");
+
+            this.InitClient();
+
+            try
+            {
+                this._client.Connect(iRemoteEP);
+            }
+            catch (SocketException)
+            {
+                throw;
+            }
+            catch (StackOverflowException)
+            {
+                throw;
+            }
+            catch (OutOfMemoryException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private void InitClient()
+        {
+            this._client = new Socket((AddressFamily)this._family, SocketType.Stream, ProtocolType.Tcp);
         }
 
         private void ResetBuffer()
@@ -95,19 +171,74 @@ namespace Communication
 
             int dataToAddLength = Math.Min(iData.Length, count);
 
-            for (int i = 0; i < dataToAddLength; i++)
+            lock (_syncRoot)
             {
-                this.Buffer[this.BufferLength] = iData[i];
-                this.BufferLength++;
+                for (int i = 0; i < dataToAddLength; i++)
+                {
+                    this.Buffer[this.BufferLength] = iData[i];
+                    this.BufferLength++;
+                }
             }
         }
 
-        public int ReadStream(byte[] buffer, int offset, int count)
+        public NetworkStream GetStream()
         {
-            NetworkStream networkStream = new NetworkStream(this.Client);
-            networkStream.Read(buffer, offset, count);
+            NetworkStream l_Stream = new NetworkStream(this._client, true);
 
-            return 0;
+            return l_Stream;
+        }
+
+        public int ReadSocket()
+        {
+            if (this._stream == null)
+                this._stream = this.GetStream();
+
+            byte[] l_buffer = new byte[this.BufferSize];
+
+            int l_BytesTransfered = this._stream.Read(l_buffer, 0, l_buffer.Length);
+
+            this.AddToBuffer(l_buffer, 0, l_BytesTransfered);
+
+            return l_BytesTransfered;
+        }
+
+        public async Task<int> ReadSocketAsnyc()
+        {
+            int l_BytesTransfered = 0;
+
+            await Task<int>.Run(() =>
+            {
+                l_BytesTransfered = this.ReadSocket();
+            });
+
+            return l_BytesTransfered;
+        }
+
+        public int Send(byte[] buffer, int offset, int count)
+        {
+            if (!this.Connected)
+                return -1;
+
+            int l_BytesTransfered = count;
+
+            try
+            {
+                if (this._stream == null)
+                    this._stream = this.GetStream();
+
+                this._stream.Write(buffer, offset, count);
+            }
+            catch (Exception)
+            {
+                return -1;
+            }
+
+            return l_BytesTransfered;
+        }
+
+        public Task<int> SendAsync(byte[] buffer, int offset, int count)
+        {
+            return Task<int>.Run(() => { return this.Send(buffer, offset, count); });
         }
 
         public int Read(byte[] buffer, int offset, int count)
@@ -115,13 +246,16 @@ namespace Communication
             int bytesRead = 0;
             int bytesToRead = Math.Min(this.BufferLength - offset, count);
 
-            for (int i = offset; i < offset + bytesToRead; i++)
+            lock (_syncRoot)
             {
-                buffer[bytesRead] = this.Buffer[i];
-                bytesRead++;
-            }
+                for (int i = offset; i < offset + bytesToRead; i++)
+                {
+                    buffer[bytesRead] = this.Buffer[i];
+                    bytesRead++;
+                }
 
-            this.ResetBuffer();
+                this.ResetBuffer();
+            }
 
             return bytesRead;
         }
@@ -137,7 +271,7 @@ namespace Communication
             if (Interlocked.CompareExchange(ref this._disposed, 1, 0) == 0)
             {
                 this.Client.Dispose();
-                this.Owner.RemoveClient(this);
+                //this.Owner.RemoveClient(this);
             }
         }
     }

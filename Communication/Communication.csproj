@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SocketServer.cs" />
     <Compile Include="EndPointDevice.cs" />
     <Compile Include="Frame.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -48,6 +49,7 @@
     <Compile Include="TcpBase.cs" />
     <Compile Include="TcpClient.cs" />
     <Compile Include="TcpServer.cs" />
+    <Compile Include="Validation.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Globals\Globals.csproj">

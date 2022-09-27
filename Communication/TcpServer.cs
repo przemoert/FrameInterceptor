@@ -109,24 +109,24 @@ namespace Communication
             return ConnectionResult.Listening;
         }
 
-        public async Task<SocketClient> ListenForClient()
-        {
-            SocketClient socketClient = new SocketClient(this, 1024);
-            socketClient.Client = await this.InternalListenForClient();
+        //public async Task<SocketClient> ListenForClient()
+        //{
+        //    //SocketClient socketClient = new SocketClient(this, 1024);
+        //    //socketClient.Client = await this.InternalListenForClient();
 
-            if (this._clients.Count >= this._clientsLimit)
-            {
-                socketClient.Close();
-                return null;
-            }
+        //    //if (this._clients.Count >= this._clientsLimit)
+        //    //{
+        //    //    socketClient.Close();
+        //    //    return null;
+        //    //}
 
-            if (socketClient.Connected)
-            {
-                this._clients.Add(socketClient);
-            }
+        //    //if (socketClient.Connected)
+        //    //{
+        //    //    this._clients.Add(socketClient);
+        //    //}
 
-            return socketClient;
-        }
+        //    //return socketClient;
+        //}
 
         private async Task<Socket> InternalListenForClient()
         {

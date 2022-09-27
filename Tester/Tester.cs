@@ -15,74 +15,96 @@ namespace Tester
 {
     public partial class Tester : Form
     {
-        TcpServer server = null;
+        SocketServer socketServer;
+        SocketClient client;
         private static int counter = 0;
-        private int limit = 2;
+        private int limit = 100;
 
         public Tester()
         {
             InitializeComponent();
 
-            server = new TcpServer(new byte[] { 192, 168, 2, 2 }, 4545);
-            server.ClientsLimit = 20;
-            server.InitListener();
+            socketServer = new SocketServer(new byte[] { 192, 168, 1, 61 }, 4545);
+            socketServer.Init();
 
-            Start();
+            Run();
 
             //Testing();
         }
 
-        private void Testing()
+        //private void Testing()
+        //{
+        //    while (counter < limit)
+        //    {
+        //        new Thread(() =>
+        //        {
+        //            int i = counter++;
+        //            Thread.CurrentThread.IsBackground = true;
+        //            Thread.CurrentThread.Name = "TName" + i;
+
+        //            ConnectToServer(i);
+        //        }).Start();
+        //    }
+        //}
+
+        private async void Run()
         {
-            while (counter < limit)
+            await Start();
+        }
+
+        //private async void ConnectToServer(int i)
+        //{
+        //    SocketClient tcpClient = new SocketClient();
+        //    tcpClient.Connect(new byte[] { 192, 168, 1, 61 }, 4545);
+
+        //    for (int j = 0; j < 3; j++)
+        //    {
+        //        byte[] msg = Encoding.UTF8.GetBytes("Thread " + i + "; Message no" + j + "\r\n");
+        //        tcpClient.Send(msg, 0, msg.Length);
+        //    }
+        //}
+
+        public async Task Start()
+        {
+            SocketClient socketClient = null;
+
+            await Task.Run(() =>
             {
-                new Thread(() =>
-                {
-                    int i = counter++;
-                    Thread.CurrentThread.IsBackground = true;
-                    Thread.CurrentThread.Name = "TName" + i;
-
-                    ConnectToServer(i);
-                }).Start();
-            }
-        }
-
-        private async void ConnectToServer(int i)
-        {
-            Communication.TcpClient tcpClient = new Communication.TcpClient();
-            tcpClient.ConnetionTimeout = 60000;
-            tcpClient.SetRemoteEndPoint(new byte[] { 192, 168, 2, 2 }, 4545);
-            await tcpClient.ConnectAsync();
-            tcpClient.Write(Encoding.UTF8.GetBytes("Test" + i + " " + Thread.CurrentThread.Name));
-        }
-
-        public async void Start()
-        {
-            SocketClient client = await server.ListenForClient();
-
-            byte[] buffer = new byte[1024];
-            client.ReadStream(buffer, 0, 1024);
-
-            string msg = Encoding.UTF8.GetString(buffer) + "\r\n";
-
-            this.textBox1.Text += msg;
+                socketClient = socketServer.OpenToClient();
+            });
 
             this.Start();
+            this.Read(socketClient);
         }
 
         public async void Read(SocketClient client)
         {
-            int test = await server.ReadAsync(client);
+            int bytesTransfered = 0;
 
-            byte[] buffer = new byte[test];
+            try
+            {
+                bytesTransfered = await client.ReadSocketAsnyc();
+            }
+            catch (Exception ex) 
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            
+            if (bytesTransfered > 0)
+            {
 
-            client.Read(buffer, 0, test);
+                client.Send(new byte[] { 6 }, 0, 1);
 
-            string msg = Encoding.UTF8.GetString(buffer) + "\r\n";
+                byte[] buffer = new byte[bytesTransfered];
+                client.Read(buffer, 0, buffer.Length);
 
-            this.textBox1.Text += msg;
+                //this.textBox1.AppendText(Encoding.UTF8.GetString(buffer) + "\r\n");
 
-            this.Read(client);
+                this.Read(client);
+
+               //Console.WriteLine(Encoding.UTF8.GetString(buffer));
+
+            }
         }
 
         private void OnDataReceived(object sender, TcpDataEventArgs e)
