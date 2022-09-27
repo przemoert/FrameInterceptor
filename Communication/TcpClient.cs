@@ -290,6 +290,8 @@ namespace Communication
 
             try
             {
+                this.CompareStream();
+
                 if (base._directionPriority == DirectionPriority.In && base._internalBufferSize > 0)
                 {
                     return 0;

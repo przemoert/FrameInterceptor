@@ -20,6 +20,8 @@ namespace Communication
         private Socket _handler = null;
         private int _listenPort;
         private bool _bufferSizeCanBeChanged = true;
+        private List<SocketClient> _clients = new List<SocketClient>();
+        private int _clientsLimit = 10;
 
 
         public TcpServer(byte[] iIpAddress, int iPort)
@@ -107,52 +109,68 @@ namespace Communication
             return ConnectionResult.Listening;
         }
 
-        public async Task<ConnectionResult> ListenForClient()
+        public async Task<SocketClient> ListenForClient()
         {
-            try
-            {
-                IAsyncResult ar = await this.InternalListenForClient();
+            SocketClient socketClient = new SocketClient(this, 1024);
+            socketClient.Client = await this.InternalListenForClient();
 
-                this._handler = this._listener.EndAccept(ar);
-            }
-            catch (SocketException ex)
+            if (this._clients.Count >= this._clientsLimit)
             {
-                return ConnectionResult.Failed;
+                socketClient.Close();
+                return null;
             }
 
-            return ConnectionResult.Connected;
+            if (socketClient.Connected)
+            {
+                this._clients.Add(socketClient);
+            }
+
+            return socketClient;
         }
 
-        private async Task<IAsyncResult> InternalListenForClient()
+        private async Task<Socket> InternalListenForClient()
         {
-            IAsyncResult ar = null;
+            Socket socket = null;
 
             await Task<IAsyncResult>.Run(() =>
             {
-                ManualResetEvent allDone = new ManualResetEvent(false);
-
-                ar = this._listener.BeginAccept(null, null);
-                ar.AsyncWaitHandle.WaitOne(Timeout.Infinite, true);
+                socket = this._listener.Accept();
             });
 
-            return ar;
+            return socket;
         }
 
-        public void ReadAsync(Socket socket)
+        public async Task<int> ReadAsync(SocketClient client)
         {
             if (this.Disposed)
                 throw new ObjectDisposedException(this.GetType().FullName);
 
-            if (socket == null)
+            if (client.Client == null)
                 throw new NullReferenceException();
 
+
             byte[] tmpBuffer = new byte[this._bufferSize];
+            int bytesReceived = 0;
 
-            SocketAsyncEventArgs ar = new SocketAsyncEventArgs();
-            ar.SetBuffer(tmpBuffer, 0, this._bufferSize);
-            ar.Completed += this.OnDataReceived;
+            try
+            {
+                bytesReceived = await Task<int>.Run(() =>
+                {
+                    int numBytes = client.Client.Receive(tmpBuffer, 0, client.BufferSize, SocketFlags.None);
+                    client.AddToBuffer(tmpBuffer, 0, numBytes);
 
-            this._handler.ReceiveAsync(ar);
+                    return numBytes;
+                });
+            }
+            catch (SocketException ex)
+            {
+                if (ex.ErrorCode == 10054)
+                {
+                    return (int)ConnectionResult.ForciblyClosed;
+                }
+            }
+
+            return bytesReceived;
         }
 
         private void OnDataReceived(object sender, EventArgs e)
@@ -161,18 +179,18 @@ namespace Communication
             {
                 TcpDataEventArgs args = new TcpDataEventArgs();
 
-                this.ReadAsync(s);
+                //this.ReadAsync(s);
             }
         }
 
-        public int Write(byte[] data)
+        public int Write(SocketClient client, byte[] data)
         {
-            if (!this.IsConnected)
+            if (!client.Connected)
                 return -1;
 
             try
             {
-                int bytesSent = this._handler.Send(data);
+                int bytesSent = client.Client.Send(data);
 
                 return bytesSent;
             }
@@ -180,6 +198,16 @@ namespace Communication
             {
                 return -1;
             }
+        }
+
+        public void AddClient(SocketClient client)
+        {
+            this._clients.Add(client);
+        }
+
+        public void RemoveClient(SocketClient client)
+        {
+            this._clients.Remove(client);
         }
 
         public override void Dispose()
@@ -221,7 +249,6 @@ namespace Communication
             }
         }
 
-        public Socket Handler { get => this._handler; }
         public string RemoteIpAddress 
         {
             get
@@ -269,6 +296,9 @@ namespace Communication
                 }
             }
         }
+
+        public List<SocketClient> Clients { get => _clients; }
+        public int ClientsLimit { get => _clientsLimit; set => _clientsLimit = value; }
     }
 
     public class TcpDataEventArgs : EventArgs
