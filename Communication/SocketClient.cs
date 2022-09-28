@@ -17,6 +17,7 @@ namespace Communication
         private object _syncRoot = new object();
         private Socket _client;
         private bool _closed = false;
+        private bool _zeroLengthByteIgnored = false;
 
         public Socket Client { get => _client; set => _client = value; }
         public SocketServer Owner { get; private set; }
@@ -72,7 +73,7 @@ namespace Communication
                 }
             }
         }
-
+        public bool ZeroLengthByteIgnored { get => _zeroLengthByteIgnored; }
 
         public SocketClient(SocketServer iOwner, int iBufferSize)
         {
@@ -222,17 +223,24 @@ namespace Communication
 
             byte[] l_buffer = new byte[this.BufferSize];
 
-            int l_BytesTransfered = this._stream.Read(l_buffer, 0, l_buffer.Length);
+            SocketError l_SocketError;
+            IAsyncResult l_AsyncResult = this._client.BeginReceive(l_buffer, 0, l_buffer.Length, 0, out l_SocketError, null, null);
 
+            bool l_Success = l_AsyncResult.AsyncWaitHandle.WaitOne(Timeout.Infinite, true);
+
+            int l_BytesTransfered = 0;
+            try
+            {
+                l_BytesTransfered = this._client.EndReceive(l_AsyncResult, out l_SocketError);
+            }
+            catch (ObjectDisposedException)
+            {
+                this._zeroLengthByteIgnored = true;
+            }
 
             if (l_BytesTransfered == 0)
             {
-                if (this._closed)
-                {
-                    if (!this.Disposed)
-                        this.Dispose();
-                }
-                else
+                if (!this._closed)
                 {
                     this.Close();
                 }
@@ -310,7 +318,7 @@ namespace Communication
                 try
                 {
                     this._client.Shutdown(SocketShutdown.Send);
-                    await Task.Delay(2000);
+                    await Task.Delay(500);
                 }
                 catch (SocketException ex)
                 {
@@ -318,10 +326,6 @@ namespace Communication
                 }
 
                 this.Client.Close();
-                this.Dispose();
-            }
-            else
-            {
                 this.Dispose();
             }
         }

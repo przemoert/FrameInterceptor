@@ -118,7 +118,15 @@ namespace CommunicationManager
             }
             else if (l_BytesToRead == 0)
             {
-                args.DataLength = (int)ManagerConnectionResult.GracefulyClosed;
+                if (this._client.ZeroLengthByteIgnored)
+                {
+                    args.DataLength = (int)ManagerConnectionResult.ZeroLengthByteIgnored;
+                }
+                else
+                {
+                    args.DataLength = (int)ManagerConnectionResult.GracefulyClosed;
+                }
+
                 this.OnDataRecieved(args);
             }
             else
