@@ -15,8 +15,9 @@ namespace Communication
         private AddressFamily? _family = null;
         private NetworkStream _stream = null;
         private object _syncRoot = new object();
-
         private Socket _client;
+        private bool _closed = false;
+
         public Socket Client { get => _client; set => _client = value; }
         public SocketServer Owner { get; private set; }
         public IPAddress IPAddress
@@ -42,6 +43,7 @@ namespace Communication
         public byte[] Buffer { get; private set; }
         public int BufferSize { get; } = 1024;
         public int BufferLength { get; private set; }
+        public bool Closed { get => this._closed; }
         public bool Disposed { get => this._disposed != 0; }
         public bool Connected
         {
@@ -89,6 +91,31 @@ namespace Communication
         private SocketClient(AddressFamily family)
         {
             this._family = family;
+        }
+
+        public bool Connect(string iIpAddress, string iPort)
+        {
+            if (!Validation.ValidateIp(iIpAddress))
+                throw new ArgumentOutOfRangeException("iIpAddress");
+
+            int l_Port = 0;
+
+            if (!Int32.TryParse(iPort, out l_Port))
+                throw new ArgumentOutOfRangeException("iPort");
+
+            if (!Validation.ValidatePort(l_Port))
+                throw new ArgumentOutOfRangeException("l_Port");
+
+            string[] l_Parts = iIpAddress.Split('.');
+
+            byte[] l_Bytes = new byte[4];
+
+            for (int i = 0; i < l_Parts.Length; i++)
+            {
+                l_Bytes[i] = byte.Parse(l_Parts[i]);
+            }
+
+            return Connect(l_Bytes, l_Port);
         }
 
         public bool Connect(byte[] iIpAddress, int iPort)
@@ -197,6 +224,20 @@ namespace Communication
 
             int l_BytesTransfered = this._stream.Read(l_buffer, 0, l_buffer.Length);
 
+
+            if (l_BytesTransfered == 0)
+            {
+                if (this._closed)
+                {
+                    if (!this.Disposed)
+                        this.Dispose();
+                }
+                else
+                {
+                    this.Close();
+                }
+            }
+
             this.AddToBuffer(l_buffer, 0, l_BytesTransfered);
 
             return l_BytesTransfered;
@@ -223,10 +264,10 @@ namespace Communication
 
             try
             {
-                if (this._stream == null)
-                    this._stream = this.GetStream();
+                //if (this._stream == null)
+                //    this._stream = this.GetStream();
 
-                this._stream.Write(buffer, offset, count);
+                this._client.Send(buffer, offset, count, 0);
             }
             catch (Exception)
             {
@@ -243,31 +284,57 @@ namespace Communication
 
         public int Read(byte[] buffer, int offset, int count)
         {
-            int bytesRead = 0;
-            int bytesToRead = Math.Min(this.BufferLength - offset, count);
+            int l_bytesTranfered = 0;
+            int l_bytesToRead = Math.Min(this.BufferLength - offset, count);
 
             lock (_syncRoot)
             {
-                for (int i = offset; i < offset + bytesToRead; i++)
+                for (int i = offset; i < offset + l_bytesToRead; i++)
                 {
-                    buffer[bytesRead] = this.Buffer[i];
-                    bytesRead++;
+                    buffer[l_bytesTranfered] = this.Buffer[i];
+                    l_bytesTranfered++;
                 }
 
                 this.ResetBuffer();
             }
 
-            return bytesRead;
+            return l_bytesTranfered;
         }
 
-        public void Close()
+        public async void Close()
         {
-            this.Client.Close();
-            this.Dispose();
+            if (!this._closed)
+            {
+                this._closed = true;
+
+                try
+                {
+                    this._client.Shutdown(SocketShutdown.Send);
+                    await Task.Delay(2000);
+                }
+                catch (SocketException ex)
+                {
+
+                }
+
+                this.Client.Close();
+                this.Dispose();
+            }
+            else
+            {
+                this.Dispose();
+            }
         }
 
         public void Dispose()
         {
+            if (this.Disposed)
+                throw new ObjectDisposedException(this.GetType().FullName);
+
+            if (this._client == null)
+                throw new ObjectDisposedException(this._client.GetType().FullName);
+
+
             if (Interlocked.CompareExchange(ref this._disposed, 1, 0) == 0)
             {
                 this.Client.Dispose();

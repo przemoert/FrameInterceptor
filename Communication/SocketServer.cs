@@ -14,6 +14,7 @@ namespace Communication
         private IPEndPoint _socketEP;
         private int _disposed = 0;
         private bool _started = false;
+        private int _bufferSize = 1024;
 
         public bool Disposed { get => this._disposed != 0; }
 
@@ -92,10 +93,15 @@ namespace Communication
 
         public SocketClient OpenToClient()
         {
+            return this.OpenToClient(this._bufferSize);
+        }
+
+        public SocketClient OpenToClient(int iBufferSize)
+        {
             if (!this._started)
                 throw new InvalidOperationException();
 
-            SocketClient l_client = new SocketClient(this, 4096);
+            SocketClient l_client = new SocketClient(this, iBufferSize);
             l_client.Client = this._socket.Accept();
 
             return l_client;

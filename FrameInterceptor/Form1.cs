@@ -94,7 +94,7 @@ namespace FrameInterceptor
 
                 if (this._comManager.Communication is TcpClientCommunication c)
                 {
-                    Log($"Connected to {c.Client.RemoteAddress}:{c.Client.RemotePort}");
+                    Log($"Connected to {c.Client.IPAddress}:{c.Client.Port}");
                 }
                 else if (this._comManager.Communication is TcpServerCommunication s)
                 {
@@ -111,7 +111,7 @@ namespace FrameInterceptor
             }
             else
             {
-                this.Log("Connection has ended with result code: " + e.DataLength + " " + ((ManagerConnectionResult)e.DataLength).ToString());
+                this.Log($"Connection has ended with result code: {e.DataLength} ({((ManagerConnectionResult)e.DataLength).ToString()})");
                 //this._comManager.Dispose();
                 this.SetButtonToConnect();
             }
@@ -252,6 +252,7 @@ namespace FrameInterceptor
             else
             {
                 this.tbSend.AppendText(Encoding.UTF8.GetString(data));
+                this.tbSend.Focus();
             }
         }
 

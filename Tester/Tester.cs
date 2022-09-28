@@ -24,7 +24,7 @@ namespace Tester
         {
             InitializeComponent();
 
-            socketServer = new SocketServer(new byte[] { 192, 168, 1, 61 }, 4545);
+            socketServer = new SocketServer(new byte[] { 192, 168, 2, 2 }, 4545);
             socketServer.Init();
 
             Run();
@@ -70,7 +70,7 @@ namespace Tester
 
             await Task.Run(() =>
             {
-                socketClient = socketServer.OpenToClient();
+                socketClient = socketServer.OpenToClient(4096);
             });
 
             this.Start();
@@ -102,7 +102,7 @@ namespace Tester
 
                 this.Read(client);
 
-               //Console.WriteLine(Encoding.UTF8.GetString(buffer));
+               Console.WriteLine(Encoding.UTF8.GetString(buffer));
 
             }
         }

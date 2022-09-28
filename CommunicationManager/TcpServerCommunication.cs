@@ -45,7 +45,7 @@ namespace CommunicationManager
             if (result != ConnectionResult.Listening)
                 return (ManagerConnectionResult)result;
 
-            result = await this._tcpServer.ListenForClient();
+            //result = await this._tcpServer.ListenForClient();
 
             return (ManagerConnectionResult)result;
         }

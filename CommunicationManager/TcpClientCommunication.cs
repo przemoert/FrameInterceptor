@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using Communication;
@@ -10,18 +11,16 @@ namespace CommunicationManager
     public class TcpClientCommunication : iCommunication
     {
         public event EventHandler<DataReceivedEventArgs> DataRecieved;
-        private TcpClient _client;
+
+        private SocketClient _client;
         private string _ipAddress;
         private string _port;
 
         public TcpClientCommunication(string iIpAddress, string iPort)
         {
-            this._client = new TcpClient();
+            this._client = new SocketClient();
             this._ipAddress = iIpAddress;
             this._port = iPort;
-
-            this._client.ConnetionTimeout = 10000;
-            this._client.ClearBufferOnRead = true;
         }
 
         public void Close()
@@ -38,62 +37,100 @@ namespace CommunicationManager
 
         public async Task<ManagerConnectionResult> Open()
         {
+            bool result = false;
             try
             {
-                this._client.SetRemoteEndPoint(this._ipAddress, this._port);
+                result = await Task<bool>.Run(() =>
+                {
+                    return this._client.Connect(this._ipAddress, this._port);
+                });
             }
-            catch (ArgumentException ex)
+            catch (ObjectDisposedException ex)
             {
-                return ManagerConnectionResult.Failed;
-            }
 
-            ConnectionResult result = 0;
-            try
-            {
-                result = await this._client.ConnectAsync();
             }
-            catch (ObjectDisposedException)
+            catch (SocketException ex)
             {
-                return ManagerConnectionResult.HandlerDisposed;
+                if (ex.ErrorCode == 10061)
+                    return ManagerConnectionResult.RefusedByRemoteHost;
+                else if (ex.ErrorCode == 10060)
+                    return ManagerConnectionResult.Timeout;
+                else if (ex.ErrorCode == 10038)
+                    return ManagerConnectionResult.NonSocketOperationError;
+                else
+                    return ManagerConnectionResult.UnhandledSocketError;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw;
             }
 
-            if (result == ConnectionResult.Connected)
+            if (result)
             {
                 this.InternalReadAsync();
             }
 
-            return (ManagerConnectionResult)result;
+            return ManagerConnectionResult.Connected;
         }
 
         private async void InternalReadAsync()
         {
-            int bytesToRead = await this._client.ReadStreamAsync();
+            int l_BytesToRead = 0;
+
+            try
+            {
+                l_BytesToRead = await this._client.ReadSocketAsnyc();
+            }
+            catch (SocketException ex)
+            {
+                if (ex.ErrorCode == 10054)
+                {
+                    l_BytesToRead = (int)ManagerConnectionResult.ForciblyClosed;
+                }
+                else if (ex.ErrorCode == 10004)
+                {
+                    if (this._client.Closed)
+                    {
+                        l_BytesToRead = (int)ManagerConnectionResult.ZeroLengthByteIgnored;
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
 
             DataReceivedEventArgs args = new DataReceivedEventArgs();
 
-            if (bytesToRead > 0)
+            if (l_BytesToRead > 0)
             {
-                args.Data = new byte[bytesToRead];
-                args.DataLength = this._client.Read(args.Data, 0, bytesToRead);
+                args.Data = new byte[l_BytesToRead];
+                args.DataLength = this._client.Read(args.Data, 0, l_BytesToRead);
 
                 this.OnDataRecieved(args);
 
                 this.InternalReadAsync();
             }
+            else if (l_BytesToRead == 0)
+            {
+                args.DataLength = (int)ManagerConnectionResult.GracefulyClosed;
+                this.OnDataRecieved(args);
+            }
             else
             {
-                args.DataLength = bytesToRead;
+                args.DataLength = l_BytesToRead;
                 this.OnDataRecieved(args);
             }
         }
 
         public int SendData(byte[] iData)
         {
-            return this._client.Write(iData);
+            return this._client.Send(iData, 0, iData.Length);
         }
 
         public void Dispose()
@@ -102,7 +139,7 @@ namespace CommunicationManager
                 this._client.Dispose();
         }
 
-        public bool IsConnected { get => this._client.IsConnected; }
-        public TcpClient Client { get => _client; }
+        public bool IsConnected { get => this._client.Connected; }
+        public SocketClient Client { get => _client; }
     }
 }

@@ -17,7 +17,9 @@ namespace CommunicationManager
         GracefulyClosed = -6,
         ClosedNoReason = -7,
         ZeroLengthByteIgnored = -8,
-        HandlerDisposed = -1001
+        HandlerDisposed = -1001,
+        UnhandledSocketError = -1002,
+        NonSocketOperationError = -1003
     }
 
     public interface iCommunication
