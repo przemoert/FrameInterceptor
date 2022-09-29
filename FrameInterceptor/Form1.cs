@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-//using Communication;
+using Communication;
 using CommunicationManager;
 
 
@@ -66,11 +66,11 @@ namespace FrameInterceptor
             this._comManager.DataRecieved -= new EventHandler<DataReceivedEventArgs>(this.OnDataReceived);
             this._comManager.DataRecieved += new EventHandler<DataReceivedEventArgs>(this.OnDataReceived);
 
-            ManagerConnectionResult result = await this._comManager.Open();
+            ConnectionResult result = (ConnectionResult)await this._comManager.Open();
 
             this.Log($"Connection completed with result code: {(int)result} ({result})");
 
-            if (result != ManagerConnectionResult.Connected && result != ManagerConnectionResult.HandlerDisposed)
+            if (result != ConnectionResult.Success && result != ConnectionResult.HandlerDisposed)
             {
                 //When not connected
                 if (this._comManager.Communication is TcpClientCommunication c)
@@ -82,12 +82,12 @@ namespace FrameInterceptor
                     this.OpenCommunication();
                 }
             }
-            else if (result == ManagerConnectionResult.HandlerDisposed)
+            else if (result == ConnectionResult.HandlerDisposed)
             {
                 //Handler disposed. Should only happend when user aborts after object creation. Any other occurence is highly distrubing.
                 this.SetButtonToConnect();
             }
-            else if (result == ManagerConnectionResult.Connected)
+            else if (result == ConnectionResult.Success)
             {
                 this.SetButtonToDisconnect();
                 //When connected, opened or whatever
@@ -96,10 +96,10 @@ namespace FrameInterceptor
                 {
                     Log($"Connected to {c.Client.IPAddress}:{c.Client.Port}");
                 }
-                else if (this._comManager.Communication is TcpServerCommunication s)
-                {
-                    Log($"Connection from {s.TcpServer.RemoteIpAddress}:{s.TcpServer.RemotePort}");
-                }
+                //else if (this._comManager.Communication is TcpServerCommunication s)
+                //{
+                //    Log($"Connection from {s.TcpServer.RemoteIpAddress}:{s.TcpServer.RemotePort}");
+                //}
             }
         }
 
@@ -111,8 +111,8 @@ namespace FrameInterceptor
             }
             else
             {
-                this.Log($"Connection has ended with result code: {e.DataLength} ({((ManagerConnectionResult)e.DataLength).ToString()})");
-                //this._comManager.Dispose();
+                this.Log($"Connection has ended with result code: {(int)this._comManager.Communication.ConnectionResult} ({this._comManager.Communication.ConnectionResult})");
+
                 this.SetButtonToConnect();
             }
         }

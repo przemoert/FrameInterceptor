@@ -11,21 +11,48 @@ namespace CommunicationManager
     {
         public event EventHandler<DataReceivedEventArgs> DataRecieved;
 
-        private TcpServer _tcpServer;
 
-        public TcpServerCommunication(int iPort)
+        private SocketServer _server;
+        private string _ipAddress;
+        private string _port;
+        private int _maxConnections;
+
+        public bool IsConnected { get => (this._server != null && this._server.Started); }
+        public ConnectionResult ConnectionResult { get => this._server.ConnectionResult; }
+
+
+        public TcpServerCommunication(string iIpAddress, string iPort, int iMaxConnections)
         {
-            this._tcpServer = new TcpServer(iPort);
+            this._ipAddress = iIpAddress;
+            this._port = iPort;
+            this._maxConnections = iMaxConnections;
         }
 
-        public TcpServerCommunication(string iIpAddress, string iPort)
+        public async Task<int> Open()
         {
-            this._tcpServer = new TcpServer(iIpAddress, iPort);
+            //This method cant block so it always returns integer representation of ConnectionResult.Success aside exceptions;
+
+            this._server = new SocketServer(this._ipAddress, this._port);
+            this._server.MaxConnections = this._maxConnections;
+
+            try
+            {
+                this._server.Init(10);
+            }
+            catch (Exception ex)
+            {
+                return (int)this.ConnectionResult;
+            }
+
+            return (int)ConnectionResult.Success;
         }
 
-        public void Close()
+        private async void InternalListenForClient()
         {
-            this._tcpServer.Close();
+            SocketClient l_Client = await Task<SocketClient>.Run(() =>
+            {
+                return this._server.OpenToClient(4096);
+            });
         }
 
         public bool IsOpen()
@@ -38,30 +65,19 @@ namespace CommunicationManager
             throw new NotImplementedException();
         }
 
-        public async Task<ManagerConnectionResult> Open()
+        public int SendData(byte[] iData)
         {
-            ConnectionResult result = this._tcpServer.InitListener();
-
-            if (result != ConnectionResult.Listening)
-                return (ManagerConnectionResult)result;
-
-            //result = await this._tcpServer.ListenForClient();
-
-            return (ManagerConnectionResult)result;
+            throw new NotImplementedException();
         }
 
-        public int SendData(byte[] iData)
+        public void Close()
         {
             throw new NotImplementedException();
         }
 
         public void Dispose()
         {
-            if (!this._tcpServer.Disposed)
-                this._tcpServer.Dispose();
+            throw new NotImplementedException();
         }
-
-        public bool IsConnected => throw new NotImplementedException();
-        public TcpServer TcpServer { get => this._tcpServer; }
     }
 }

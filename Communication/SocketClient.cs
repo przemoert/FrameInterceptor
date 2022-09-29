@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,6 +19,21 @@ namespace Communication
         private Socket _client;
         private bool _closed = false;
         private bool _zeroLengthByteIgnored = false;
+        private ConnectionResult _lastConnectionResult = 0;
+        private ConnectionResult _connectionResult = ConnectionResult.Success;
+
+        public ConnectionResult ConnectionResult
+        {
+            get
+            {
+                return this._connectionResult;
+            }
+            private set
+            {
+                this._lastConnectionResult = this._connectionResult;
+                this._connectionResult = value;
+            }
+        }
 
         public Socket Client { get => _client; set => _client = value; }
         public SocketServer Owner { get; private set; }
@@ -26,6 +42,9 @@ namespace Communication
             get
             {
                 if (this.Client == null)
+                    return null;
+
+                if (this.Client.RemoteEndPoint == null)
                     return null;
 
                 return ((IPEndPoint)Client.RemoteEndPoint).Address;
@@ -44,6 +63,7 @@ namespace Communication
         public byte[] Buffer { get; private set; }
         public int BufferSize { get; } = 1024;
         public int BufferLength { get; private set; }
+        public int ConnectionTimeout { get; set; } = Timeout.Infinite;
         public bool Closed { get => this._closed; }
         public bool Disposed { get => this._disposed != 0; }
         public bool Connected
@@ -159,11 +179,17 @@ namespace Communication
 
             try
             {
-                this._client.Connect(iRemoteEP);
+                //this._client.Connect(iRemoteEP);
+                IAsyncResult l_AsyncResult = this.Client.BeginConnect(iRemoteEP, null, null);
+                l_AsyncResult.AsyncWaitHandle.WaitOne(this.ConnectionTimeout, true);
+
+                this.Client.EndConnect(l_AsyncResult);
             }
-            catch (SocketException)
+            catch (SocketException ex)
             {
-                throw;
+                this.ConnectionResult = ErrorHandler.TranslateSocketError((SocketError)ex.ErrorCode);
+
+                return false;
             }
             catch (StackOverflowException)
             {
@@ -173,10 +199,18 @@ namespace Communication
             {
                 throw;
             }
+            catch (ObjectDisposedException ex)
+            {
+                this.ConnectionResult = ConnectionResult.HandlerDisposed;
+
+                return false;
+            }
             catch (Exception ex)
             {
                 return false;
             }
+
+            this.ConnectionResult = ConnectionResult.Success;
 
             return true;
         }
@@ -216,11 +250,20 @@ namespace Communication
             return l_Stream;
         }
 
+
         public int ReadSocket()
         {
-            if (this._stream == null)
-                this._stream = this.GetStream();
+            ConnectionResult l_ConnectionResult = 0;
 
+            int l_BytesTransfered = this.ReadSocket(out l_ConnectionResult);
+
+            this.ConnectionResult = l_ConnectionResult;
+
+            return l_BytesTransfered;
+        }
+
+        public int ReadSocket(out ConnectionResult oConnectionResult)
+        {
             byte[] l_buffer = new byte[this.BufferSize];
 
             SocketError l_SocketError;
@@ -228,7 +271,11 @@ namespace Communication
 
             bool l_Success = l_AsyncResult.AsyncWaitHandle.WaitOne(Timeout.Infinite, true);
 
+
+            //If 0 length byte was sent to remote host and host did not responded then closing socket results with blocking returns and EndReceive will throw ObjectDisposed.
+
             int l_BytesTransfered = 0;
+
             try
             {
                 l_BytesTransfered = this._client.EndReceive(l_AsyncResult, out l_SocketError);
@@ -236,7 +283,16 @@ namespace Communication
             catch (ObjectDisposedException)
             {
                 this._zeroLengthByteIgnored = true;
+
+                this.ConnectionResult = ConnectionResult.ZeroLengthByteIgnored;
             }
+
+
+            //If error occures it happens within EndReceive. Return must happen outside try catch for our sake.
+
+            if (this.ConnectionResult != ConnectionResult.ZeroLengthByteIgnored)
+                this.ConnectionResult = ErrorHandler.TranslateSocketError(l_SocketError);
+
 
             if (l_BytesTransfered == 0)
             {
@@ -247,6 +303,9 @@ namespace Communication
             }
 
             this.AddToBuffer(l_buffer, 0, l_BytesTransfered);
+
+
+            oConnectionResult = this.ConnectionResult;
 
             return l_BytesTransfered;
         }
@@ -342,7 +401,9 @@ namespace Communication
             if (Interlocked.CompareExchange(ref this._disposed, 1, 0) == 0)
             {
                 this.Client.Dispose();
-                //this.Owner.RemoveClient(this);
+
+                if (this.Owner != null)
+                    this.Owner.RemoveClient(this);
             }
         }
     }

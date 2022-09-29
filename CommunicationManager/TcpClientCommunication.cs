@@ -21,6 +21,11 @@ namespace CommunicationManager
             this._client = new SocketClient();
             this._ipAddress = iIpAddress;
             this._port = iPort;
+
+            /*
+             * !!!!!!!!!!
+             */
+            this._client.ConnectionTimeout = 10000;
         }
 
         public void Close()
@@ -35,7 +40,7 @@ namespace CommunicationManager
             this.DataRecieved?.Invoke(this, e);
         }
 
-        public async Task<ManagerConnectionResult> Open()
+        public async Task<int> Open()
         {
             bool result = false;
             try
@@ -49,17 +54,6 @@ namespace CommunicationManager
             {
 
             }
-            catch (SocketException ex)
-            {
-                if (ex.ErrorCode == 10061)
-                    return ManagerConnectionResult.RefusedByRemoteHost;
-                else if (ex.ErrorCode == 10060)
-                    return ManagerConnectionResult.Timeout;
-                else if (ex.ErrorCode == 10038)
-                    return ManagerConnectionResult.NonSocketOperationError;
-                else
-                    return ManagerConnectionResult.UnhandledSocketError;
-            }
             catch (Exception ex)
             {
                 throw;
@@ -70,40 +64,16 @@ namespace CommunicationManager
                 this.InternalReadAsync();
             }
 
-            return ManagerConnectionResult.Connected;
+            return (int)this._client.ConnectionResult;
         }
 
         private async void InternalReadAsync()
         {
             int l_BytesToRead = 0;
 
-            try
-            {
-                l_BytesToRead = await this._client.ReadSocketAsnyc();
-            }
-            catch (SocketException ex)
-            {
-                if (ex.ErrorCode == 10054)
-                {
-                    l_BytesToRead = (int)ManagerConnectionResult.ForciblyClosed;
-                }
-                else if (ex.ErrorCode == 10004)
-                {
-                    if (this._client.Closed)
-                    {
-                        l_BytesToRead = (int)ManagerConnectionResult.ZeroLengthByteIgnored;
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
 
+            //No need for try catch because all socket exception are outed on lower layer and another exception has to be thrown anyway
+            l_BytesToRead = await this._client.ReadSocketAsnyc();
 
             DataReceivedEventArgs args = new DataReceivedEventArgs();
 
@@ -118,20 +88,8 @@ namespace CommunicationManager
             }
             else if (l_BytesToRead == 0)
             {
-                if (this._client.ZeroLengthByteIgnored)
-                {
-                    args.DataLength = (int)ManagerConnectionResult.ZeroLengthByteIgnored;
-                }
-                else
-                {
-                    args.DataLength = (int)ManagerConnectionResult.GracefulyClosed;
-                }
+                args.DataLength = 0;
 
-                this.OnDataRecieved(args);
-            }
-            else
-            {
-                args.DataLength = l_BytesToRead;
                 this.OnDataRecieved(args);
             }
         }
@@ -148,6 +106,7 @@ namespace CommunicationManager
         }
 
         public bool IsConnected { get => this._client.Connected; }
+        public ConnectionResult ConnectionResult { get => this._client.ConnectionResult; }
         public SocketClient Client { get => _client; }
     }
 }

@@ -106,10 +106,5 @@ namespace Tester
 
             }
         }
-
-        private void OnDataReceived(object sender, TcpDataEventArgs e)
-        {
-            
-        }
     }
 }

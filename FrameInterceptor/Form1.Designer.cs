@@ -95,22 +95,22 @@ namespace FrameInterceptor
             this.tabSettings.Controls.Add(this.tabSerial);
             this.tabSettings.Controls.Add(this.tabServer);
             this.tabSettings.Controls.Add(this.tabClient);
-            this.tabSettings.Location = new System.Drawing.Point(840, 14);
-            this.tabSettings.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.tabSettings.Location = new System.Drawing.Point(630, 11);
+            this.tabSettings.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tabSettings.Name = "tabSettings";
             this.tabSettings.SelectedIndex = 0;
-            this.tabSettings.Size = new System.Drawing.Size(603, 150);
+            this.tabSettings.Size = new System.Drawing.Size(452, 122);
             this.tabSettings.TabIndex = 0;
             // 
             // tabSerial
             // 
             this.tabSerial.BackColor = System.Drawing.SystemColors.Control;
             this.tabSerial.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.tabSerial.Location = new System.Drawing.Point(4, 25);
-            this.tabSerial.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.tabSerial.Location = new System.Drawing.Point(4, 22);
+            this.tabSerial.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tabSerial.Name = "tabSerial";
-            this.tabSerial.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.tabSerial.Size = new System.Drawing.Size(595, 121);
+            this.tabSerial.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tabSerial.Size = new System.Drawing.Size(444, 96);
             this.tabSerial.TabIndex = 0;
             this.tabSerial.Text = "Serial";
             // 
@@ -121,47 +121,49 @@ namespace FrameInterceptor
             this.tabServer.Controls.Add(this.label3);
             this.tabServer.Controls.Add(this.tbServerIp);
             this.tabServer.Controls.Add(this.label4);
-            this.tabServer.Location = new System.Drawing.Point(4, 25);
-            this.tabServer.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.tabServer.Location = new System.Drawing.Point(4, 22);
+            this.tabServer.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tabServer.Name = "tabServer";
-            this.tabServer.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.tabServer.Size = new System.Drawing.Size(595, 121);
+            this.tabServer.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tabServer.Size = new System.Drawing.Size(444, 96);
             this.tabServer.TabIndex = 1;
             this.tabServer.Text = "TCP Server";
             // 
             // tbServerPort
             // 
-            this.tbServerPort.Location = new System.Drawing.Point(284, 15);
-            this.tbServerPort.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.tbServerPort.Location = new System.Drawing.Point(213, 12);
+            this.tbServerPort.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tbServerPort.Name = "tbServerPort";
-            this.tbServerPort.Size = new System.Drawing.Size(73, 22);
+            this.tbServerPort.Size = new System.Drawing.Size(56, 20);
             this.tbServerPort.TabIndex = 8;
             this.tbServerPort.Text = "4545";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(240, 18);
+            this.label3.Location = new System.Drawing.Point(180, 15);
+            this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(38, 17);
+            this.label3.Size = new System.Drawing.Size(29, 13);
             this.label3.TabIndex = 7;
             this.label3.Text = "Port:";
             // 
             // tbServerIp
             // 
-            this.tbServerIp.Location = new System.Drawing.Point(43, 14);
-            this.tbServerIp.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.tbServerIp.Location = new System.Drawing.Point(32, 11);
+            this.tbServerIp.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tbServerIp.Name = "tbServerIp";
-            this.tbServerIp.Size = new System.Drawing.Size(160, 22);
+            this.tbServerIp.Size = new System.Drawing.Size(121, 20);
             this.tbServerIp.TabIndex = 6;
             this.tbServerIp.Text = "192.168.2.2";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(13, 16);
+            this.label4.Location = new System.Drawing.Point(10, 13);
+            this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(24, 17);
+            this.label4.Size = new System.Drawing.Size(20, 13);
             this.label4.TabIndex = 5;
             this.label4.Text = "IP:";
             // 
@@ -172,47 +174,49 @@ namespace FrameInterceptor
             this.tabClient.Controls.Add(this.label2);
             this.tabClient.Controls.Add(this.tbClientIp);
             this.tabClient.Controls.Add(this.label1);
-            this.tabClient.Location = new System.Drawing.Point(4, 25);
-            this.tabClient.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.tabClient.Location = new System.Drawing.Point(4, 22);
+            this.tabClient.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tabClient.Name = "tabClient";
-            this.tabClient.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.tabClient.Size = new System.Drawing.Size(595, 121);
+            this.tabClient.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tabClient.Size = new System.Drawing.Size(444, 96);
             this.tabClient.TabIndex = 2;
             this.tabClient.Text = "TCP Client";
             // 
             // tbClientPort
             // 
-            this.tbClientPort.Location = new System.Drawing.Point(284, 15);
-            this.tbClientPort.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.tbClientPort.Location = new System.Drawing.Point(213, 12);
+            this.tbClientPort.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tbClientPort.Name = "tbClientPort";
-            this.tbClientPort.Size = new System.Drawing.Size(73, 22);
+            this.tbClientPort.Size = new System.Drawing.Size(56, 20);
             this.tbClientPort.TabIndex = 4;
             this.tbClientPort.Text = "4545";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(240, 18);
+            this.label2.Location = new System.Drawing.Point(180, 15);
+            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(38, 17);
+            this.label2.Size = new System.Drawing.Size(29, 13);
             this.label2.TabIndex = 3;
             this.label2.Text = "Port:";
             // 
             // tbClientIp
             // 
-            this.tbClientIp.Location = new System.Drawing.Point(43, 14);
-            this.tbClientIp.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.tbClientIp.Location = new System.Drawing.Point(32, 11);
+            this.tbClientIp.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tbClientIp.Name = "tbClientIp";
-            this.tbClientIp.Size = new System.Drawing.Size(160, 22);
+            this.tbClientIp.Size = new System.Drawing.Size(121, 20);
             this.tbClientIp.TabIndex = 2;
-            this.tbClientIp.Text = "192.168.1.61";
+            this.tbClientIp.Text = "192.168.2.2";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(13, 16);
+            this.label1.Location = new System.Drawing.Point(10, 13);
+            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(24, 17);
+            this.label1.Size = new System.Drawing.Size(20, 13);
             this.label1.TabIndex = 1;
             this.label1.Text = "IP:";
             // 
@@ -220,21 +224,21 @@ namespace FrameInterceptor
             // 
             this.tbConnectionLog.BackColor = System.Drawing.SystemColors.HighlightText;
             this.tbConnectionLog.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbConnectionLog.Location = new System.Drawing.Point(840, 169);
-            this.tbConnectionLog.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.tbConnectionLog.Location = new System.Drawing.Point(630, 137);
+            this.tbConnectionLog.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tbConnectionLog.Multiline = true;
             this.tbConnectionLog.Name = "tbConnectionLog";
             this.tbConnectionLog.ReadOnly = true;
             this.tbConnectionLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.tbConnectionLog.Size = new System.Drawing.Size(597, 103);
+            this.tbConnectionLog.Size = new System.Drawing.Size(448, 84);
             this.tbConnectionLog.TabIndex = 6;
             // 
             // btnConnect
             // 
-            this.btnConnect.Location = new System.Drawing.Point(16, 14);
-            this.btnConnect.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnConnect.Location = new System.Drawing.Point(12, 11);
+            this.btnConnect.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnConnect.Name = "btnConnect";
-            this.btnConnect.Size = new System.Drawing.Size(123, 38);
+            this.btnConnect.Size = new System.Drawing.Size(92, 31);
             this.btnConnect.TabIndex = 5;
             this.btnConnect.Text = "Connect";
             this.btnConnect.UseVisualStyleBackColor = true;
@@ -242,18 +246,18 @@ namespace FrameInterceptor
             // 
             // tbSend
             // 
-            this.tbSend.Location = new System.Drawing.Point(840, 277);
-            this.tbSend.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.tbSend.Location = new System.Drawing.Point(630, 225);
+            this.tbSend.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tbSend.Name = "tbSend";
-            this.tbSend.Size = new System.Drawing.Size(481, 22);
+            this.tbSend.Size = new System.Drawing.Size(362, 20);
             this.tbSend.TabIndex = 1;
             // 
             // btnSend
             // 
-            this.btnSend.Location = new System.Drawing.Point(1328, 277);
-            this.btnSend.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnSend.Location = new System.Drawing.Point(996, 225);
+            this.btnSend.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnSend.Name = "btnSend";
-            this.btnSend.Size = new System.Drawing.Size(109, 26);
+            this.btnSend.Size = new System.Drawing.Size(82, 21);
             this.btnSend.TabIndex = 2;
             this.btnSend.Text = "Send";
             this.btnSend.UseVisualStyleBackColor = true;
@@ -263,23 +267,20 @@ namespace FrameInterceptor
             // 
             this.tbUserFriendlyData.BackColor = System.Drawing.SystemColors.HighlightText;
             this.tbUserFriendlyData.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbUserFriendlyData.Location = new System.Drawing.Point(8, 23);
-            this.tbUserFriendlyData.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tbUserFriendlyData.Location = new System.Drawing.Point(6, 19);
             this.tbUserFriendlyData.Multiline = true;
             this.tbUserFriendlyData.Name = "tbUserFriendlyData";
             this.tbUserFriendlyData.ReadOnly = true;
             this.tbUserFriendlyData.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.tbUserFriendlyData.Size = new System.Drawing.Size(799, 120);
+            this.tbUserFriendlyData.Size = new System.Drawing.Size(600, 98);
             this.tbUserFriendlyData.TabIndex = 3;
             // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.tbUserFriendlyData);
-            this.groupBox1.Location = new System.Drawing.Point(16, 54);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox1.Location = new System.Drawing.Point(12, 44);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.groupBox1.Size = new System.Drawing.Size(816, 151);
+            this.groupBox1.Size = new System.Drawing.Size(612, 123);
             this.groupBox1.TabIndex = 7;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Friendly Log";
@@ -287,11 +288,9 @@ namespace FrameInterceptor
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.tbClearData);
-            this.groupBox2.Location = new System.Drawing.Point(17, 213);
-            this.groupBox2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox2.Location = new System.Drawing.Point(13, 173);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.groupBox2.Size = new System.Drawing.Size(816, 151);
+            this.groupBox2.Size = new System.Drawing.Size(612, 123);
             this.groupBox2.TabIndex = 8;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Clear Incomming";
@@ -300,23 +299,20 @@ namespace FrameInterceptor
             // 
             this.tbClearData.BackColor = System.Drawing.SystemColors.HighlightText;
             this.tbClearData.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbClearData.Location = new System.Drawing.Point(8, 23);
-            this.tbClearData.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tbClearData.Location = new System.Drawing.Point(6, 19);
             this.tbClearData.Multiline = true;
             this.tbClearData.Name = "tbClearData";
             this.tbClearData.ReadOnly = true;
             this.tbClearData.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.tbClearData.Size = new System.Drawing.Size(799, 120);
+            this.tbClearData.Size = new System.Drawing.Size(600, 98);
             this.tbClearData.TabIndex = 3;
             // 
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.tbRawData);
-            this.groupBox3.Location = new System.Drawing.Point(16, 372);
-            this.groupBox3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox3.Location = new System.Drawing.Point(12, 302);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.groupBox3.Size = new System.Drawing.Size(816, 151);
+            this.groupBox3.Size = new System.Drawing.Size(612, 123);
             this.groupBox3.TabIndex = 9;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "RAW";
@@ -325,22 +321,20 @@ namespace FrameInterceptor
             // 
             this.tbRawData.BackColor = System.Drawing.SystemColors.HighlightText;
             this.tbRawData.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbRawData.Location = new System.Drawing.Point(8, 23);
-            this.tbRawData.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tbRawData.Location = new System.Drawing.Point(6, 19);
             this.tbRawData.Multiline = true;
             this.tbRawData.Name = "tbRawData";
             this.tbRawData.ReadOnly = true;
             this.tbRawData.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.tbRawData.Size = new System.Drawing.Size(799, 120);
+            this.tbRawData.Size = new System.Drawing.Size(600, 98);
             this.tbRawData.TabIndex = 3;
             // 
             // btnSOH
             // 
             this.btnSOH.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnSOH.Location = new System.Drawing.Point(23, 39);
-            this.btnSOH.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSOH.Location = new System.Drawing.Point(17, 32);
             this.btnSOH.Name = "btnSOH";
-            this.btnSOH.Size = new System.Drawing.Size(72, 28);
+            this.btnSOH.Size = new System.Drawing.Size(54, 23);
             this.btnSOH.TabIndex = 10;
             this.btnSOH.Text = "SOH";
             this.btnSOH.UseVisualStyleBackColor = true;
@@ -377,11 +371,9 @@ namespace FrameInterceptor
             this.groupBox4.Controls.Add(this.btnETX);
             this.groupBox4.Controls.Add(this.btnSTX);
             this.groupBox4.Controls.Add(this.btnSOH);
-            this.groupBox4.Location = new System.Drawing.Point(840, 309);
-            this.groupBox4.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox4.Location = new System.Drawing.Point(630, 251);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.groupBox4.Size = new System.Drawing.Size(597, 181);
+            this.groupBox4.Size = new System.Drawing.Size(448, 147);
             this.groupBox4.TabIndex = 15;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Shortcuts";
@@ -389,10 +381,9 @@ namespace FrameInterceptor
             // btnDEL
             // 
             this.btnDEL.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnDEL.Location = new System.Drawing.Point(503, 145);
-            this.btnDEL.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnDEL.Location = new System.Drawing.Point(377, 118);
             this.btnDEL.Name = "btnDEL";
-            this.btnDEL.Size = new System.Drawing.Size(72, 28);
+            this.btnDEL.Size = new System.Drawing.Size(54, 23);
             this.btnDEL.TabIndex = 16;
             this.btnDEL.Text = "DEL";
             this.btnDEL.UseVisualStyleBackColor = true;
@@ -401,10 +392,9 @@ namespace FrameInterceptor
             // btnUS
             // 
             this.btnUS.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnUS.Location = new System.Drawing.Point(423, 145);
-            this.btnUS.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnUS.Location = new System.Drawing.Point(317, 118);
             this.btnUS.Name = "btnUS";
-            this.btnUS.Size = new System.Drawing.Size(72, 28);
+            this.btnUS.Size = new System.Drawing.Size(54, 23);
             this.btnUS.TabIndex = 37;
             this.btnUS.Text = "US";
             this.btnUS.UseVisualStyleBackColor = true;
@@ -413,10 +403,9 @@ namespace FrameInterceptor
             // btnRS
             // 
             this.btnRS.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnRS.Location = new System.Drawing.Point(343, 145);
-            this.btnRS.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnRS.Location = new System.Drawing.Point(257, 118);
             this.btnRS.Name = "btnRS";
-            this.btnRS.Size = new System.Drawing.Size(72, 28);
+            this.btnRS.Size = new System.Drawing.Size(54, 23);
             this.btnRS.TabIndex = 36;
             this.btnRS.Text = "RS";
             this.btnRS.UseVisualStyleBackColor = true;
@@ -425,10 +414,9 @@ namespace FrameInterceptor
             // btnGS
             // 
             this.btnGS.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnGS.Location = new System.Drawing.Point(263, 145);
-            this.btnGS.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnGS.Location = new System.Drawing.Point(197, 118);
             this.btnGS.Name = "btnGS";
-            this.btnGS.Size = new System.Drawing.Size(72, 28);
+            this.btnGS.Size = new System.Drawing.Size(54, 23);
             this.btnGS.TabIndex = 35;
             this.btnGS.Text = "GS";
             this.btnGS.UseVisualStyleBackColor = true;
@@ -437,10 +425,9 @@ namespace FrameInterceptor
             // btnFS
             // 
             this.btnFS.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnFS.Location = new System.Drawing.Point(183, 145);
-            this.btnFS.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnFS.Location = new System.Drawing.Point(137, 118);
             this.btnFS.Name = "btnFS";
-            this.btnFS.Size = new System.Drawing.Size(72, 28);
+            this.btnFS.Size = new System.Drawing.Size(54, 23);
             this.btnFS.TabIndex = 34;
             this.btnFS.Text = "FS";
             this.btnFS.UseVisualStyleBackColor = true;
@@ -449,10 +436,9 @@ namespace FrameInterceptor
             // btnESC
             // 
             this.btnESC.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnESC.Location = new System.Drawing.Point(103, 145);
-            this.btnESC.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnESC.Location = new System.Drawing.Point(77, 118);
             this.btnESC.Name = "btnESC";
-            this.btnESC.Size = new System.Drawing.Size(72, 28);
+            this.btnESC.Size = new System.Drawing.Size(54, 23);
             this.btnESC.TabIndex = 33;
             this.btnESC.Text = "ESC";
             this.btnESC.UseVisualStyleBackColor = true;
@@ -461,10 +447,9 @@ namespace FrameInterceptor
             // btnEM
             // 
             this.btnEM.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnEM.Location = new System.Drawing.Point(503, 111);
-            this.btnEM.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnEM.Location = new System.Drawing.Point(377, 90);
             this.btnEM.Name = "btnEM";
-            this.btnEM.Size = new System.Drawing.Size(72, 28);
+            this.btnEM.Size = new System.Drawing.Size(54, 23);
             this.btnEM.TabIndex = 32;
             this.btnEM.Text = "EM";
             this.btnEM.UseVisualStyleBackColor = true;
@@ -473,10 +458,9 @@ namespace FrameInterceptor
             // chkSend
             // 
             this.chkSend.AutoSize = true;
-            this.chkSend.Location = new System.Drawing.Point(507, 11);
-            this.chkSend.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.chkSend.Location = new System.Drawing.Point(380, 9);
             this.chkSend.Name = "chkSend";
-            this.chkSend.Size = new System.Drawing.Size(63, 21);
+            this.chkSend.Size = new System.Drawing.Size(51, 17);
             this.chkSend.TabIndex = 31;
             this.chkSend.Text = "Send";
             this.chkSend.UseVisualStyleBackColor = true;
@@ -484,10 +468,9 @@ namespace FrameInterceptor
             // btnSUB
             // 
             this.btnSUB.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnSUB.Location = new System.Drawing.Point(23, 145);
-            this.btnSUB.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSUB.Location = new System.Drawing.Point(17, 118);
             this.btnSUB.Name = "btnSUB";
-            this.btnSUB.Size = new System.Drawing.Size(72, 28);
+            this.btnSUB.Size = new System.Drawing.Size(54, 23);
             this.btnSUB.TabIndex = 30;
             this.btnSUB.Text = "SUB";
             this.btnSUB.UseVisualStyleBackColor = true;
@@ -496,10 +479,9 @@ namespace FrameInterceptor
             // btnCAN
             // 
             this.btnCAN.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnCAN.Location = new System.Drawing.Point(423, 111);
-            this.btnCAN.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnCAN.Location = new System.Drawing.Point(317, 90);
             this.btnCAN.Name = "btnCAN";
-            this.btnCAN.Size = new System.Drawing.Size(72, 28);
+            this.btnCAN.Size = new System.Drawing.Size(54, 23);
             this.btnCAN.TabIndex = 29;
             this.btnCAN.Text = "CAN";
             this.btnCAN.UseVisualStyleBackColor = true;
@@ -508,10 +490,9 @@ namespace FrameInterceptor
             // btnETB
             // 
             this.btnETB.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnETB.Location = new System.Drawing.Point(343, 111);
-            this.btnETB.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnETB.Location = new System.Drawing.Point(257, 90);
             this.btnETB.Name = "btnETB";
-            this.btnETB.Size = new System.Drawing.Size(72, 28);
+            this.btnETB.Size = new System.Drawing.Size(54, 23);
             this.btnETB.TabIndex = 28;
             this.btnETB.Text = "ETB";
             this.btnETB.UseVisualStyleBackColor = true;
@@ -520,10 +501,9 @@ namespace FrameInterceptor
             // btnSYN
             // 
             this.btnSYN.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnSYN.Location = new System.Drawing.Point(263, 111);
-            this.btnSYN.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSYN.Location = new System.Drawing.Point(197, 90);
             this.btnSYN.Name = "btnSYN";
-            this.btnSYN.Size = new System.Drawing.Size(72, 28);
+            this.btnSYN.Size = new System.Drawing.Size(54, 23);
             this.btnSYN.TabIndex = 27;
             this.btnSYN.Text = "SYN";
             this.btnSYN.UseVisualStyleBackColor = true;
@@ -532,10 +512,9 @@ namespace FrameInterceptor
             // btnNAK
             // 
             this.btnNAK.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnNAK.Location = new System.Drawing.Point(183, 111);
-            this.btnNAK.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnNAK.Location = new System.Drawing.Point(137, 90);
             this.btnNAK.Name = "btnNAK";
-            this.btnNAK.Size = new System.Drawing.Size(72, 28);
+            this.btnNAK.Size = new System.Drawing.Size(54, 23);
             this.btnNAK.TabIndex = 26;
             this.btnNAK.Text = "NAK";
             this.btnNAK.UseVisualStyleBackColor = true;
@@ -544,10 +523,9 @@ namespace FrameInterceptor
             // btnDLE
             // 
             this.btnDLE.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnDLE.Location = new System.Drawing.Point(103, 111);
-            this.btnDLE.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnDLE.Location = new System.Drawing.Point(77, 90);
             this.btnDLE.Name = "btnDLE";
-            this.btnDLE.Size = new System.Drawing.Size(72, 28);
+            this.btnDLE.Size = new System.Drawing.Size(54, 23);
             this.btnDLE.TabIndex = 25;
             this.btnDLE.Text = "DLE";
             this.btnDLE.UseVisualStyleBackColor = true;
@@ -556,10 +534,9 @@ namespace FrameInterceptor
             // btnSI
             // 
             this.btnSI.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnSI.Location = new System.Drawing.Point(23, 111);
-            this.btnSI.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSI.Location = new System.Drawing.Point(17, 90);
             this.btnSI.Name = "btnSI";
-            this.btnSI.Size = new System.Drawing.Size(72, 28);
+            this.btnSI.Size = new System.Drawing.Size(54, 23);
             this.btnSI.TabIndex = 24;
             this.btnSI.Text = "SI";
             this.btnSI.UseVisualStyleBackColor = true;
@@ -568,10 +545,9 @@ namespace FrameInterceptor
             // btnSO
             // 
             this.btnSO.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnSO.Location = new System.Drawing.Point(503, 75);
-            this.btnSO.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSO.Location = new System.Drawing.Point(377, 61);
             this.btnSO.Name = "btnSO";
-            this.btnSO.Size = new System.Drawing.Size(72, 28);
+            this.btnSO.Size = new System.Drawing.Size(54, 23);
             this.btnSO.TabIndex = 23;
             this.btnSO.Text = "SO";
             this.btnSO.UseVisualStyleBackColor = true;
@@ -580,10 +556,9 @@ namespace FrameInterceptor
             // btnCR
             // 
             this.btnCR.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnCR.Location = new System.Drawing.Point(423, 75);
-            this.btnCR.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnCR.Location = new System.Drawing.Point(317, 61);
             this.btnCR.Name = "btnCR";
-            this.btnCR.Size = new System.Drawing.Size(72, 28);
+            this.btnCR.Size = new System.Drawing.Size(54, 23);
             this.btnCR.TabIndex = 22;
             this.btnCR.Text = "CR";
             this.btnCR.UseVisualStyleBackColor = true;
@@ -592,10 +567,9 @@ namespace FrameInterceptor
             // btnFF
             // 
             this.btnFF.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnFF.Location = new System.Drawing.Point(343, 75);
-            this.btnFF.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnFF.Location = new System.Drawing.Point(257, 61);
             this.btnFF.Name = "btnFF";
-            this.btnFF.Size = new System.Drawing.Size(72, 28);
+            this.btnFF.Size = new System.Drawing.Size(54, 23);
             this.btnFF.TabIndex = 21;
             this.btnFF.Text = "FF";
             this.btnFF.UseVisualStyleBackColor = true;
@@ -604,10 +578,9 @@ namespace FrameInterceptor
             // btnVT
             // 
             this.btnVT.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnVT.Location = new System.Drawing.Point(263, 75);
-            this.btnVT.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnVT.Location = new System.Drawing.Point(197, 61);
             this.btnVT.Name = "btnVT";
-            this.btnVT.Size = new System.Drawing.Size(72, 28);
+            this.btnVT.Size = new System.Drawing.Size(54, 23);
             this.btnVT.TabIndex = 20;
             this.btnVT.Text = "VT";
             this.btnVT.UseVisualStyleBackColor = true;
@@ -616,10 +589,9 @@ namespace FrameInterceptor
             // btnLF
             // 
             this.btnLF.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnLF.Location = new System.Drawing.Point(183, 75);
-            this.btnLF.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnLF.Location = new System.Drawing.Point(137, 61);
             this.btnLF.Name = "btnLF";
-            this.btnLF.Size = new System.Drawing.Size(72, 28);
+            this.btnLF.Size = new System.Drawing.Size(54, 23);
             this.btnLF.TabIndex = 19;
             this.btnLF.Text = "LF";
             this.btnLF.UseVisualStyleBackColor = true;
@@ -628,10 +600,9 @@ namespace FrameInterceptor
             // btnHT
             // 
             this.btnHT.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnHT.Location = new System.Drawing.Point(103, 75);
-            this.btnHT.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnHT.Location = new System.Drawing.Point(77, 61);
             this.btnHT.Name = "btnHT";
-            this.btnHT.Size = new System.Drawing.Size(72, 28);
+            this.btnHT.Size = new System.Drawing.Size(54, 23);
             this.btnHT.TabIndex = 18;
             this.btnHT.Text = "HT";
             this.btnHT.UseVisualStyleBackColor = true;
@@ -640,10 +611,9 @@ namespace FrameInterceptor
             // btnBS
             // 
             this.btnBS.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnBS.Location = new System.Drawing.Point(23, 75);
-            this.btnBS.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnBS.Location = new System.Drawing.Point(17, 61);
             this.btnBS.Name = "btnBS";
-            this.btnBS.Size = new System.Drawing.Size(72, 28);
+            this.btnBS.Size = new System.Drawing.Size(54, 23);
             this.btnBS.TabIndex = 17;
             this.btnBS.Text = "BS";
             this.btnBS.UseVisualStyleBackColor = true;
@@ -652,10 +622,9 @@ namespace FrameInterceptor
             // btnBEL
             // 
             this.btnBEL.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnBEL.Location = new System.Drawing.Point(503, 39);
-            this.btnBEL.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnBEL.Location = new System.Drawing.Point(377, 32);
             this.btnBEL.Name = "btnBEL";
-            this.btnBEL.Size = new System.Drawing.Size(72, 28);
+            this.btnBEL.Size = new System.Drawing.Size(54, 23);
             this.btnBEL.TabIndex = 16;
             this.btnBEL.Text = "BEL";
             this.btnBEL.UseVisualStyleBackColor = true;
@@ -664,10 +633,9 @@ namespace FrameInterceptor
             // btnACK
             // 
             this.btnACK.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnACK.Location = new System.Drawing.Point(423, 39);
-            this.btnACK.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnACK.Location = new System.Drawing.Point(317, 32);
             this.btnACK.Name = "btnACK";
-            this.btnACK.Size = new System.Drawing.Size(72, 28);
+            this.btnACK.Size = new System.Drawing.Size(54, 23);
             this.btnACK.TabIndex = 15;
             this.btnACK.Text = "ACK";
             this.btnACK.UseVisualStyleBackColor = true;
@@ -676,10 +644,9 @@ namespace FrameInterceptor
             // btnENQ
             // 
             this.btnENQ.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnENQ.Location = new System.Drawing.Point(343, 39);
-            this.btnENQ.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnENQ.Location = new System.Drawing.Point(257, 32);
             this.btnENQ.Name = "btnENQ";
-            this.btnENQ.Size = new System.Drawing.Size(72, 28);
+            this.btnENQ.Size = new System.Drawing.Size(54, 23);
             this.btnENQ.TabIndex = 14;
             this.btnENQ.Text = "ENQ";
             this.btnENQ.UseVisualStyleBackColor = true;
@@ -688,10 +655,9 @@ namespace FrameInterceptor
             // btnEOT
             // 
             this.btnEOT.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnEOT.Location = new System.Drawing.Point(263, 39);
-            this.btnEOT.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnEOT.Location = new System.Drawing.Point(197, 32);
             this.btnEOT.Name = "btnEOT";
-            this.btnEOT.Size = new System.Drawing.Size(72, 28);
+            this.btnEOT.Size = new System.Drawing.Size(54, 23);
             this.btnEOT.TabIndex = 13;
             this.btnEOT.Text = "EOT";
             this.btnEOT.UseVisualStyleBackColor = true;
@@ -700,10 +666,9 @@ namespace FrameInterceptor
             // btnETX
             // 
             this.btnETX.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnETX.Location = new System.Drawing.Point(183, 39);
-            this.btnETX.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnETX.Location = new System.Drawing.Point(137, 32);
             this.btnETX.Name = "btnETX";
-            this.btnETX.Size = new System.Drawing.Size(72, 28);
+            this.btnETX.Size = new System.Drawing.Size(54, 23);
             this.btnETX.TabIndex = 12;
             this.btnETX.Text = "ETX";
             this.btnETX.UseVisualStyleBackColor = true;
@@ -712,10 +677,9 @@ namespace FrameInterceptor
             // btnSTX
             // 
             this.btnSTX.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnSTX.Location = new System.Drawing.Point(103, 39);
-            this.btnSTX.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSTX.Location = new System.Drawing.Point(77, 32);
             this.btnSTX.Name = "btnSTX";
-            this.btnSTX.Size = new System.Drawing.Size(72, 28);
+            this.btnSTX.Size = new System.Drawing.Size(54, 23);
             this.btnSTX.TabIndex = 11;
             this.btnSTX.Text = "STX";
             this.btnSTX.UseVisualStyleBackColor = true;
@@ -723,9 +687,9 @@ namespace FrameInterceptor
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1457, 554);
+            this.ClientSize = new System.Drawing.Size(1093, 450);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
@@ -735,7 +699,6 @@ namespace FrameInterceptor
             this.Controls.Add(this.btnSend);
             this.Controls.Add(this.tbSend);
             this.Controls.Add(this.tabSettings);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "Form1";
             this.Text = "Form1";
             this.tabSettings.ResumeLayout(false);

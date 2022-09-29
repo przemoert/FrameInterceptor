@@ -4,29 +4,15 @@ using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Communication;
 
 namespace CommunicationManager
 {
-    public enum ManagerConnectionResult
-    {
-        Connected = -1,
-        RefusedByRemoteHost = -2,
-        Timeout = -3,
-        Failed = -4,
-        ForciblyClosed = -5,
-        GracefulyClosed = -6,
-        ClosedNoReason = -7,
-        ZeroLengthByteIgnored = -8,
-        HandlerDisposed = -1001,
-        UnhandledSocketError = -1002,
-        NonSocketOperationError = -1003
-    }
-
     public interface iCommunication
     {
         event EventHandler<DataReceivedEventArgs> DataRecieved;
 
-        Task<ManagerConnectionResult> Open();
+        Task<int> Open();
         void Close();
         int SendData(byte[] iData);
         bool IsOpen();
@@ -34,6 +20,7 @@ namespace CommunicationManager
         void Dispose();
 
         bool IsConnected { get; }
+        ConnectionResult ConnectionResult { get; }
     }
 
     internal abstract class CommunicationBase
