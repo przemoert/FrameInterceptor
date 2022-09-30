@@ -66,6 +66,10 @@ namespace Communication
         public int ConnectionTimeout { get; set; } = Timeout.Infinite;
         public bool Closed { get => this._closed; }
         public bool Disposed { get => this._disposed != 0; }
+        public bool Poll
+        {
+            get => this.Client.Poll(1000, SelectMode.SelectRead);
+        }
         public bool Connected
         {
             get
@@ -77,7 +81,7 @@ namespace Communication
 
                 try
                 {
-                    return !(this.Client.Poll(1, SelectMode.SelectRead) && this.Client.Available == 0);
+                    return !(this.Client.Poll(1000, SelectMode.SelectRead) && this.Client.Available == 0);
                 }
                 catch (SocketException)
                 {
@@ -298,7 +302,14 @@ namespace Communication
             {
                 if (!this._closed)
                 {
-                    this.Close();
+                    this.Close(0).Wait();
+
+                    this.ConnectionResult = ConnectionResult.GracefulyClosed;
+                }
+                else
+                {
+                    if (this.ConnectionResult != ConnectionResult.ZeroLengthByteIgnored)
+                        this.ConnectionResult = ConnectionResult.GracefulyClosed;
                 }
             }
 
@@ -368,7 +379,12 @@ namespace Communication
             return l_bytesTranfered;
         }
 
-        public async void Close()
+        public async Task Close()
+        {
+            await this.Close(500);
+        }
+
+        public async Task Close(int timeout)
         {
             if (!this._closed)
             {
@@ -377,7 +393,7 @@ namespace Communication
                 try
                 {
                     this._client.Shutdown(SocketShutdown.Send);
-                    await Task.Delay(500);
+                    await Task.Delay(timeout);
                 }
                 catch (SocketException ex)
                 {
