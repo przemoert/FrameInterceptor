@@ -29,7 +29,7 @@ namespace FrameInterceptor.Communication
             base._owningForm = iOwner;
             this._remoteAddress = iIpAddress;
             this._remotePort = iPort;
-            this._bufferExceededOption = (BufferOptions)this._owningForm.icServerBufferOptions.Value;
+            this._bufferExceededOption = (BufferOptions)this._owningForm.icClientBufferOptions.Value;
 
 
             this._socketClient = new SocketClient(this._bufferSize);
