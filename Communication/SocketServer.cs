@@ -4,25 +4,107 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Communication
 {
-    public class SocketServer : IDisposable
+    public class SocketServer : IDisposable, IDisposer
     {
+        public event EventHandler ClientsListChanged;
+
         private Socket _socket;
         private IPEndPoint _socketEP;
         private int _disposed = 0;
         private bool _started = false;
         private int _bufferSize = 1024;
+        private bool _closing = false;
         private ConnectionResult _lastConnectionResult = 0;
         private ConnectionResult _connectionResult = ConnectionResult.Unhandled;
 
         public bool Disposed { get => this._disposed != 0; }
+        public bool Closing { get => this._closing; }
         public int MaxConnections { get; set; } = 10;
+        public bool Binded { get => (this._socket != null && this._socket.LocalEndPoint != null) ? true : false; }
         public List<SocketClient> Clients { get; private set; } = new List<SocketClient>();
         public int ClientsCount { get => this.Clients.Count(); }
         public bool Started { get => this._started; }
+        public bool AcceptingClients
+        {
+            //Remember - such constructs are messed up when debugging.
+            get
+            {
+                if (this.ClientsCount >= this.MaxConnections)
+                {
+                    if (this.ConnectionResult != ConnectionResult.ActiveConnectionsLimit || this.LastConnectionResult != ConnectionResult.ActiveConnectionsLimit)
+                        this.ConnectionResult = ConnectionResult.ActiveConnectionsLimit;
+
+                    return false;
+                }
+                else
+                {
+                    if (this.ConnectionResult != ConnectionResult.AcceptingClients)
+                    {
+                        if (this.LastConnectionResult == ConnectionResult.ActiveConnectionsLimit)
+                        {
+                            this.ConnectionResult = ConnectionResult.AcceptingClientsAfterLimit;
+                        }
+                        else
+                        {
+                            this.ConnectionResult = ConnectionResult.AcceptingClients;
+                        }
+
+                    }
+
+                    return true;
+                }
+            }
+        }
+        public Socket Server 
+        {
+            get => this._socket; 
+            private set
+            {
+                this._socket = value;
+                this.IpAddressAndPortBuffered = this.IpAddressAndPort;
+            }
+        }
+        public IPAddress IPAddress
+        {
+            get
+            {
+                if (this.Server == null)
+                    return null;
+
+                if (this.Server.LocalEndPoint == null)
+                    return null;
+
+                return ((IPEndPoint)Server.LocalEndPoint).Address;
+            }
+        }
+        public int Port
+        {
+            get
+            {
+                if (this.Server == null)
+                    return -1;
+
+                return ((IPEndPoint)Server.LocalEndPoint).Port;
+            }
+        }
+        public string IpAddressAndPort
+        {
+            get
+            {
+                if (this.IPAddress == null)
+                {
+                    return "Empty";
+                }
+
+                return this.IPAddress.ToString() + ":" + this.Port;
+            }
+        }
+        public string IpAddressAndPortBuffered { get; private set; }
         public ConnectionResult ConnectionResult
         {
             get
@@ -35,6 +117,7 @@ namespace Communication
                 this._connectionResult = value;
             }
         }
+        public ConnectionResult LastConnectionResult { get => this._lastConnectionResult; }
 
 
         public SocketServer(IPEndPoint iLocalEP)
@@ -43,9 +126,9 @@ namespace Communication
                 throw new ArgumentNullException("iLocalEP");
 
             this._socketEP = iLocalEP;
-            this._socket = new Socket(this._socketEP.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            //this._socket = new Socket(this._socketEP.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
-            this.ConnectionResult = ConnectionResult.Success;
+            //this.ConnectionResult = ConnectionResult.Success;
         }
 
         public SocketServer(IPAddress iIpAddress, int iPort)
@@ -57,9 +140,9 @@ namespace Communication
                 throw new ArgumentOutOfRangeException("iPort");
 
             this._socketEP = new IPEndPoint(iIpAddress, iPort);
-            this._socket = new Socket(this._socketEP.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            //this._socket = new Socket(this._socketEP.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
-            this.ConnectionResult = ConnectionResult.Success;
+            //this.ConnectionResult = ConnectionResult.Success;
         }
 
         public SocketServer(byte[] iIpAddress, int iPort)
@@ -71,9 +154,9 @@ namespace Communication
                 throw new ArgumentOutOfRangeException("iPort");
 
             this._socketEP = new IPEndPoint(new IPAddress(iIpAddress), iPort);
-            this._socket = new Socket(this._socketEP.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            //this._socket = new Socket(this._socketEP.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
-            this.ConnectionResult = ConnectionResult.Success;
+            //this.ConnectionResult = ConnectionResult.Success;
         }
 
         public SocketServer(string iIpAddress, string iPort)
@@ -99,7 +182,23 @@ namespace Communication
             }
 
             this._socketEP = new IPEndPoint(new IPAddress(l_Bytes), l_Port);
-            this._socket = new Socket(this._socketEP.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            //this._socket = new Socket(this._socketEP.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+
+            //this.ConnectionResult = ConnectionResult.Success;
+        }
+
+        public void OpenSocket()
+        {
+            try
+            {
+                this.Server = new Socket(this._socketEP.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            }
+            catch (SocketException ex)
+            {
+                this.ConnectionResult = ErrorHandler.TranslateSocketError(ex.ErrorCode);
+
+                return;
+            }
 
             this.ConnectionResult = ConnectionResult.Success;
         }
@@ -119,16 +218,26 @@ namespace Communication
             }
 
             if (this._started)
+            {
+                this.ConnectionResult = ConnectionResult.ServerListening;
+
                 return;
+            }
 
             try
             {
-                this._socket.Bind(this._socketEP);
+                if (!this.Binded)
+                    this._socket.Bind(this._socketEP);
+
                 this._socket.Listen(iBacklog);
             }
             catch (SocketException ex)
             {
-                throw;
+                this.Undo();
+
+                this.ConnectionResult = ErrorHandler.TranslateSocketError(ex.ErrorCode);
+
+                return;
             }
             catch (Exception ex)
             {
@@ -138,7 +247,7 @@ namespace Communication
 
             this._started = true;
 
-            this.ConnectionResult = ConnectionResult.Success;
+            this.ConnectionResult = ConnectionResult.ServerListening;
         }
 
         public void Undo()
@@ -151,6 +260,9 @@ namespace Communication
             }
 
             this._started = false;
+            this._closing = false;
+
+            this.OpenSocket();
         }
 
         public SocketClient OpenToClient()
@@ -158,10 +270,13 @@ namespace Communication
             return this.OpenToClient(this._bufferSize);
         }
 
-        public SocketClient OpenToClient(int iBufferSize)
+        public SocketClient OpenToClient(int iBufferSize, int iSocketBufferSize = -1)
         {
             if (!this._started)
                 throw new InvalidOperationException();
+
+            
+            //Before we start accepting we have to check if ConnectionsLimit has been reached. If so we set the result and return null to notify.
 
             if (this.ClientsCount >= this.MaxConnections)
             {
@@ -170,29 +285,126 @@ namespace Communication
                 return null;
             }
 
-            SocketClient l_client = new SocketClient(this, iBufferSize);
-            l_client.Client = this._socket.Accept();
+            SocketClient l_client = new SocketClient(this, iBufferSize, iSocketBufferSize);
+            IAsyncResult l_AsyncResult = null; 
+            
+            try
+            {
+                l_AsyncResult = this._socket.BeginAccept(null, null);
+                bool l_Success = l_AsyncResult.AsyncWaitHandle.WaitOne(Timeout.Infinite, true);
+            }
+            catch (ObjectDisposedException)
+            {
+                //We can only catch.
+                //Memory leaks occured during tests if Socket.EndAccept hasnt been called.
+            }
 
-            this.Clients.Add(l_client);
+
+            try
+            {
+                l_client.Client = this._socket.EndAccept(l_AsyncResult);
+            }
+            catch (ObjectDisposedException)
+            {
+                this.ConnectionResult = ConnectionResult.ListenerClosed;
+
+                return null;
+            }
+
+            if (l_client.Client != null)
+            {
+                this.AddClient(l_client);
+            }
+            else
+            {
+                l_client.Close().Wait(0);
+                l_client.Dispose();
+            }
 
             this.ConnectionResult = ConnectionResult.Success;
 
             return l_client;
         }
 
+        public void ResetState()
+        {
+            //The only reason to reset ConnectionResult is to allow new clients to come. Any other scenario will result with exception.
+            if (this.ConnectionResult != ConnectionResult.ActiveConnectionsLimit && this._lastConnectionResult != ConnectionResult.Success)
+                throw new InvalidOperationException();
+
+            this.ConnectionResult = ConnectionResult.Success;
+        }
+
         public void RemoveClient(SocketClient iClient)
         {
             this.Clients.Remove(iClient);
+
+            this.OnClientsListChanged();
         }
 
-        public void Close()
+        public void AddClient(SocketClient iClient)
         {
+            this.Clients.Add(iClient);
 
+            this.OnClientsListChanged();
+        }
+
+        private void OnClientsListChanged()
+        {
+            this.ClientsListChanged?.Invoke(this, new EventArgs());
+        }
+
+
+        //This method allows blocked OpenToClient method to unblock. Then OpenToClient returns null.
+        //Ones closed socket cant be used again so all closing stuff has to be handle manually.
+        public void CloseListener()
+        {
+            this._closing = true;
+            this._socket.Close();
+        }
+
+        public async Task Close()
+        {
+            this._closing = true;
+
+            if (this.Clients.Count > 0)
+            {
+                //foreach (SocketClient client in this.Clients.ToList())
+                while (this.ClientsCount > 0)
+                {
+                    await this.Clients.First().Close(500);
+                }
+            }
+
+            this._socket.Close();
+            this._socket.Dispose();
+
+            this.Dispose();
+
+            this.ConnectionResult = ConnectionResult.ListenerClosed;
         }
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            if (this.Disposed)
+                throw new ObjectDisposedException(this.GetType().FullName);
+
+            if (this._socket == null)
+                throw new ObjectDisposedException(this._socket.GetType().FullName);
+
+
+            if (Interlocked.CompareExchange(ref this._disposed, 1, 0) == 0)
+            {
+                if (this.Clients.Count > 0)
+                {
+                    foreach (SocketClient c in this.Clients.ToList())
+                    {
+                        c.Dispose();
+                    }
+                }
+
+                this._socket.Dispose();
+            }
         }
     }
 }

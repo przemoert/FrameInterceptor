@@ -49,8 +49,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Communication\CommunicationCommons.cs" />
     <Compile Include="Communication\ControlChars.cs" />
     <Compile Include="Communication\TcpClientCommunication.cs" />
+    <Compile Include="Communication\TcpServerCommunication.cs" />
+    <Compile Include="CustomControls\InputCombo.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CustomControls\InputCombo.Designer.cs">
+      <DependentUpon>InputCombo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CustomControls\InputFiled.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CustomControls\InputFiled.Designer.cs">
+      <DependentUpon>InputFiled.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrameInterceptor_v2.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -65,6 +79,12 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="CustomControls\InputCombo.resx">
+      <DependentUpon>InputCombo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CustomControls\InputFiled.resx">
+      <DependentUpon>InputFiled.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FrameInterceptor_v2.resx">
       <DependentUpon>FrameInterceptor_v2.cs</DependentUpon>
     </EmbeddedResource>
@@ -103,5 +123,6 @@
       <Name>Communication</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

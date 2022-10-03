@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Communication;
 using FrameInterceptor.Communication;
+using FrameInterceptor.CustomControls;
 
 
 //Connected = -1,
@@ -24,92 +25,151 @@ using FrameInterceptor.Communication;
 
 namespace FrameInterceptor
 {
-    public partial class FrameInterceptor : Form
+    public partial class FrameInterceptor_v2 : Form
     {
-        private bool _abort = false;
         private TcpClientCommunication _tcpClient;
+        private TcpServerCommunication _tcpServer;
+        private BindingSource ClientsBindigs = new BindingSource();
+        private bool _silentMode;
 
-        public FrameInterceptor()
+        public FrameInterceptor_v2()
         {
             InitializeComponent();
 
+            SetupControls();
+
+            this._silentMode = this.chkSilentMode.Checked;
+
         }
 
-        internal void ResultLog(ConnectionResult result)
+        private void SetupControls()
         {
-            this.Log($"Connection has completed with result code: {(int)result} ({result})");
+            this.icServerBufferOptions.DataSource = Enum.GetValues(typeof(BufferOptions));
+            this.icClientBufferOptions.DataSource = Enum.GetValues(typeof(BufferOptions));
         }
 
-        internal void Log(string msg)
+        private void SetUpClientsDataSource()
         {
-            if (InvokeRequired)
+            this.dgClients.AutoGenerateColumns = false;
+
+            ClientsBindigs.DataSource = this._tcpServer.Server.Clients;
+
+            dgClients.DataSource = ClientsBindigs;
+
+
+            //this.dgClients.DataSource = null;
+            //this.dgClients.DataSource = this.DgClientsBinding;
+        }
+
+        private async void UpdateClientsDataSource()
+        {
+            await Task.Delay(200);
+
+            if (this._tcpServer != null)
             {
-                this.Invoke(new Action<string>(Log), new object[] { msg });
-                return;
+                if (this._tcpServer.Server.Closing)
+                {
+                    this.dgClients.DataSource = null;
+                    this.dgClients.DataSource = ClientsBindigs;
+                }
+
+                if (this.dgClients.Rows.Count != this._tcpServer.Clients.Count)
+                    if (this._tcpServer.Clients.Count > 0)
+                        this.ClientsBindigs.ResetBindings(false);
+
+
+                this.UpdateClientsDataSource();
+            }
+        }
+
+        internal void ResetClientsBindings()
+        {
+            this.ClientsBindigs.ResetBindings(false);
+        }
+
+        internal void ResultLog(ConnectionResult result, object sender = null)
+        {
+            string l_Sender = String.Empty;
+
+            if (sender is SocketClient c)
+            {
+                l_Sender = c.IpAddressAndPortBuffered;
             }
 
-            this.tbConnectionLog.AppendText(msg + "\r\n");
+            this.Log($"{l_Sender} Connection has updated with result code: {(int)result} ({result})".Trim());
         }
 
-        internal void ComLog(byte[] iData, int iLength, bool isNotIncomingButOutgoing)
+        internal void Log(string msg, object sender = null)
         {
+            //Invokes no logner required
+
+            //if (InvokeRequired)
+            //{
+            //    this.Invoke(new Action<string>(Log), new object[] { msg });
+            //    return;
+            //}
+
+            string l_Sender = String.Empty;
+
+            if (sender is SocketClient c)
+            {
+                l_Sender = c.IpAddressAndPortBuffered;
+            }
+
+            this.tbConnectionLog.AppendText($"{l_Sender} {msg}".Trim() + "\r\n");
+        }
+
+        internal async Task ComLog(byte[] iData, int iLength, bool isNotIncomingButOutgoing, SocketClient iSender = null)
+        {
+            if (this._silentMode)
+                return;
+
             string msg = String.Empty;
+            string msgBytes = String.Empty;
             string prefix = String.Empty;
+            string sender = String.Empty;
+
+            sender = (iSender == null) ? String.Empty : iSender.IpAddressAndPortBuffered;
 
             if (isNotIncomingButOutgoing)
             {
-                prefix = "SNT[" + iLength + "] ";
+                if (iSender != null)
+                {
+                    prefix = sender + " <- ";
+                }
+
+                prefix += $"SNT[{iLength}] ";
             }
             else
             {
-                prefix = "RCV[" + iLength + "] ";
+                if (iSender != null)
+                {
+                    prefix = sender + " -> ";
+                }
+
+                prefix += $"RCV[{iLength}] ";
             }
 
-            msg = Encoding.UTF8.GetString(iData);
+
+            msg = await Task<string>.Run(() =>
+            {
+                return Encoding.UTF8.GetString(iData);
+            });
 
             if (!isNotIncomingButOutgoing)
             {
                 this.tbClearData.AppendText(msg);
 
-                foreach (byte b in iData)
-                    this.tbRawData.AppendText(b.ToString() + " ");
+                await Task<string>.Run(() =>
+                {
+                    foreach (byte b in iData)
+                        msgBytes += b.ToString() + " ";
+                });
+
+                this.tbRawData.AppendText(msgBytes);
             }
 
-            this.tbUserFriendlyData.AppendText(prefix + this.ReplaceControlChars(msg) + "\r\n");
-        }
-
-        private string ReplaceControlChars(string iMessage)
-        {
-            iMessage = iMessage.Replace(ControlChars.SOH.ToString(), "<SOH>");
-            iMessage = iMessage.Replace(ControlChars.STX.ToString(), "<STX>");
-            iMessage = iMessage.Replace(ControlChars.ETX.ToString(), "<ETX>");
-            iMessage = iMessage.Replace(ControlChars.EOT.ToString(), "<EOT>");
-            iMessage = iMessage.Replace(ControlChars.ENQ.ToString(), "<ENQ>");
-            iMessage = iMessage.Replace(ControlChars.ACK.ToString(), "<ACK>");
-            iMessage = iMessage.Replace(ControlChars.BEL.ToString(), "<BEL>");
-            iMessage = iMessage.Replace(ControlChars.BS.ToString(), "<BS>");
-            iMessage = iMessage.Replace(ControlChars.HT.ToString(), "<HT>");
-            iMessage = iMessage.Replace(ControlChars.LF.ToString(), "<LF>");
-            iMessage = iMessage.Replace(ControlChars.VT.ToString(), "<VT>");
-            iMessage = iMessage.Replace(ControlChars.FF.ToString(), "<FF>");
-            iMessage = iMessage.Replace(ControlChars.CR.ToString(), "<CR>");
-            iMessage = iMessage.Replace(ControlChars.SO.ToString(), "<SO>");
-            iMessage = iMessage.Replace(ControlChars.SI.ToString(), "<SI>");
-            iMessage = iMessage.Replace(ControlChars.DLE.ToString(), "<DLE>");
-            iMessage = iMessage.Replace(ControlChars.NAK.ToString(), "<NAK>");
-            iMessage = iMessage.Replace(ControlChars.SYN.ToString(), "<SYN>");
-            iMessage = iMessage.Replace(ControlChars.ETB.ToString(), "<ETB>");
-            iMessage = iMessage.Replace(ControlChars.CAN.ToString(), "<CAN>");
-            iMessage = iMessage.Replace(ControlChars.EM.ToString(), "<EM>");
-            iMessage = iMessage.Replace(ControlChars.SUB.ToString(), "<SUB>");
-            iMessage = iMessage.Replace(ControlChars.ESC.ToString(), "<ESC>");
-            iMessage = iMessage.Replace(ControlChars.FS.ToString(), "<FS>");
-            iMessage = iMessage.Replace(ControlChars.GS.ToString(), "<GS>");
-            iMessage = iMessage.Replace(ControlChars.RS.ToString(), "<RS>");
-            iMessage = iMessage.Replace(ControlChars.US.ToString(), "<US>");
-            iMessage = iMessage.Replace(ControlChars.DEL.ToString(), "<DEL>");
-
-            return iMessage;
+            this.tbUserFriendlyData.AppendText(prefix + ControlChars.ReplaceControlChars(msg) + "\r\n");
         }
 
         private object GetSender()
@@ -122,7 +182,17 @@ namespace FrameInterceptor
                 {
                     return this._tcpClient;
                 }
-            } 
+            }
+            if (this.tabSettings.SelectedIndex == 1)
+            {
+                if (this._tcpServer != null)
+                {
+                    if (this._tcpServer.Clients.Count > 0)
+                    {
+                        return this._tcpServer;
+                    }
+                }
+            }
 
             return sender;
         }
@@ -145,7 +215,14 @@ namespace FrameInterceptor
         private void Send(object sender, byte[] iData)
         {
             if (sender is TcpClientCommunication t)
-                t.Send(iData);
+            {
+                t.Send(iData, t.Client);
+            }
+            else if (sender is TcpServerCommunication s)
+            {
+                s.Send(iData, (SocketClient)this.dgClients.SelectedRows[0].Cells["colSocketClient"].Value);
+            }
+
         }
 
         private void Send(object sender, string iData)
@@ -158,6 +235,11 @@ namespace FrameInterceptor
             if (!String.IsNullOrEmpty(this.tbSend.Text))
             {
                 this.Send(this.GetSender(), this.tbSend.Text);
+
+                if (this.chkClearSend.Checked && !this.chkAutoResponse.Checked)
+                {
+                    this.tbSend.Text = String.Empty;
+                }
             }
         }
 
@@ -260,7 +342,7 @@ namespace FrameInterceptor
         {
             if (this.btnClientConnect.Text == "Connect")
             {
-                this._tcpClient = new TcpClientCommunication(this, this.tbClientIp.Text, this.tbClientPort.Text);
+                this._tcpClient = new TcpClientCommunication(this, this.ifClientIp.Text, this.ifClientPort.Text, this.ifClientBufferSize.Text, this.ifClientTimeout.Text);
                 this._tcpClient.Connect();
             }
             else
@@ -271,6 +353,75 @@ namespace FrameInterceptor
                     this._tcpClient = null;
                 }
             }
+        }
+
+        private async void btnServerOpen_Click(object sender, EventArgs e)
+        {
+            if (this.btnServerOpen.Text == "Open")
+            {
+                try
+                {
+                    this._tcpServer = new TcpServerCommunication(this, this.ifServerIp.Text, this.ifServerPort.Text, this.ifServerBufferSize.Text, this.ifServerMaxClients.Text, this.ifServerBacklog.Text);
+                }
+                catch (ArgumentOutOfRangeException)
+                {
+                    return;
+                }
+
+                this._tcpServer.CreateSocket();
+
+                this.SetUpClientsDataSource();
+                //this.UpdateClientsDataSource();
+
+                if (this._tcpServer.ConnectionResult != ConnectionResult.Success)
+                {
+                    this.ResultLog(this._tcpServer.ConnectionResult);
+
+                    return;
+                }
+
+                this._tcpServer.InitServer();
+
+                if (this._tcpServer.ConnectionResult != ConnectionResult.ServerListening)
+                {
+                    this.ResultLog(this._tcpServer.ConnectionResult);
+
+                    return;
+                }
+
+                this.ResultLog(this._tcpServer.ConnectionResult);
+
+                this._tcpServer.Open();
+            }
+            else
+            {
+                this.btnServerOpen.Enabled = false;
+
+                await this._tcpServer.Close();
+
+                this.btnServerOpen.Text = "Open";
+                this.btnServerOpen.Enabled = true;
+            }
+        }
+
+        private void btnKickClient_Click(object sender, EventArgs e)
+        {
+            if (this._tcpServer == null)
+                return;
+
+            if (this._tcpServer.Clients.Count == 0)
+            {
+                this.Log("0 clients connected");
+
+                return;
+            }
+
+            this._tcpServer.DisconnectClinet((SocketClient)this.dgClients.SelectedRows[0].Cells["colSocketClient"].Value);
+        }
+
+        private void chkSilentMode_CheckedChanged(object sender, EventArgs e)
+        {
+            this._silentMode = ((CheckBox)sender).Checked;
         }
     }
 }

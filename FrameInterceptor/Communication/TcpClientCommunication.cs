@@ -8,21 +8,35 @@ using Communication;
 
 namespace FrameInterceptor.Communication
 {
-    internal class TcpClientCommunication
+    internal class TcpClientCommunication : CommunicationCommons
     {
-        private FrameInterceptor _owningForm;
+        //private FrameInterceptor_v2 _owningForm;
         private SocketClient _socketClient;
         private string _remoteAddress;
         private string _remotePort;
+        private int _timeout;
+        private int _bufferSize;
+        private BufferOptions _bufferExceededOption;
 
-        public TcpClientCommunication(FrameInterceptor iOwner, string iIpAddress, string iPort)
+        public TcpClientCommunication(FrameInterceptor_v2 iOwner, string iIpAddress, string iPort, string iBufferSize, string iTimeout) : base(iOwner)
         {
-            this._owningForm = iOwner;
+            if (!Int32.TryParse(iBufferSize, out this._bufferSize))
+                throw new ArgumentOutOfRangeException("iBufferSize");
+
+            if (!Int32.TryParse(iTimeout, out this._timeout))
+                throw new ArgumentOutOfRangeException("iTimeout");
+
+            base._owningForm = iOwner;
             this._remoteAddress = iIpAddress;
             this._remotePort = iPort;
+            this._bufferExceededOption = (BufferOptions)this._owningForm.icServerBufferOptions.Value;
 
-            this._socketClient = new SocketClient(4096);
-            this._socketClient.ConnectionTimeout = 5000;
+
+            this._socketClient = new SocketClient(this._bufferSize);
+            this._socketClient.ConnectionTimeout = this._timeout;
+            this._socketClient.BufferExceededOption = this._bufferExceededOption;
+
+            base.SetHandler(this._socketClient);
         }
 
         public async void Connect()
@@ -38,7 +52,7 @@ namespace FrameInterceptor.Communication
                     return this._socketClient.Connect(this._remoteAddress, this._remotePort);
                 });
             }
-            catch (ArgumentOutOfRangeException)
+            catch (ArgumentNullException)
             {
                 this._owningForm.btnClientConnect.Enabled = true;
 
@@ -61,40 +75,12 @@ namespace FrameInterceptor.Communication
                 return;
             }
 
+            this._owningForm.Log($"Connected to {this.Client.IPAddress.ToString()}:{this.Client.Port}");
+
             this._owningForm.btnClientConnect.Enabled = true;
             this._owningForm.btnClientConnect.Text = "Disconnect";
 
-            this.Receive();
-        }
-
-        public async void Receive()
-        {
-            ConnectionResult l_ConnectionResult = ConnectionResult.Unhandled;
-
-            int l_BytesTransfered = await Task<int>.Run(() =>
-            {
-                return this._socketClient.ReadSocket(out l_ConnectionResult);
-            });
-
-
-            byte[] l_Buffer = new byte[l_BytesTransfered];
-
-            if (l_BytesTransfered > 0)
-            {
-                this.Receive();
-
-                this._socketClient.Read(l_Buffer, 0, l_BytesTransfered);
-                this._owningForm.ComLog(l_Buffer, l_BytesTransfered, false);
-            }
-            else if (l_BytesTransfered == 0)
-            {
-                this._owningForm.ResultLog(l_ConnectionResult);
-            }
-        }
-
-        public int Send(byte[] iData)
-        {
-            return this._socketClient.Send(iData, 0, iData.Length);
+            this.Receive(this._socketClient);
         }
 
         public async Task Close()

@@ -16,7 +16,7 @@ namespace FrameInterceptor
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FrameInterceptor());
+            Application.Run(new FrameInterceptor_v2());
         }
     }
 }

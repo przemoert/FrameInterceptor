@@ -36,5 +36,39 @@ namespace FrameInterceptor
         public static readonly char RS = (char)30;
         public static readonly char US = (char)31;
         public static readonly char DEL = (char)127;
+
+        internal static string ReplaceControlChars(string iMessage)
+        {
+            iMessage = iMessage.Replace(ControlChars.SOH.ToString(), "<SOH>");
+            iMessage = iMessage.Replace(ControlChars.STX.ToString(), "<STX>");
+            iMessage = iMessage.Replace(ControlChars.ETX.ToString(), "<ETX>");
+            iMessage = iMessage.Replace(ControlChars.EOT.ToString(), "<EOT>");
+            iMessage = iMessage.Replace(ControlChars.ENQ.ToString(), "<ENQ>");
+            iMessage = iMessage.Replace(ControlChars.ACK.ToString(), "<ACK>");
+            iMessage = iMessage.Replace(ControlChars.BEL.ToString(), "<BEL>");
+            iMessage = iMessage.Replace(ControlChars.BS.ToString(), "<BS>");
+            iMessage = iMessage.Replace(ControlChars.HT.ToString(), "<HT>");
+            iMessage = iMessage.Replace(ControlChars.LF.ToString(), "<LF>");
+            iMessage = iMessage.Replace(ControlChars.VT.ToString(), "<VT>");
+            iMessage = iMessage.Replace(ControlChars.FF.ToString(), "<FF>");
+            iMessage = iMessage.Replace(ControlChars.CR.ToString(), "<CR>");
+            iMessage = iMessage.Replace(ControlChars.SO.ToString(), "<SO>");
+            iMessage = iMessage.Replace(ControlChars.SI.ToString(), "<SI>");
+            iMessage = iMessage.Replace(ControlChars.DLE.ToString(), "<DLE>");
+            iMessage = iMessage.Replace(ControlChars.NAK.ToString(), "<NAK>");
+            iMessage = iMessage.Replace(ControlChars.SYN.ToString(), "<SYN>");
+            iMessage = iMessage.Replace(ControlChars.ETB.ToString(), "<ETB>");
+            iMessage = iMessage.Replace(ControlChars.CAN.ToString(), "<CAN>");
+            iMessage = iMessage.Replace(ControlChars.EM.ToString(), "<EM>");
+            iMessage = iMessage.Replace(ControlChars.SUB.ToString(), "<SUB>");
+            iMessage = iMessage.Replace(ControlChars.ESC.ToString(), "<ESC>");
+            iMessage = iMessage.Replace(ControlChars.FS.ToString(), "<FS>");
+            iMessage = iMessage.Replace(ControlChars.GS.ToString(), "<GS>");
+            iMessage = iMessage.Replace(ControlChars.RS.ToString(), "<RS>");
+            iMessage = iMessage.Replace(ControlChars.US.ToString(), "<US>");
+            iMessage = iMessage.Replace(ControlChars.DEL.ToString(), "<DEL>");
+
+            return iMessage;
+        }
     }
 }

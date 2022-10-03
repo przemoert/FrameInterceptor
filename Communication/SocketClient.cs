@@ -10,33 +10,40 @@ using System.Threading.Tasks;
 
 namespace Communication
 {
-    public sealed class SocketClient : IDisposable
+    public enum BufferOptions
+    {
+        Flush, //Can hangs if remote host sends data continuosly
+        Preserve,
+        Dynamic
+    }
+
+    public sealed class SocketClient : IDisposable, IDisposer
     {
         private int _disposed = 0;
         private AddressFamily? _family = null;
-        private NetworkStream _stream = null;
         private object _syncRoot = new object();
         private Socket _client;
         private bool _closed = false;
         private bool _zeroLengthByteIgnored = false;
         private ConnectionResult _lastConnectionResult = 0;
         private ConnectionResult _connectionResult = ConnectionResult.Success;
+        private int _bufferSize = 0;
+        private int _socketBuffer = 0;
+        private byte[] _buffer;
+        private int _currentBufferSize = 0;
 
-        public ConnectionResult ConnectionResult
-        {
-            get
-            {
-                return this._connectionResult;
-            }
-            private set
-            {
-                this._lastConnectionResult = this._connectionResult;
-                this._connectionResult = value;
-            }
-        }
+        
 
-        public Socket Client { get => _client; set => _client = value; }
+        public BufferOptions BufferExceededOption { get; set; } = BufferOptions.Preserve;
+        public int BufferSize { get => this._bufferSize; }
+        public int SocketBuffer { get => this._socketBuffer; }
+        public int ConnectionTimeout { get; set; } = Timeout.Infinite;
+
+        public byte[] Buffer { get => this._buffer; }
+        public int BufferLength { get => this._currentBufferSize; }
+        public bool HasData { get => this.Connected && this._client.Available > 0; }
         public SocketServer Owner { get; private set; }
+        public SocketClient Self { get => this; }
         public IPAddress IPAddress
         {
             get
@@ -60,10 +67,19 @@ namespace Communication
                 return ((IPEndPoint)Client.RemoteEndPoint).Port;
             }
         }
-        public byte[] Buffer { get; private set; }
-        public int BufferSize { get; } = 1024;
-        public int BufferLength { get; private set; }
-        public int ConnectionTimeout { get; set; } = Timeout.Infinite;
+        public string IpAddressAndPort
+        {
+            get
+            {
+                if (this.IPAddress == null)
+                {
+                    return "Empty";
+                }
+
+                return this.IPAddress.ToString() + ":" + this.Port;
+            }
+        }
+        public string IpAddressAndPortBuffered { get; private set; }
         public bool Closed { get => this._closed; }
         public bool Disposed { get => this._disposed != 0; }
         public bool Poll
@@ -98,19 +114,49 @@ namespace Communication
             }
         }
         public bool ZeroLengthByteIgnored { get => _zeroLengthByteIgnored; }
-
-        public SocketClient(SocketServer iOwner, int iBufferSize)
+        public ConnectionResult ConnectionResult
         {
-            this.Owner = iOwner;
-            this.BufferSize = iBufferSize;
-            this.Buffer = new byte[this.BufferSize];
-            this.BufferLength = 0;
+            get
+            {
+                return this._connectionResult;
+            }
+            private set
+            {
+                this._lastConnectionResult = this._connectionResult;
+                this._connectionResult = value;
+            }
+        }
+        public ConnectionResult LastConnectionResult { get => this._lastConnectionResult; }
+        public Socket Client
+        {
+            get => this._client;
+            set
+            {
+                _client = value;
+
+                this._client.ReceiveBufferSize = this._socketBuffer;
+                this._client.SendBufferSize = this._socketBuffer;
+
+                this.IpAddressAndPortBuffered = this.IpAddressAndPort;
+            }
         }
 
-        public SocketClient(int iBufferSize = 1024) : this(AddressFamily.InterNetwork) 
+
+
+        public SocketClient(SocketServer iOwner, int iBufferSize, int iSocketBufferSize = -1)
         {
-            this.BufferSize = iBufferSize;
-            this.Buffer = new byte[this.BufferSize];
+            this.Owner = iOwner;
+            this._bufferSize = iBufferSize;
+            this._socketBuffer = (iSocketBufferSize == -1) ? iBufferSize : iSocketBufferSize;
+            this._buffer = new byte[this._bufferSize];
+            this._currentBufferSize = 0;
+        }
+
+        public SocketClient(int iBufferSize = 1024, int iSocketBufferSize = -1) : this(AddressFamily.InterNetwork) 
+        {
+            this._bufferSize = iBufferSize;
+            this._socketBuffer = (iSocketBufferSize == -1) ? iBufferSize : iSocketBufferSize;
+            this._buffer = new byte[this._bufferSize];
         }
 
         private SocketClient(AddressFamily family)
@@ -216,18 +262,20 @@ namespace Communication
 
             this.ConnectionResult = ConnectionResult.Success;
 
+            this.IpAddressAndPortBuffered = this.IpAddressAndPort;
+
             return true;
         }
 
         private void InitClient()
         {
-            this._client = new Socket((AddressFamily)this._family, SocketType.Stream, ProtocolType.Tcp);
+            this.Client = new Socket((AddressFamily)this._family, SocketType.Stream, ProtocolType.Tcp);
         }
 
         private void ResetBuffer()
         {
-            this.Buffer = new byte[this.BufferSize];
-            this.BufferLength = 0;
+            this._buffer = new byte[this._bufferSize];
+            this._currentBufferSize = 0;
         }
 
         public void AddToBuffer(byte[] iData, int offset, int count)
@@ -237,16 +285,44 @@ namespace Communication
 
             int dataToAddLength = Math.Min(iData.Length, count);
 
+            if ((dataToAddLength + this._currentBufferSize) > this._bufferSize)
+            {
+                if (this.BufferExceededOption == BufferOptions.Dynamic)
+                {
+                    this.ResizeInternalBuffer(dataToAddLength + this._currentBufferSize);
+                }
+            }
+
             lock (_syncRoot)
             {
                 for (int i = 0; i < dataToAddLength; i++)
                 {
-                    this.Buffer[this.BufferLength] = iData[i];
-                    this.BufferLength++;
+                    this._buffer[this._currentBufferSize] = iData[i];
+                    this._currentBufferSize++;
                 }
             }
         }
 
+        public void ResizeInternalBuffer(int iNewBufferSize)
+        {
+            this._bufferSize = iNewBufferSize;
+
+            if (this._currentBufferSize == 0)
+            {
+                this._buffer = new byte[this._bufferSize];
+
+                return;
+            }
+
+            byte[] l_TempBuffer = this._buffer;
+            this._buffer = new byte[this._bufferSize];
+
+            Array.Copy(l_TempBuffer, this._buffer, this._currentBufferSize);
+        }
+
+
+        //NetworkStream is no longer needed. All communication can be managed directly through socket.
+        //NetworkStream provides unnecessary layer which would had to be managed.
         public NetworkStream GetStream()
         {
             NetworkStream l_Stream = new NetworkStream(this._client, true);
@@ -268,15 +344,34 @@ namespace Communication
 
         public int ReadSocket(out ConnectionResult oConnectionResult)
         {
-            byte[] l_buffer = new byte[this.BufferSize];
+            SocketError l_SocketError = SocketError.Fault;
+            IAsyncResult l_AsyncResult = null;
 
-            SocketError l_SocketError;
-            IAsyncResult l_AsyncResult = this._client.BeginReceive(l_buffer, 0, l_buffer.Length, 0, out l_SocketError, null, null);
+            int l_BufferSpaceAvailable = this._bufferSize - this._currentBufferSize;
 
-            bool l_Success = l_AsyncResult.AsyncWaitHandle.WaitOne(Timeout.Infinite, true);
+            if (l_BufferSpaceAvailable <= 0 && this.BufferExceededOption != BufferOptions.Dynamic)
+            {
+                this.ConnectionResult = ConnectionResult.BufferSizeExceeded;
+                oConnectionResult = this.ConnectionResult;
+
+                return -1;
+            }
+
+            byte[] l_buffer = new byte[this._bufferSize];
+
+            try
+            {
+                l_AsyncResult = this._client.BeginReceive(l_buffer, 0, l_buffer.Length, 0, out l_SocketError, null, null);
+                bool l_Success = l_AsyncResult.AsyncWaitHandle.WaitOne(Timeout.Infinite, true);
+            }
+            catch (ObjectDisposedException)
+            {
+                this.ConnectionResult = ConnectionResult.HandlerDisposed;
+            }
 
 
             //If 0 length byte was sent to remote host and host did not responded then closing socket results with blocking returns and EndReceive will throw ObjectDisposed.
+            //It is borken by design and logic can only be managed through catching exception.
 
             int l_BytesTransfered = 0;
 
@@ -286,34 +381,51 @@ namespace Communication
             }
             catch (ObjectDisposedException)
             {
-                this._zeroLengthByteIgnored = true;
-
-                this.ConnectionResult = ConnectionResult.ZeroLengthByteIgnored;
+                if (this.ConnectionResult != ConnectionResult.HandlerDisposed)
+                    this.ConnectionResult = ConnectionResult.ZeroLengthByteIgnored;
             }
 
 
-            //If error occures it happens within EndReceive. Return must happen outside try catch for our sake.
+            //If error occures it happens within EndReceive. Return must happen outside try catch for out sake.
 
-            if (this.ConnectionResult != ConnectionResult.ZeroLengthByteIgnored)
+            if (this.ConnectionResult != ConnectionResult.ZeroLengthByteIgnored && this.ConnectionResult != ConnectionResult.HandlerDisposed)
                 this.ConnectionResult = ErrorHandler.TranslateSocketError(l_SocketError);
 
 
             if (l_BytesTransfered == 0)
-            {
-                if (!this._closed)
-                {
-                    this.Close(0).Wait();
+                this.HandleZeroByte();
 
-                    this.ConnectionResult = ConnectionResult.GracefulyClosed;
-                }
-                else
+            if (this.HasData)
+            {
+                if (this.BufferExceededOption != BufferOptions.Dynamic)
+                    this.ConnectionResult = ConnectionResult.BufferSizeExceeded;
+
+                if (this.BufferExceededOption != BufferOptions.Preserve)
                 {
-                    if (this.ConnectionResult != ConnectionResult.ZeroLengthByteIgnored)
-                        this.ConnectionResult = ConnectionResult.GracefulyClosed;
+                    if (this.BufferExceededOption == BufferOptions.Flush)
+                    {
+                        this.FlushSocketBuffer();
+                    }
+                    else if (this.BufferExceededOption == BufferOptions.Dynamic)
+                    {
+                        l_BytesTransfered = this.RewriteBuffer(ref l_buffer);
+                    }
+                    else
+                    {
+                        throw new ArgumentOutOfRangeException();
+                    }
                 }
             }
 
-            this.AddToBuffer(l_buffer, 0, l_BytesTransfered);
+
+            try
+            {
+                this.AddToBuffer(l_buffer, 0, l_BytesTransfered);
+            }
+            catch (IndexOutOfRangeException ex)
+            {
+                this.ConnectionResult = ConnectionResult.BufferSizeExceeded;
+            }
 
 
             oConnectionResult = this.ConnectionResult;
@@ -331,6 +443,77 @@ namespace Communication
             });
 
             return l_BytesTransfered;
+        }
+
+        private int FlushSocketBuffer()
+        {
+            int l_DataFlushed = 0;
+
+            while (this._client.Available > 0)
+            {
+                byte[] l_TempBuffer = new byte[this._client.Available];
+
+                this._client.Receive(l_TempBuffer, 0, l_TempBuffer.Length, 0);
+
+                l_DataFlushed += l_TempBuffer.Length;
+            }
+
+            return l_DataFlushed;
+        }
+
+        private int RewriteBuffer(ref byte[] iBuffer)
+        {
+            int l_NewBufferSize = 0;
+
+            while (this.HasData)
+            {
+                int l_DataAvailable = this._client.Available;
+
+                int l_OldBufferSize = iBuffer.Length;
+                l_NewBufferSize = l_OldBufferSize + l_DataAvailable;
+
+                byte[] l_TempReceiveBuffer = new byte[l_DataAvailable];
+
+
+                this._client.Receive(l_TempReceiveBuffer, 0, l_DataAvailable, 0);
+
+
+                byte[] l_TempBuffer = iBuffer;
+                iBuffer = new byte[l_NewBufferSize];
+
+                Array.Copy(l_TempBuffer, 0, iBuffer, 0, l_OldBufferSize);
+                Array.Copy(l_TempReceiveBuffer, 0, iBuffer, l_OldBufferSize, l_DataAvailable);
+            }
+
+            return l_NewBufferSize;
+        }
+
+        private void HandleZeroByte()
+        {
+            if (!this._closed)
+            {
+                if (!this.Disposed)
+                {
+                    try
+                    {
+                        this.Close(0).Wait();
+                        this.ConnectionResult = ConnectionResult.GracefullyClosed;
+                    }
+                    catch (ObjectDisposedException)
+                    {
+                        this.ConnectionResult = ConnectionResult.HandlerDisposed;
+                    }
+                }
+                else
+                {
+                    this.ConnectionResult = ConnectionResult.HandlerDisposed;
+                }
+            }
+            else
+            {
+                if (this.ConnectionResult != ConnectionResult.ZeroLengthByteIgnored && this.ConnectionResult != ConnectionResult.HandlerDisposed)
+                    this.ConnectionResult = ConnectionResult.GracefullyClosed;
+            }
         }
 
         public int Send(byte[] buffer, int offset, int count)
@@ -363,13 +546,13 @@ namespace Communication
         public int Read(byte[] buffer, int offset, int count)
         {
             int l_bytesTranfered = 0;
-            int l_bytesToRead = Math.Min(this.BufferLength - offset, count);
+            int l_bytesToRead = Math.Min(this._currentBufferSize - offset, count);
 
             lock (_syncRoot)
             {
                 for (int i = offset; i < offset + l_bytesToRead; i++)
                 {
-                    buffer[l_bytesTranfered] = this.Buffer[i];
+                    buffer[l_bytesTranfered] = this._buffer[i];
                     l_bytesTranfered++;
                 }
 
@@ -399,9 +582,19 @@ namespace Communication
                 {
 
                 }
+                catch (ObjectDisposedException)
+                {
+                    throw new ObjectDisposedException(this._client.GetType().FullName);
+                }
+                catch (Exception ex) 
+                { 
+                
+                }
 
                 this.Client.Close();
-                this.Dispose();
+
+                if (!this.Disposed)
+                    this.Dispose();
             }
         }
 

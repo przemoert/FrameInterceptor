@@ -16,7 +16,7 @@ namespace Communication
         Timeout = 1001,
         Failed = 1002,
         ForciblyClosed = 1003,
-        GracefulyClosed = 1004,
+        GracefullyClosed = 1004,
         ClosedNoReason = 1005,
         ZeroLengthByteIgnored = 1006,
         HandlerDisposed = 1007,
@@ -24,7 +24,14 @@ namespace Communication
         NonSocketOperationError = 1009,
         SocketAccessDenied = 1010,
         Aborted = 1011,
-        ActiveConnectionsLimit = 1012
+        ActiveConnectionsLimit = 1012,
+        AddressAlreadyInUse = 1013,
+        ListenerClosed = 1014,
+        AcceptingClients = 1015,
+        AcceptingClientsAfterLimit = 1016,
+        ServerListening = 1017,
+        BufferSizeExceeded = 1018,
+        DataReceivedWhileFlushing = 1019
     }
 
 
@@ -102,7 +109,7 @@ namespace Communication
                     l_Reuslt = ConnectionResult.Unhandled;
                     break;
                 case SocketError.AddressAlreadyInUse:
-                    l_Reuslt = ConnectionResult.Unhandled;
+                    l_Reuslt = ConnectionResult.AddressAlreadyInUse;
                     break;
                 case SocketError.AddressNotAvailable:
                     l_Reuslt = ConnectionResult.Unhandled;
