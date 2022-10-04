@@ -30,8 +30,11 @@ namespace FrameInterceptor.Communication
             }
         }
 
-        protected async void Receive(SocketClient iClient)
+        protected virtual async void Receive(SocketClient iClient)
         {
+            if (iClient == null)
+                throw new ArgumentNullException();
+
             if (this._handler.Disposed)
                 return;
 
@@ -39,7 +42,18 @@ namespace FrameInterceptor.Communication
 
             int l_BytesTransfered = await Task<int>.Run(() =>
             {
-                return iClient.ReadSocket(out l_ConnectionResult);
+                int l_InternalBytesTransfered = 0;
+
+                try
+                {
+                    l_InternalBytesTransfered = iClient.ReadSocket(out l_ConnectionResult);
+                }
+                catch (ObjectDisposedException)
+                {
+
+                }
+
+                return l_InternalBytesTransfered;
             });
 
             if (iClient.ConnectionResult != ConnectionResult.Success)
@@ -89,22 +103,29 @@ namespace FrameInterceptor.Communication
             }
         }
 
-        protected async void ReadClientBuffer(SocketClient iClient, int iBytesToRead)
+        protected virtual async void ReadClientBuffer(SocketClient iClient, int iBytesToRead)
         {
             byte[] l_Buffer = new byte[iBytesToRead];
 
             iClient.Read(l_Buffer, 0, iBytesToRead);
             await this._owningForm.ComLog(l_Buffer, iBytesToRead, false, iClient);
+
+            //TESTS
+            //string l_Response = Encoding.UTF8.GetString(l_Buffer);
+            //int l_Hashcode = l_Response.GetHashCode();
+
+            //byte[] l_Bytes = Encoding.UTF8.GetBytes(l_Hashcode.ToString());
+            //this.Send(l_Bytes, iClient);
         }
 
-        public async void Send(byte[] iData, SocketClient iClient)
+        public virtual async void Send(byte[] iData, SocketClient iClient)
         {
             int l_BytesTransfered = await Task<int>.Run(() =>
             {
                 return iClient.Send(iData, 0, iData.Length);
             });
 
-            this._owningForm.ComLog(iData, l_BytesTransfered, true, iClient);
+            await this._owningForm.ComLog(iData, l_BytesTransfered, true, iClient);
         }
     }
 }

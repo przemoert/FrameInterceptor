@@ -31,7 +31,8 @@ namespace Communication
         AcceptingClientsAfterLimit = 1016,
         ServerListening = 1017,
         BufferSizeExceeded = 1018,
-        DataReceivedWhileFlushing = 1019
+        DataReceivedWhileFlushing = 1019,
+        UnknownAddressContext = 1020
     }
 
 
@@ -112,7 +113,7 @@ namespace Communication
                     l_Reuslt = ConnectionResult.AddressAlreadyInUse;
                     break;
                 case SocketError.AddressNotAvailable:
-                    l_Reuslt = ConnectionResult.Unhandled;
+                    l_Reuslt = ConnectionResult.UnknownAddressContext;
                     break;
                 case SocketError.NetworkDown:
                     l_Reuslt = ConnectionResult.Unhandled;

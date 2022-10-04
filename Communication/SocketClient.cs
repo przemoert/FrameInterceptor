@@ -368,6 +368,14 @@ namespace Communication
             {
                 this.ConnectionResult = ConnectionResult.HandlerDisposed;
             }
+            catch (NullReferenceException ex)
+            {
+                //Reset. Will be translated;
+            }
+            catch (ArgumentNullException ex)
+            {
+                //Reset. Will be translated;
+            }
 
 
             //If 0 length byte was sent to remote host and host did not responded then closing socket results with blocking returns and EndReceive will throw ObjectDisposed.
@@ -383,6 +391,14 @@ namespace Communication
             {
                 if (this.ConnectionResult != ConnectionResult.HandlerDisposed)
                     this.ConnectionResult = ConnectionResult.ZeroLengthByteIgnored;
+            }
+            catch (NullReferenceException ex)
+            {
+                //Reset. Will be translated;
+            }
+            catch (ArgumentNullException ex)
+            {
+                //Reset. Will be translated;
             }
 
 
@@ -485,6 +501,8 @@ namespace Communication
                 Array.Copy(l_TempReceiveBuffer, 0, iBuffer, l_OldBufferSize, l_DataAvailable);
             }
 
+            this._socketBuffer = l_NewBufferSize;
+
             return l_NewBufferSize;
         }
 
@@ -496,6 +514,14 @@ namespace Communication
                 {
                     try
                     {
+                        if (this.ConnectionResult == ConnectionResult.ForciblyClosed)
+                        {
+                            this.Dispose();
+
+                            return;
+                        }
+
+
                         this.Close(0).Wait();
                         this.ConnectionResult = ConnectionResult.GracefullyClosed;
                     }

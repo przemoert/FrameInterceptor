@@ -310,6 +310,12 @@ namespace Communication
 
                 return null;
             }
+            catch(SocketException ex)
+            {
+                this.ConnectionResult = ErrorHandler.TranslateSocketError(ex.ErrorCode);
+
+                return null;
+            }
 
             if (l_client.Client != null)
             {
