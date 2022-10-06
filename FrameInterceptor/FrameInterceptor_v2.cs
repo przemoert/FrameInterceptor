@@ -29,7 +29,7 @@ namespace FrameInterceptor
     {
         private TcpClientCommunication _tcpClient;
         private TcpServerCommunication _tcpServer;
-        private BindingSource ClientsBindigs = new BindingSource();
+        private BindingSource ClientsBindigs = null;
         private bool _silentMode;
 
         public FrameInterceptor_v2()
@@ -52,13 +52,10 @@ namespace FrameInterceptor
         {
             this.dgClients.AutoGenerateColumns = false;
 
-            ClientsBindigs.DataSource = this._tcpServer.Server.Clients;
+            this.ClientsBindigs = new BindingSource();
 
+            ClientsBindigs.DataSource = this._tcpServer.Clients;
             dgClients.DataSource = ClientsBindigs;
-
-
-            //this.dgClients.DataSource = null;
-            //this.dgClients.DataSource = this.DgClientsBinding;
         }
 
         private async void UpdateClientsDataSource()
@@ -84,6 +81,8 @@ namespace FrameInterceptor
 
         internal void ResetClientsBindings()
         {
+            //this._tcpServer.Clients = new BindingList<SocketClient>(this._tcpServer.Server.Clients);
+
             this.ClientsBindigs.ResetBindings(false);
         }
 
@@ -399,6 +398,8 @@ namespace FrameInterceptor
 
                 await this._tcpServer.Close();
 
+                this.ClientsBindigs.Dispose();
+
                 this.btnServerOpen.Text = "Open";
                 this.btnServerOpen.Enabled = true;
             }
@@ -422,6 +423,16 @@ namespace FrameInterceptor
         private void chkSilentMode_CheckedChanged(object sender, EventArgs e)
         {
             this._silentMode = ((CheckBox)sender).Checked;
+        }
+
+        private void btnClearLogs_Click(object sender, EventArgs e)
+        {
+            this.tbUserFriendlyData.Text = String.Empty;
+            this.tbClearData.Text = String.Empty;
+            this.tbRawData.Text = String.Empty;
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
         }
     }
 }

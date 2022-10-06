@@ -36,7 +36,7 @@ namespace FrameInterceptor.Communication
             this._socketClient.ConnectionTimeout = this._timeout;
             this._socketClient.BufferExceededOption = this._bufferExceededOption;
 
-            base.SetHandler(this._socketClient);
+            base.SetHandler(this);
         }
 
         public async void Connect()

@@ -48,13 +48,22 @@ namespace Communication
         {
             get
             {
-                if (this.Client == null)
-                    return null;
+                try
+                {
+                    if (this.Client == null)
+                        return null;
 
-                if (this.Client.RemoteEndPoint == null)
+                    if (this.Client.RemoteEndPoint == null)
+                        return null;
+                
+                    return ((IPEndPoint)Client.RemoteEndPoint).Address;
+                }
+                catch (NullReferenceException)
+                {
                     return null;
+                }
 
-                return ((IPEndPoint)Client.RemoteEndPoint).Address;
+
             }
         }
         public int Port
@@ -617,7 +626,8 @@ namespace Communication
                 
                 }
 
-                this.Client.Close();
+                if (this._client != null)
+                    this._client.Close();
 
                 if (!this.Disposed)
                     this.Dispose();
@@ -629,16 +639,17 @@ namespace Communication
             if (this.Disposed)
                 throw new ObjectDisposedException(this.GetType().FullName);
 
-            if (this._client == null)
-                throw new ObjectDisposedException(this._client.GetType().FullName);
-
-
             if (Interlocked.CompareExchange(ref this._disposed, 1, 0) == 0)
             {
-                this.Client.Dispose();
+                if (this._client != null)
+                    this._client.Dispose();
 
                 if (this.Owner != null)
                     this.Owner.RemoveClient(this);
+
+                this.Owner = null;
+
+                //GC.Collect();
             }
         }
     }

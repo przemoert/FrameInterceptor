@@ -10,7 +10,7 @@ namespace FrameInterceptor.Communication
     public class CommunicationCommons
     {
         protected FrameInterceptor_v2 _owningForm;
-        private IDisposer _handler = null;
+        private object _handler = null;
 
 
         public CommunicationCommons(FrameInterceptor_v2 iOwningForm)
@@ -20,14 +20,7 @@ namespace FrameInterceptor.Communication
 
         protected void SetHandler(object iCallerHandler)
         {
-            if (iCallerHandler is IDisposer)
-            { 
-                this._handler = (IDisposer)iCallerHandler;
-            }
-            else
-            {
-                throw new ArgumentOutOfRangeException("iCallerHandler");
-            }
+            this._handler = iCallerHandler;
         }
 
         protected virtual async void Receive(SocketClient iClient)
@@ -35,7 +28,10 @@ namespace FrameInterceptor.Communication
             if (iClient == null)
                 throw new ArgumentNullException();
 
-            if (this._handler.Disposed)
+            if (this._handler is TcpClientCommunication c && c.Client.Disposed)
+                return;
+
+            if (this._handler is TcpServerCommunication s && s.Server.Disposed)
                 return;
 
             ConnectionResult l_ConnectionResult = ConnectionResult.Unhandled;
@@ -81,7 +77,10 @@ namespace FrameInterceptor.Communication
             }
             else if (l_BytesTransfered == 0)
             {
-                this._owningForm.ResetClientsBindings();
+                if (this._handler is TcpServerCommunication ss)
+                    ss.Clients.Remove(iClient);
+
+                //this._owningForm.ResetClientsBindings();
                 //this._owningForm.ResultLog(l_ConnectionResult, iClient);
             }
             else
@@ -93,7 +92,11 @@ namespace FrameInterceptor.Communication
                     try
                     {
                         await iClient.Close();
-                        this._owningForm.ResetClientsBindings();
+
+                        if (this._handler is TcpServerCommunication ss)
+                            ss.Clients.Remove(iClient);
+
+                        //this._owningForm.ResetClientsBindings();
                     }
                     catch (Exception ex)
                     {

@@ -14,6 +14,7 @@ namespace Communication
         public event EventHandler ClientsListChanged;
 
         private Socket _socket;
+        private List<SocketClient> _clients = new List<SocketClient>();
         private IPEndPoint _socketEP;
         private int _disposed = 0;
         private bool _started = false;
@@ -21,13 +22,14 @@ namespace Communication
         private bool _closing = false;
         private ConnectionResult _lastConnectionResult = 0;
         private ConnectionResult _connectionResult = ConnectionResult.Unhandled;
+        private object _clientsLock = new object();
 
         public bool Disposed { get => this._disposed != 0; }
         public bool Closing { get => this._closing; }
         public int MaxConnections { get; set; } = 10;
         public bool Binded { get => (this._socket != null && this._socket.LocalEndPoint != null) ? true : false; }
-        public List<SocketClient> Clients { get; private set; } = new List<SocketClient>();
-        public int ClientsCount { get => this.Clients.Count(); }
+        public List<SocketClient> Clients { get => this._clients; }
+        public int ClientsCount { get => this._clients.Count(); }
         public bool Started { get => this._started; }
         public bool AcceptingClients
         {
@@ -306,6 +308,8 @@ namespace Communication
             }
             catch (ObjectDisposedException)
             {
+                l_client.Close().Wait();
+
                 this.ConnectionResult = ConnectionResult.ListenerClosed;
 
                 return null;
@@ -343,14 +347,20 @@ namespace Communication
 
         public void RemoveClient(SocketClient iClient)
         {
-            this.Clients.Remove(iClient);
+            lock (_clientsLock)
+            {
+                this._clients.Remove(iClient);
+            }
 
             this.OnClientsListChanged();
         }
 
         public void AddClient(SocketClient iClient)
         {
-            this.Clients.Add(iClient);
+            lock (_clientsLock)
+            {
+                this._clients.Add(iClient);
+            }
 
             this.OnClientsListChanged();
         }
@@ -373,12 +383,12 @@ namespace Communication
         {
             this._closing = true;
 
-            if (this.Clients.Count > 0)
+            if (this.ClientsCount > 0)
             {
                 //foreach (SocketClient client in this.Clients.ToList())
                 while (this.ClientsCount > 0)
                 {
-                    await this.Clients.First().Close(500);
+                    await this._clients[0].Close(500);
                 }
             }
 
@@ -401,9 +411,9 @@ namespace Communication
 
             if (Interlocked.CompareExchange(ref this._disposed, 1, 0) == 0)
             {
-                if (this.Clients.Count > 0)
+                if (this.ClientsCount > 0)
                 {
-                    foreach (SocketClient c in this.Clients.ToList())
+                    foreach (SocketClient c in this._clients.ToList())
                     {
                         c.Dispose();
                     }

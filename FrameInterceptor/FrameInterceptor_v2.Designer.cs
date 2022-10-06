@@ -29,16 +29,10 @@ namespace FrameInterceptor
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.tabSettings = new System.Windows.Forms.TabControl();
             this.tabSerial = new System.Windows.Forms.TabPage();
             this.tabServer = new System.Windows.Forms.TabPage();
-            this.icServerBufferOptions = new FrameInterceptor.CustomControls.InputCombo();
-            this.ifServerBufferSize = new FrameInterceptor.CustomControls.InputFiled();
-            this.ifServerBacklog = new FrameInterceptor.CustomControls.InputFiled();
-            this.ifServerMaxClients = new FrameInterceptor.CustomControls.InputFiled();
-            this.ifServerPort = new FrameInterceptor.CustomControls.InputFiled();
-            this.ifServerIp = new FrameInterceptor.CustomControls.InputFiled();
             this.btnServerOpen = new System.Windows.Forms.Button();
             this.tabClient = new System.Windows.Forms.TabPage();
             this.btnClientConnect = new System.Windows.Forms.Button();
@@ -90,11 +84,18 @@ namespace FrameInterceptor
             this.btnKickClient = new System.Windows.Forms.Button();
             this.chkClearSend = new System.Windows.Forms.CheckBox();
             this.chkAutoResponse = new System.Windows.Forms.CheckBox();
-            this.ifClientIp = new FrameInterceptor.CustomControls.InputFiled();
-            this.ifClientPort = new FrameInterceptor.CustomControls.InputFiled();
-            this.ifClientBufferSize = new FrameInterceptor.CustomControls.InputFiled();
-            this.icClientBufferOptions = new FrameInterceptor.CustomControls.InputCombo();
+            this.icServerBufferOptions = new FrameInterceptor.CustomControls.InputCombo();
+            this.ifServerBufferSize = new FrameInterceptor.CustomControls.InputFiled();
+            this.ifServerBacklog = new FrameInterceptor.CustomControls.InputFiled();
+            this.ifServerMaxClients = new FrameInterceptor.CustomControls.InputFiled();
+            this.ifServerPort = new FrameInterceptor.CustomControls.InputFiled();
+            this.ifServerIp = new FrameInterceptor.CustomControls.InputFiled();
             this.ifClientTimeout = new FrameInterceptor.CustomControls.InputFiled();
+            this.icClientBufferOptions = new FrameInterceptor.CustomControls.InputCombo();
+            this.ifClientBufferSize = new FrameInterceptor.CustomControls.InputFiled();
+            this.ifClientPort = new FrameInterceptor.CustomControls.InputFiled();
+            this.ifClientIp = new FrameInterceptor.CustomControls.InputFiled();
+            this.btnClearLogs = new System.Windows.Forms.Button();
             this.tabSettings.SuspendLayout();
             this.tabServer.SuspendLayout();
             this.tabClient.SuspendLayout();
@@ -150,72 +151,6 @@ namespace FrameInterceptor
             this.tabServer.TabIndex = 1;
             this.tabServer.Text = "TCP Server";
             // 
-            // icServerBufferOptions
-            // 
-            this.icServerBufferOptions.DataSource = null;
-            this.icServerBufferOptions.Location = new System.Drawing.Point(258, 5);
-            this.icServerBufferOptions.MaximumSize = new System.Drawing.Size(500, 40);
-            this.icServerBufferOptions.MinimumSize = new System.Drawing.Size(20, 40);
-            this.icServerBufferOptions.Name = "icServerBufferOptions";
-            this.icServerBufferOptions.Size = new System.Drawing.Size(111, 40);
-            this.icServerBufferOptions.TabIndex = 16;
-            this.icServerBufferOptions.Title = "Buffer Options";
-            // 
-            // ifServerBufferSize
-            // 
-            this.ifServerBufferSize.Location = new System.Drawing.Point(7, 48);
-            this.ifServerBufferSize.MaximumSize = new System.Drawing.Size(500, 37);
-            this.ifServerBufferSize.MinimumSize = new System.Drawing.Size(20, 37);
-            this.ifServerBufferSize.Name = "ifServerBufferSize";
-            this.ifServerBufferSize.Size = new System.Drawing.Size(73, 37);
-            this.ifServerBufferSize.TabIndex = 15;
-            this.ifServerBufferSize.Text = "4096";
-            this.ifServerBufferSize.Title = "Buffer Size";
-            // 
-            // ifServerBacklog
-            // 
-            this.ifServerBacklog.Location = new System.Drawing.Point(169, 5);
-            this.ifServerBacklog.MaximumSize = new System.Drawing.Size(500, 37);
-            this.ifServerBacklog.MinimumSize = new System.Drawing.Size(20, 37);
-            this.ifServerBacklog.Name = "ifServerBacklog";
-            this.ifServerBacklog.Size = new System.Drawing.Size(83, 37);
-            this.ifServerBacklog.TabIndex = 14;
-            this.ifServerBacklog.Text = "1";
-            this.ifServerBacklog.Title = "Backlog";
-            // 
-            // ifServerMaxClients
-            // 
-            this.ifServerMaxClients.Location = new System.Drawing.Point(86, 48);
-            this.ifServerMaxClients.MaximumSize = new System.Drawing.Size(500, 37);
-            this.ifServerMaxClients.MinimumSize = new System.Drawing.Size(20, 37);
-            this.ifServerMaxClients.Name = "ifServerMaxClients";
-            this.ifServerMaxClients.Size = new System.Drawing.Size(102, 37);
-            this.ifServerMaxClients.TabIndex = 13;
-            this.ifServerMaxClients.Text = "10";
-            this.ifServerMaxClients.Title = "Max Connections";
-            // 
-            // ifServerPort
-            // 
-            this.ifServerPort.Location = new System.Drawing.Point(99, 5);
-            this.ifServerPort.MaximumSize = new System.Drawing.Size(500, 37);
-            this.ifServerPort.MinimumSize = new System.Drawing.Size(20, 37);
-            this.ifServerPort.Name = "ifServerPort";
-            this.ifServerPort.Size = new System.Drawing.Size(64, 37);
-            this.ifServerPort.TabIndex = 12;
-            this.ifServerPort.Text = "4545";
-            this.ifServerPort.Title = "Port";
-            // 
-            // ifServerIp
-            // 
-            this.ifServerIp.Location = new System.Drawing.Point(7, 5);
-            this.ifServerIp.MaximumSize = new System.Drawing.Size(500, 37);
-            this.ifServerIp.MinimumSize = new System.Drawing.Size(20, 37);
-            this.ifServerIp.Name = "ifServerIp";
-            this.ifServerIp.Size = new System.Drawing.Size(86, 37);
-            this.ifServerIp.TabIndex = 11;
-            this.ifServerIp.Text = "192.168.2.2";
-            this.ifServerIp.Title = "IP";
-            // 
             // btnServerOpen
             // 
             this.btnServerOpen.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
@@ -258,6 +193,7 @@ namespace FrameInterceptor
             // tabSettingsTab
             // 
             this.tabSettingsTab.BackColor = System.Drawing.SystemColors.Control;
+            this.tabSettingsTab.Controls.Add(this.btnClearLogs);
             this.tabSettingsTab.Controls.Add(this.chkSilentMode);
             this.tabSettingsTab.Location = new System.Drawing.Point(4, 22);
             this.tabSettingsTab.Name = "tabSettingsTab";
@@ -768,14 +704,14 @@ namespace FrameInterceptor
             this.dgClients.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colSocketClient,
             this.colClientName});
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F);
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgClients.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F);
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgClients.DefaultCellStyle = dataGridViewCellStyle1;
             this.dgClients.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgClients.Location = new System.Drawing.Point(3, 16);
             this.dgClients.Name = "dgClients";
@@ -833,38 +769,82 @@ namespace FrameInterceptor
             this.chkAutoResponse.Text = "AutoResp";
             this.chkAutoResponse.UseVisualStyleBackColor = true;
             // 
-            // ifClientIp
+            // icServerBufferOptions
             // 
-            this.ifClientIp.Location = new System.Drawing.Point(7, 5);
-            this.ifClientIp.MaximumSize = new System.Drawing.Size(500, 37);
-            this.ifClientIp.MinimumSize = new System.Drawing.Size(20, 37);
-            this.ifClientIp.Name = "ifClientIp";
-            this.ifClientIp.Size = new System.Drawing.Size(86, 37);
-            this.ifClientIp.TabIndex = 12;
-            this.ifClientIp.Text = "172.29.92.30";
-            this.ifClientIp.Title = "IP";
+            this.icServerBufferOptions.DataSource = null;
+            this.icServerBufferOptions.Location = new System.Drawing.Point(258, 5);
+            this.icServerBufferOptions.MaximumSize = new System.Drawing.Size(500, 40);
+            this.icServerBufferOptions.MinimumSize = new System.Drawing.Size(20, 40);
+            this.icServerBufferOptions.Name = "icServerBufferOptions";
+            this.icServerBufferOptions.Size = new System.Drawing.Size(111, 40);
+            this.icServerBufferOptions.TabIndex = 16;
+            this.icServerBufferOptions.Title = "Buffer Options";
             // 
-            // ifClientPort
+            // ifServerBufferSize
             // 
-            this.ifClientPort.Location = new System.Drawing.Point(99, 5);
-            this.ifClientPort.MaximumSize = new System.Drawing.Size(500, 37);
-            this.ifClientPort.MinimumSize = new System.Drawing.Size(20, 37);
-            this.ifClientPort.Name = "ifClientPort";
-            this.ifClientPort.Size = new System.Drawing.Size(64, 37);
-            this.ifClientPort.TabIndex = 13;
-            this.ifClientPort.Text = "4545";
-            this.ifClientPort.Title = "Port";
+            this.ifServerBufferSize.Location = new System.Drawing.Point(7, 48);
+            this.ifServerBufferSize.MaximumSize = new System.Drawing.Size(500, 37);
+            this.ifServerBufferSize.MinimumSize = new System.Drawing.Size(20, 37);
+            this.ifServerBufferSize.Name = "ifServerBufferSize";
+            this.ifServerBufferSize.Size = new System.Drawing.Size(73, 37);
+            this.ifServerBufferSize.TabIndex = 15;
+            this.ifServerBufferSize.Text = "4096";
+            this.ifServerBufferSize.Title = "Buffer Size";
             // 
-            // ifClientBufferSize
+            // ifServerBacklog
             // 
-            this.ifClientBufferSize.Location = new System.Drawing.Point(7, 48);
-            this.ifClientBufferSize.MaximumSize = new System.Drawing.Size(500, 37);
-            this.ifClientBufferSize.MinimumSize = new System.Drawing.Size(20, 37);
-            this.ifClientBufferSize.Name = "ifClientBufferSize";
-            this.ifClientBufferSize.Size = new System.Drawing.Size(73, 37);
-            this.ifClientBufferSize.TabIndex = 16;
-            this.ifClientBufferSize.Text = "4096";
-            this.ifClientBufferSize.Title = "Buffer Size";
+            this.ifServerBacklog.Location = new System.Drawing.Point(169, 5);
+            this.ifServerBacklog.MaximumSize = new System.Drawing.Size(500, 37);
+            this.ifServerBacklog.MinimumSize = new System.Drawing.Size(20, 37);
+            this.ifServerBacklog.Name = "ifServerBacklog";
+            this.ifServerBacklog.Size = new System.Drawing.Size(83, 37);
+            this.ifServerBacklog.TabIndex = 14;
+            this.ifServerBacklog.Text = "1";
+            this.ifServerBacklog.Title = "Backlog";
+            // 
+            // ifServerMaxClients
+            // 
+            this.ifServerMaxClients.Location = new System.Drawing.Point(86, 48);
+            this.ifServerMaxClients.MaximumSize = new System.Drawing.Size(500, 37);
+            this.ifServerMaxClients.MinimumSize = new System.Drawing.Size(20, 37);
+            this.ifServerMaxClients.Name = "ifServerMaxClients";
+            this.ifServerMaxClients.Size = new System.Drawing.Size(102, 37);
+            this.ifServerMaxClients.TabIndex = 13;
+            this.ifServerMaxClients.Text = "10";
+            this.ifServerMaxClients.Title = "Max Connections";
+            // 
+            // ifServerPort
+            // 
+            this.ifServerPort.Location = new System.Drawing.Point(99, 5);
+            this.ifServerPort.MaximumSize = new System.Drawing.Size(500, 37);
+            this.ifServerPort.MinimumSize = new System.Drawing.Size(20, 37);
+            this.ifServerPort.Name = "ifServerPort";
+            this.ifServerPort.Size = new System.Drawing.Size(64, 37);
+            this.ifServerPort.TabIndex = 12;
+            this.ifServerPort.Text = "4545";
+            this.ifServerPort.Title = "Port";
+            // 
+            // ifServerIp
+            // 
+            this.ifServerIp.Location = new System.Drawing.Point(7, 5);
+            this.ifServerIp.MaximumSize = new System.Drawing.Size(500, 37);
+            this.ifServerIp.MinimumSize = new System.Drawing.Size(20, 37);
+            this.ifServerIp.Name = "ifServerIp";
+            this.ifServerIp.Size = new System.Drawing.Size(86, 37);
+            this.ifServerIp.TabIndex = 11;
+            this.ifServerIp.Text = "192.168.2.2";
+            this.ifServerIp.Title = "IP";
+            // 
+            // ifClientTimeout
+            // 
+            this.ifClientTimeout.Location = new System.Drawing.Point(88, 48);
+            this.ifClientTimeout.MaximumSize = new System.Drawing.Size(500, 37);
+            this.ifClientTimeout.MinimumSize = new System.Drawing.Size(20, 37);
+            this.ifClientTimeout.Name = "ifClientTimeout";
+            this.ifClientTimeout.Size = new System.Drawing.Size(83, 37);
+            this.ifClientTimeout.TabIndex = 18;
+            this.ifClientTimeout.Text = "5000";
+            this.ifClientTimeout.Title = "Timeout";
             // 
             // icClientBufferOptions
             // 
@@ -877,16 +857,49 @@ namespace FrameInterceptor
             this.icClientBufferOptions.TabIndex = 17;
             this.icClientBufferOptions.Title = "Buffer Options";
             // 
-            // ifClientTimeout
+            // ifClientBufferSize
             // 
-            this.ifClientTimeout.Location = new System.Drawing.Point(88, 48);
-            this.ifClientTimeout.MaximumSize = new System.Drawing.Size(500, 37);
-            this.ifClientTimeout.MinimumSize = new System.Drawing.Size(20, 37);
-            this.ifClientTimeout.Name = "ifClientTimeout";
-            this.ifClientTimeout.Size = new System.Drawing.Size(83, 37);
-            this.ifClientTimeout.TabIndex = 18;
-            this.ifClientTimeout.Text = "5000";
-            this.ifClientTimeout.Title = "Timeout";
+            this.ifClientBufferSize.Location = new System.Drawing.Point(7, 48);
+            this.ifClientBufferSize.MaximumSize = new System.Drawing.Size(500, 37);
+            this.ifClientBufferSize.MinimumSize = new System.Drawing.Size(20, 37);
+            this.ifClientBufferSize.Name = "ifClientBufferSize";
+            this.ifClientBufferSize.Size = new System.Drawing.Size(73, 37);
+            this.ifClientBufferSize.TabIndex = 16;
+            this.ifClientBufferSize.Text = "4096";
+            this.ifClientBufferSize.Title = "Buffer Size";
+            // 
+            // ifClientPort
+            // 
+            this.ifClientPort.Location = new System.Drawing.Point(99, 5);
+            this.ifClientPort.MaximumSize = new System.Drawing.Size(500, 37);
+            this.ifClientPort.MinimumSize = new System.Drawing.Size(20, 37);
+            this.ifClientPort.Name = "ifClientPort";
+            this.ifClientPort.Size = new System.Drawing.Size(64, 37);
+            this.ifClientPort.TabIndex = 13;
+            this.ifClientPort.Text = "4545";
+            this.ifClientPort.Title = "Port";
+            // 
+            // ifClientIp
+            // 
+            this.ifClientIp.Location = new System.Drawing.Point(7, 5);
+            this.ifClientIp.MaximumSize = new System.Drawing.Size(500, 37);
+            this.ifClientIp.MinimumSize = new System.Drawing.Size(20, 37);
+            this.ifClientIp.Name = "ifClientIp";
+            this.ifClientIp.Size = new System.Drawing.Size(86, 37);
+            this.ifClientIp.TabIndex = 12;
+            this.ifClientIp.Text = "172.29.92.30";
+            this.ifClientIp.Title = "IP";
+            // 
+            // btnClearLogs
+            // 
+            this.btnClearLogs.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.btnClearLogs.Location = new System.Drawing.Point(391, 6);
+            this.btnClearLogs.Name = "btnClearLogs";
+            this.btnClearLogs.Size = new System.Drawing.Size(84, 19);
+            this.btnClearLogs.TabIndex = 35;
+            this.btnClearLogs.Text = "Clear Logs";
+            this.btnClearLogs.UseVisualStyleBackColor = true;
+            this.btnClearLogs.Click += new System.EventHandler(this.btnClearLogs_Click);
             // 
             // FrameInterceptor_v2
             // 
@@ -992,6 +1005,7 @@ namespace FrameInterceptor
         private CustomControls.InputFiled ifClientPort;
         private CustomControls.InputFiled ifClientIp;
         private CustomControls.InputFiled ifClientTimeout;
+        internal System.Windows.Forms.Button btnClearLogs;
     }
 }
 

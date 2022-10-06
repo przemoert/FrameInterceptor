@@ -1,6 +1,7 @@
 ﻿using Communication;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Text;
@@ -48,7 +49,7 @@ namespace FrameInterceptor.Communication
                 throw;
             }
 
-            base.SetHandler(this._socketServer);
+            base.SetHandler(this);
         }
 
         public void CreateSocket()
@@ -145,7 +146,9 @@ namespace FrameInterceptor.Communication
             if (l_Client != null)
             {
                 //Client has connected. Log it and start receiving data
-                this._owningForm.ResetClientsBindings();
+                this.Clients.Add(l_Client);
+                //this._owningForm.ResetClientsBindings();
+
                 this._owningForm.Log($"{l_Client.IpAddressAndPort} -> {this.Server.IpAddressAndPort}");
 
                 this.Open();
@@ -162,7 +165,9 @@ namespace FrameInterceptor.Communication
             if (iClient != null)
                 await iClient.Close();
 
-            this._owningForm.ResetClientsBindings();
+            this.Clients.Remove(iClient);
+
+            //this._owningForm.ResetClientsBindings();
         }
 
         public async Task Close()
@@ -177,7 +182,9 @@ namespace FrameInterceptor.Communication
                 {
                     await client.Close();
 
-                    this._owningForm.ResetClientsBindings();
+                    this.Clients.Remove(client);
+
+                    //this._owningForm.ResetClientsBindings();
                 }
             }
 
@@ -188,7 +195,7 @@ namespace FrameInterceptor.Communication
 
 
         public SocketServer Server { get => this._socketServer; }
-        public List<SocketClient> Clients { get => this._socketServer.Clients; }
+        public BindingList<SocketClient> Clients { get; set; } = new BindingList<SocketClient>();
         public ConnectionResult ConnectionResult { get => this.Server.ConnectionResult; }
     }
 }
