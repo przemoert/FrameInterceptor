@@ -12,6 +12,7 @@ namespace FrameInterceptor.Communication
         protected FrameInterceptor_v2 _owningForm;
         private object _handler = null;
 
+        public FrameInterceptor_v2 OwningForm { get => _owningForm; set => _owningForm = value; }
 
         public CommunicationCommons(FrameInterceptor_v2 iOwningForm)
         {
@@ -21,6 +22,11 @@ namespace FrameInterceptor.Communication
         protected void SetHandler(object iCallerHandler)
         {
             this._handler = iCallerHandler;
+        }
+
+        protected void RemoveHandler()
+        {
+            this._handler = null;
         }
 
         protected virtual async void Receive(SocketClient iClient)
@@ -52,6 +58,7 @@ namespace FrameInterceptor.Communication
                 return l_InternalBytesTransfered;
             });
 
+
             if (iClient.ConnectionResult != ConnectionResult.Success)
                 this._owningForm.ResultLog(iClient.ConnectionResult, iClient);
 
@@ -79,6 +86,11 @@ namespace FrameInterceptor.Communication
             {
                 if (this._handler is TcpServerCommunication ss)
                     ss.Clients.Remove(iClient);
+
+                if (this._handler is TcpClientCommunication cc)
+                {
+                    await cc.Close();
+                }
 
                 //this._owningForm.ResetClientsBindings();
                 //this._owningForm.ResultLog(l_ConnectionResult, iClient);

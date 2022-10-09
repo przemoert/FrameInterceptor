@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="Communication\CommunicationCommons.cs" />
     <Compile Include="Communication\ControlChars.cs" />
+    <Compile Include="Communication\SerialCommunication.cs" />
     <Compile Include="Communication\TcpClientCommunication.cs" />
     <Compile Include="Communication\TcpServerCommunication.cs" />
     <Compile Include="CustomControls\InputCombo.cs">
@@ -65,20 +66,21 @@
     <Compile Include="CustomControls\InputFiled.Designer.cs">
       <DependentUpon>InputFiled.cs</DependentUpon>
     </Compile>
+    <Compile Include="CustomControls\Led.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CustomControls\Led.Designer.cs">
+      <DependentUpon>Led.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrameInterceptor_v2.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FrameInterceptor_v2.Designer.cs">
       <DependentUpon>FrameInterceptor_v2.cs</DependentUpon>
     </Compile>
-    <Compile Include="Form1.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
-    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\SerialPortComparer.cs" />
     <EmbeddedResource Include="CustomControls\InputCombo.resx">
       <DependentUpon>InputCombo.cs</DependentUpon>
     </EmbeddedResource>
@@ -87,9 +89,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FrameInterceptor_v2.resx">
       <DependentUpon>FrameInterceptor_v2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -114,10 +113,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CommunicationManager\CommunicationManager.csproj">
-      <Project>{0bb02477-d12e-47de-947d-2374630f1862}</Project>
-      <Name>CommunicationManager</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Communication\Communication.csproj">
       <Project>{492f454d-5754-46e5-8bec-890a03d6eb73}</Project>
       <Name>Communication</Name>

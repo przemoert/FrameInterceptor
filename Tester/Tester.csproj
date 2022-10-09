@@ -87,6 +87,10 @@
       <Project>{492f454d-5754-46e5-8bec-890a03d6eb73}</Project>
       <Name>Communication</Name>
     </ProjectReference>
+    <ProjectReference Include="..\FrameInterceptor\FrameInterceptor.csproj">
+      <Project>{5da8b7a2-dcc7-4c77-b7ae-16a0de5cd690}</Project>
+      <Name>FrameInterceptor</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

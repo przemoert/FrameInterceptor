@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace FrameInterceptor.Communication
 {
-    internal class TcpServerCommunication : CommunicationCommons
+    internal class TcpServerCommunication : CommunicationCommons, IDisposable
     {
         //private FrameInterceptor_v2 _owningForm;
         private SocketServer _socketServer;
@@ -20,6 +20,7 @@ namespace FrameInterceptor.Communication
         private int _backlog;
         private int _bufferSize;
         private BufferOptions _bufferExceededOption;
+        private int _disposed = 0;
 
 
         public TcpServerCommunication(FrameInterceptor_v2 iOwner, string iIpAddress, string iPort, string iBufferSize, string iMaxConnections, string iBacklog) : base(iOwner)
@@ -34,7 +35,7 @@ namespace FrameInterceptor.Communication
                 throw new ArgumentOutOfRangeException("iBufferSize");
 
 
-            //this._owningForm = iOwner;
+            this._owningForm = iOwner;
             this._localAddress = iIpAddress;
             this._localPort = iPort;
             this._bufferExceededOption = (BufferOptions)this._owningForm.icServerBufferOptions.Value;
@@ -174,13 +175,17 @@ namespace FrameInterceptor.Communication
         {
             //Because of use of DGV for listing clients we cant use native server closing to disconnect all clients.
             //We must iterate over each client, close it manually and reset bindings.
-            this._socketServer.CloseListener();
+            if (this._socketServer != null)
+                this._socketServer.CloseListener();
 
             if (this.Clients.Count > 0)
             {
                 foreach (SocketClient client in this.Clients.ToList())
                 {
-                    await client.Close();
+                    if (!client.Closed)
+                    {
+                        await client.Close();
+                    }
 
                     this.Clients.Remove(client);
 
@@ -188,14 +193,31 @@ namespace FrameInterceptor.Communication
                 }
             }
 
-            await this._socketServer.Close();
+            if (this._socketServer != null)
+                await this._socketServer.Close();
+
+            this.Dispose();
 
             this._owningForm.ResultLog(this._socketServer.ConnectionResult);
         }
 
+        public void Dispose()
+        {
+            if (this.Disposed)
+                throw new ObjectDisposedException(this.GetType().FullName);
+
+            if (Interlocked.CompareExchange(ref this._disposed, 1, 0) == 0)
+            {
+                //base.RemoveHandler();
+
+                if (this._socketServer != null && !this._socketServer.Disposed)
+                    this._socketServer.Dispose();
+            }
+        }
 
         public SocketServer Server { get => this._socketServer; }
-        public BindingList<SocketClient> Clients { get; set; } = new BindingList<SocketClient>();
+        public BindingList<SocketClient> Clients { get; } = new BindingList<SocketClient>();
         public ConnectionResult ConnectionResult { get => this.Server.ConnectionResult; }
+        public bool Disposed { get => this._disposed != 0; }
     }
 }

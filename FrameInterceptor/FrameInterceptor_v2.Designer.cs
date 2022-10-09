@@ -29,14 +29,44 @@ namespace FrameInterceptor
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.tabSettings = new System.Windows.Forms.TabControl();
             this.tabSerial = new System.Windows.Forms.TabPage();
+            this.chkDTR = new System.Windows.Forms.CheckBox();
+            this.chkRTS = new System.Windows.Forms.CheckBox();
+            this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.ldCD = new FrameInterceptor.CustomControls.Led();
+            this.ldRI = new FrameInterceptor.CustomControls.Led();
+            this.ldDSR = new FrameInterceptor.CustomControls.Led();
+            this.ldCTS = new FrameInterceptor.CustomControls.Led();
+            this.btnSerialOpen = new System.Windows.Forms.Button();
+            this.icSerialParity = new FrameInterceptor.CustomControls.InputCombo();
+            this.icSerialStopBits = new FrameInterceptor.CustomControls.InputCombo();
+            this.icSerialDataBits = new FrameInterceptor.CustomControls.InputCombo();
+            this.icSerialHandshake = new FrameInterceptor.CustomControls.InputCombo();
+            this.icSerialBaudRate = new FrameInterceptor.CustomControls.InputCombo();
+            this.icSerialPort = new FrameInterceptor.CustomControls.InputCombo();
             this.tabServer = new System.Windows.Forms.TabPage();
+            this.icServerBufferOptions = new FrameInterceptor.CustomControls.InputCombo();
+            this.ifServerBufferSize = new FrameInterceptor.CustomControls.InputFiled();
+            this.ifServerBacklog = new FrameInterceptor.CustomControls.InputFiled();
+            this.ifServerMaxClients = new FrameInterceptor.CustomControls.InputFiled();
+            this.ifServerPort = new FrameInterceptor.CustomControls.InputFiled();
+            this.ifServerIp = new FrameInterceptor.CustomControls.InputFiled();
             this.btnServerOpen = new System.Windows.Forms.Button();
             this.tabClient = new System.Windows.Forms.TabPage();
+            this.ifClientTimeout = new FrameInterceptor.CustomControls.InputFiled();
+            this.icClientBufferOptions = new FrameInterceptor.CustomControls.InputCombo();
+            this.ifClientBufferSize = new FrameInterceptor.CustomControls.InputFiled();
+            this.ifClientPort = new FrameInterceptor.CustomControls.InputFiled();
+            this.ifClientIp = new FrameInterceptor.CustomControls.InputFiled();
             this.btnClientConnect = new System.Windows.Forms.Button();
             this.tabSettingsTab = new System.Windows.Forms.TabPage();
+            this.btnClearLogs = new System.Windows.Forms.Button();
             this.chkSilentMode = new System.Windows.Forms.CheckBox();
             this.tbConnectionLog = new System.Windows.Forms.TextBox();
             this.tbSend = new System.Windows.Forms.TextBox();
@@ -84,19 +114,9 @@ namespace FrameInterceptor
             this.btnKickClient = new System.Windows.Forms.Button();
             this.chkClearSend = new System.Windows.Forms.CheckBox();
             this.chkAutoResponse = new System.Windows.Forms.CheckBox();
-            this.icServerBufferOptions = new FrameInterceptor.CustomControls.InputCombo();
-            this.ifServerBufferSize = new FrameInterceptor.CustomControls.InputFiled();
-            this.ifServerBacklog = new FrameInterceptor.CustomControls.InputFiled();
-            this.ifServerMaxClients = new FrameInterceptor.CustomControls.InputFiled();
-            this.ifServerPort = new FrameInterceptor.CustomControls.InputFiled();
-            this.ifServerIp = new FrameInterceptor.CustomControls.InputFiled();
-            this.ifClientTimeout = new FrameInterceptor.CustomControls.InputFiled();
-            this.icClientBufferOptions = new FrameInterceptor.CustomControls.InputCombo();
-            this.ifClientBufferSize = new FrameInterceptor.CustomControls.InputFiled();
-            this.ifClientPort = new FrameInterceptor.CustomControls.InputFiled();
-            this.ifClientIp = new FrameInterceptor.CustomControls.InputFiled();
-            this.btnClearLogs = new System.Windows.Forms.Button();
             this.tabSettings.SuspendLayout();
+            this.tabSerial.SuspendLayout();
+            this.groupBox6.SuspendLayout();
             this.tabServer.SuspendLayout();
             this.tabClient.SuspendLayout();
             this.tabSettingsTab.SuspendLayout();
@@ -125,6 +145,16 @@ namespace FrameInterceptor
             // 
             this.tabSerial.BackColor = System.Drawing.SystemColors.Control;
             this.tabSerial.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.tabSerial.Controls.Add(this.chkDTR);
+            this.tabSerial.Controls.Add(this.chkRTS);
+            this.tabSerial.Controls.Add(this.groupBox6);
+            this.tabSerial.Controls.Add(this.btnSerialOpen);
+            this.tabSerial.Controls.Add(this.icSerialParity);
+            this.tabSerial.Controls.Add(this.icSerialStopBits);
+            this.tabSerial.Controls.Add(this.icSerialDataBits);
+            this.tabSerial.Controls.Add(this.icSerialHandshake);
+            this.tabSerial.Controls.Add(this.icSerialBaudRate);
+            this.tabSerial.Controls.Add(this.icSerialPort);
             this.tabSerial.Location = new System.Drawing.Point(4, 22);
             this.tabSerial.Margin = new System.Windows.Forms.Padding(2);
             this.tabSerial.Name = "tabSerial";
@@ -132,6 +162,201 @@ namespace FrameInterceptor
             this.tabSerial.Size = new System.Drawing.Size(481, 96);
             this.tabSerial.TabIndex = 0;
             this.tabSerial.Text = "Serial";
+            // 
+            // chkDTR
+            // 
+            this.chkDTR.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.chkDTR.Location = new System.Drawing.Point(246, 5);
+            this.chkDTR.Name = "chkDTR";
+            this.chkDTR.Size = new System.Drawing.Size(44, 19);
+            this.chkDTR.TabIndex = 36;
+            this.chkDTR.Text = "DTR";
+            this.chkDTR.UseVisualStyleBackColor = true;
+            this.chkDTR.CheckedChanged += new System.EventHandler(this.chkDTR_CheckedChanged);
+            // 
+            // chkRTS
+            // 
+            this.chkRTS.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.chkRTS.Location = new System.Drawing.Point(246, 26);
+            this.chkRTS.Name = "chkRTS";
+            this.chkRTS.Size = new System.Drawing.Size(44, 19);
+            this.chkRTS.TabIndex = 35;
+            this.chkRTS.Text = "RTS";
+            this.chkRTS.UseVisualStyleBackColor = true;
+            this.chkRTS.CheckedChanged += new System.EventHandler(this.chkRTS_CheckedChanged);
+            // 
+            // groupBox6
+            // 
+            this.groupBox6.Controls.Add(this.label4);
+            this.groupBox6.Controls.Add(this.label3);
+            this.groupBox6.Controls.Add(this.label2);
+            this.groupBox6.Controls.Add(this.label1);
+            this.groupBox6.Controls.Add(this.ldCD);
+            this.groupBox6.Controls.Add(this.ldRI);
+            this.groupBox6.Controls.Add(this.ldDSR);
+            this.groupBox6.Controls.Add(this.ldCTS);
+            this.groupBox6.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.groupBox6.Location = new System.Drawing.Point(334, 30);
+            this.groupBox6.Name = "groupBox6";
+            this.groupBox6.Size = new System.Drawing.Size(142, 61);
+            this.groupBox6.TabIndex = 24;
+            this.groupBox6.TabStop = false;
+            this.groupBox6.Text = "Lines";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(113, 17);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(19, 12);
+            this.label4.TabIndex = 7;
+            this.label4.Text = "CD";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(81, 17);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(15, 12);
+            this.label3.TabIndex = 6;
+            this.label3.Text = "RI";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(42, 17);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(25, 12);
+            this.label2.TabIndex = 5;
+            this.label2.Text = "DSR";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(9, 17);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(23, 12);
+            this.label1.TabIndex = 4;
+            this.label1.Text = "CTS";
+            // 
+            // ldCD
+            // 
+            this.ldCD.Location = new System.Drawing.Point(112, 34);
+            this.ldCD.Margin = new System.Windows.Forms.Padding(7, 3, 7, 3);
+            this.ldCD.Name = "ldCD";
+            this.ldCD.On = false;
+            this.ldCD.Size = new System.Drawing.Size(20, 20);
+            this.ldCD.TabIndex = 3;
+            // 
+            // ldRI
+            // 
+            this.ldRI.Location = new System.Drawing.Point(78, 34);
+            this.ldRI.Margin = new System.Windows.Forms.Padding(7, 3, 7, 3);
+            this.ldRI.Name = "ldRI";
+            this.ldRI.On = false;
+            this.ldRI.Size = new System.Drawing.Size(20, 20);
+            this.ldRI.TabIndex = 2;
+            // 
+            // ldDSR
+            // 
+            this.ldDSR.Location = new System.Drawing.Point(44, 34);
+            this.ldDSR.Margin = new System.Windows.Forms.Padding(7, 3, 7, 3);
+            this.ldDSR.Name = "ldDSR";
+            this.ldDSR.On = false;
+            this.ldDSR.Size = new System.Drawing.Size(20, 20);
+            this.ldDSR.TabIndex = 1;
+            // 
+            // ldCTS
+            // 
+            this.ldCTS.Location = new System.Drawing.Point(10, 34);
+            this.ldCTS.Margin = new System.Windows.Forms.Padding(7, 3, 7, 3);
+            this.ldCTS.Name = "ldCTS";
+            this.ldCTS.On = false;
+            this.ldCTS.Size = new System.Drawing.Size(20, 20);
+            this.ldCTS.TabIndex = 0;
+            // 
+            // btnSerialOpen
+            // 
+            this.btnSerialOpen.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.btnSerialOpen.Location = new System.Drawing.Point(392, 5);
+            this.btnSerialOpen.Name = "btnSerialOpen";
+            this.btnSerialOpen.Size = new System.Drawing.Size(84, 19);
+            this.btnSerialOpen.TabIndex = 23;
+            this.btnSerialOpen.Text = "Open";
+            this.btnSerialOpen.UseVisualStyleBackColor = true;
+            this.btnSerialOpen.Click += new System.EventHandler(this.btnSerialOpen_Click);
+            // 
+            // icSerialParity
+            // 
+            this.icSerialParity.DataSource = null;
+            this.icSerialParity.Location = new System.Drawing.Point(226, 51);
+            this.icSerialParity.MaximumSize = new System.Drawing.Size(500, 40);
+            this.icSerialParity.MinimumSize = new System.Drawing.Size(20, 40);
+            this.icSerialParity.Name = "icSerialParity";
+            this.icSerialParity.SelectedIndex = -1;
+            this.icSerialParity.Size = new System.Drawing.Size(75, 40);
+            this.icSerialParity.TabIndex = 22;
+            this.icSerialParity.Title = "Parity";
+            // 
+            // icSerialStopBits
+            // 
+            this.icSerialStopBits.DataSource = null;
+            this.icSerialStopBits.Location = new System.Drawing.Point(145, 51);
+            this.icSerialStopBits.MaximumSize = new System.Drawing.Size(500, 40);
+            this.icSerialStopBits.MinimumSize = new System.Drawing.Size(20, 40);
+            this.icSerialStopBits.Name = "icSerialStopBits";
+            this.icSerialStopBits.SelectedIndex = -1;
+            this.icSerialStopBits.Size = new System.Drawing.Size(75, 40);
+            this.icSerialStopBits.TabIndex = 21;
+            this.icSerialStopBits.Title = "StopBits";
+            // 
+            // icSerialDataBits
+            // 
+            this.icSerialDataBits.DataSource = null;
+            this.icSerialDataBits.Location = new System.Drawing.Point(165, 5);
+            this.icSerialDataBits.MaximumSize = new System.Drawing.Size(500, 40);
+            this.icSerialDataBits.MinimumSize = new System.Drawing.Size(20, 40);
+            this.icSerialDataBits.Name = "icSerialDataBits";
+            this.icSerialDataBits.SelectedIndex = -1;
+            this.icSerialDataBits.Size = new System.Drawing.Size(75, 40);
+            this.icSerialDataBits.TabIndex = 20;
+            this.icSerialDataBits.Title = "DataBits";
+            // 
+            // icSerialHandshake
+            // 
+            this.icSerialHandshake.DataSource = null;
+            this.icSerialHandshake.Location = new System.Drawing.Point(5, 51);
+            this.icSerialHandshake.MaximumSize = new System.Drawing.Size(500, 40);
+            this.icSerialHandshake.MinimumSize = new System.Drawing.Size(20, 40);
+            this.icSerialHandshake.Name = "icSerialHandshake";
+            this.icSerialHandshake.SelectedIndex = -1;
+            this.icSerialHandshake.Size = new System.Drawing.Size(134, 40);
+            this.icSerialHandshake.TabIndex = 19;
+            this.icSerialHandshake.Title = "Handshake";
+            // 
+            // icSerialBaudRate
+            // 
+            this.icSerialBaudRate.DataSource = null;
+            this.icSerialBaudRate.Location = new System.Drawing.Point(84, 5);
+            this.icSerialBaudRate.MaximumSize = new System.Drawing.Size(500, 40);
+            this.icSerialBaudRate.MinimumSize = new System.Drawing.Size(20, 40);
+            this.icSerialBaudRate.Name = "icSerialBaudRate";
+            this.icSerialBaudRate.SelectedIndex = -1;
+            this.icSerialBaudRate.Size = new System.Drawing.Size(75, 40);
+            this.icSerialBaudRate.TabIndex = 18;
+            this.icSerialBaudRate.Title = "BaudRate";
+            // 
+            // icSerialPort
+            // 
+            this.icSerialPort.DataSource = null;
+            this.icSerialPort.Location = new System.Drawing.Point(5, 5);
+            this.icSerialPort.MaximumSize = new System.Drawing.Size(500, 40);
+            this.icSerialPort.MinimumSize = new System.Drawing.Size(20, 40);
+            this.icSerialPort.Name = "icSerialPort";
+            this.icSerialPort.SelectedIndex = -1;
+            this.icSerialPort.Size = new System.Drawing.Size(73, 40);
+            this.icSerialPort.TabIndex = 17;
+            this.icSerialPort.Title = "Port";
             // 
             // tabServer
             // 
@@ -150,6 +375,73 @@ namespace FrameInterceptor
             this.tabServer.Size = new System.Drawing.Size(481, 96);
             this.tabServer.TabIndex = 1;
             this.tabServer.Text = "TCP Server";
+            // 
+            // icServerBufferOptions
+            // 
+            this.icServerBufferOptions.DataSource = null;
+            this.icServerBufferOptions.Location = new System.Drawing.Point(258, 5);
+            this.icServerBufferOptions.MaximumSize = new System.Drawing.Size(500, 40);
+            this.icServerBufferOptions.MinimumSize = new System.Drawing.Size(20, 40);
+            this.icServerBufferOptions.Name = "icServerBufferOptions";
+            this.icServerBufferOptions.SelectedIndex = -1;
+            this.icServerBufferOptions.Size = new System.Drawing.Size(111, 40);
+            this.icServerBufferOptions.TabIndex = 16;
+            this.icServerBufferOptions.Title = "Buffer Options";
+            // 
+            // ifServerBufferSize
+            // 
+            this.ifServerBufferSize.Location = new System.Drawing.Point(7, 48);
+            this.ifServerBufferSize.MaximumSize = new System.Drawing.Size(500, 37);
+            this.ifServerBufferSize.MinimumSize = new System.Drawing.Size(20, 37);
+            this.ifServerBufferSize.Name = "ifServerBufferSize";
+            this.ifServerBufferSize.Size = new System.Drawing.Size(73, 37);
+            this.ifServerBufferSize.TabIndex = 15;
+            this.ifServerBufferSize.Text = "4096";
+            this.ifServerBufferSize.Title = "Buffer Size";
+            // 
+            // ifServerBacklog
+            // 
+            this.ifServerBacklog.Location = new System.Drawing.Point(169, 5);
+            this.ifServerBacklog.MaximumSize = new System.Drawing.Size(500, 37);
+            this.ifServerBacklog.MinimumSize = new System.Drawing.Size(20, 37);
+            this.ifServerBacklog.Name = "ifServerBacklog";
+            this.ifServerBacklog.Size = new System.Drawing.Size(83, 37);
+            this.ifServerBacklog.TabIndex = 14;
+            this.ifServerBacklog.Text = "1";
+            this.ifServerBacklog.Title = "Backlog";
+            // 
+            // ifServerMaxClients
+            // 
+            this.ifServerMaxClients.Location = new System.Drawing.Point(86, 48);
+            this.ifServerMaxClients.MaximumSize = new System.Drawing.Size(500, 37);
+            this.ifServerMaxClients.MinimumSize = new System.Drawing.Size(20, 37);
+            this.ifServerMaxClients.Name = "ifServerMaxClients";
+            this.ifServerMaxClients.Size = new System.Drawing.Size(102, 37);
+            this.ifServerMaxClients.TabIndex = 13;
+            this.ifServerMaxClients.Text = "10";
+            this.ifServerMaxClients.Title = "Max Connections";
+            // 
+            // ifServerPort
+            // 
+            this.ifServerPort.Location = new System.Drawing.Point(99, 5);
+            this.ifServerPort.MaximumSize = new System.Drawing.Size(500, 37);
+            this.ifServerPort.MinimumSize = new System.Drawing.Size(20, 37);
+            this.ifServerPort.Name = "ifServerPort";
+            this.ifServerPort.Size = new System.Drawing.Size(64, 37);
+            this.ifServerPort.TabIndex = 12;
+            this.ifServerPort.Text = "4545";
+            this.ifServerPort.Title = "Port";
+            // 
+            // ifServerIp
+            // 
+            this.ifServerIp.Location = new System.Drawing.Point(7, 5);
+            this.ifServerIp.MaximumSize = new System.Drawing.Size(500, 37);
+            this.ifServerIp.MinimumSize = new System.Drawing.Size(20, 37);
+            this.ifServerIp.Name = "ifServerIp";
+            this.ifServerIp.Size = new System.Drawing.Size(86, 37);
+            this.ifServerIp.TabIndex = 11;
+            this.ifServerIp.Text = "192.168.2.2";
+            this.ifServerIp.Title = "IP";
             // 
             // btnServerOpen
             // 
@@ -179,6 +471,62 @@ namespace FrameInterceptor
             this.tabClient.TabIndex = 2;
             this.tabClient.Text = "TCP Client";
             // 
+            // ifClientTimeout
+            // 
+            this.ifClientTimeout.Location = new System.Drawing.Point(88, 48);
+            this.ifClientTimeout.MaximumSize = new System.Drawing.Size(500, 37);
+            this.ifClientTimeout.MinimumSize = new System.Drawing.Size(20, 37);
+            this.ifClientTimeout.Name = "ifClientTimeout";
+            this.ifClientTimeout.Size = new System.Drawing.Size(83, 37);
+            this.ifClientTimeout.TabIndex = 18;
+            this.ifClientTimeout.Text = "5000";
+            this.ifClientTimeout.Title = "Timeout";
+            // 
+            // icClientBufferOptions
+            // 
+            this.icClientBufferOptions.DataSource = null;
+            this.icClientBufferOptions.Location = new System.Drawing.Point(169, 5);
+            this.icClientBufferOptions.MaximumSize = new System.Drawing.Size(500, 40);
+            this.icClientBufferOptions.MinimumSize = new System.Drawing.Size(20, 40);
+            this.icClientBufferOptions.Name = "icClientBufferOptions";
+            this.icClientBufferOptions.SelectedIndex = -1;
+            this.icClientBufferOptions.Size = new System.Drawing.Size(111, 40);
+            this.icClientBufferOptions.TabIndex = 17;
+            this.icClientBufferOptions.Title = "Buffer Options";
+            // 
+            // ifClientBufferSize
+            // 
+            this.ifClientBufferSize.Location = new System.Drawing.Point(7, 48);
+            this.ifClientBufferSize.MaximumSize = new System.Drawing.Size(500, 37);
+            this.ifClientBufferSize.MinimumSize = new System.Drawing.Size(20, 37);
+            this.ifClientBufferSize.Name = "ifClientBufferSize";
+            this.ifClientBufferSize.Size = new System.Drawing.Size(73, 37);
+            this.ifClientBufferSize.TabIndex = 16;
+            this.ifClientBufferSize.Text = "4096";
+            this.ifClientBufferSize.Title = "Buffer Size";
+            // 
+            // ifClientPort
+            // 
+            this.ifClientPort.Location = new System.Drawing.Point(99, 5);
+            this.ifClientPort.MaximumSize = new System.Drawing.Size(500, 37);
+            this.ifClientPort.MinimumSize = new System.Drawing.Size(20, 37);
+            this.ifClientPort.Name = "ifClientPort";
+            this.ifClientPort.Size = new System.Drawing.Size(64, 37);
+            this.ifClientPort.TabIndex = 13;
+            this.ifClientPort.Text = "4545";
+            this.ifClientPort.Title = "Port";
+            // 
+            // ifClientIp
+            // 
+            this.ifClientIp.Location = new System.Drawing.Point(7, 5);
+            this.ifClientIp.MaximumSize = new System.Drawing.Size(500, 37);
+            this.ifClientIp.MinimumSize = new System.Drawing.Size(20, 37);
+            this.ifClientIp.Name = "ifClientIp";
+            this.ifClientIp.Size = new System.Drawing.Size(86, 37);
+            this.ifClientIp.TabIndex = 12;
+            this.ifClientIp.Text = "172.29.92.30";
+            this.ifClientIp.Title = "IP";
+            // 
             // btnClientConnect
             // 
             this.btnClientConnect.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
@@ -201,6 +549,17 @@ namespace FrameInterceptor
             this.tabSettingsTab.Size = new System.Drawing.Size(481, 96);
             this.tabSettingsTab.TabIndex = 3;
             this.tabSettingsTab.Text = "Settings";
+            // 
+            // btnClearLogs
+            // 
+            this.btnClearLogs.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.btnClearLogs.Location = new System.Drawing.Point(391, 6);
+            this.btnClearLogs.Name = "btnClearLogs";
+            this.btnClearLogs.Size = new System.Drawing.Size(84, 19);
+            this.btnClearLogs.TabIndex = 35;
+            this.btnClearLogs.Text = "Clear Logs";
+            this.btnClearLogs.UseVisualStyleBackColor = true;
+            this.btnClearLogs.Click += new System.EventHandler(this.btnClearLogs_Click);
             // 
             // chkSilentMode
             // 
@@ -704,14 +1063,14 @@ namespace FrameInterceptor
             this.dgClients.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colSocketClient,
             this.colClientName});
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F);
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgClients.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F);
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgClients.DefaultCellStyle = dataGridViewCellStyle2;
             this.dgClients.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgClients.Location = new System.Drawing.Point(3, 16);
             this.dgClients.Name = "dgClients";
@@ -769,138 +1128,6 @@ namespace FrameInterceptor
             this.chkAutoResponse.Text = "AutoResp";
             this.chkAutoResponse.UseVisualStyleBackColor = true;
             // 
-            // icServerBufferOptions
-            // 
-            this.icServerBufferOptions.DataSource = null;
-            this.icServerBufferOptions.Location = new System.Drawing.Point(258, 5);
-            this.icServerBufferOptions.MaximumSize = new System.Drawing.Size(500, 40);
-            this.icServerBufferOptions.MinimumSize = new System.Drawing.Size(20, 40);
-            this.icServerBufferOptions.Name = "icServerBufferOptions";
-            this.icServerBufferOptions.Size = new System.Drawing.Size(111, 40);
-            this.icServerBufferOptions.TabIndex = 16;
-            this.icServerBufferOptions.Title = "Buffer Options";
-            // 
-            // ifServerBufferSize
-            // 
-            this.ifServerBufferSize.Location = new System.Drawing.Point(7, 48);
-            this.ifServerBufferSize.MaximumSize = new System.Drawing.Size(500, 37);
-            this.ifServerBufferSize.MinimumSize = new System.Drawing.Size(20, 37);
-            this.ifServerBufferSize.Name = "ifServerBufferSize";
-            this.ifServerBufferSize.Size = new System.Drawing.Size(73, 37);
-            this.ifServerBufferSize.TabIndex = 15;
-            this.ifServerBufferSize.Text = "4096";
-            this.ifServerBufferSize.Title = "Buffer Size";
-            // 
-            // ifServerBacklog
-            // 
-            this.ifServerBacklog.Location = new System.Drawing.Point(169, 5);
-            this.ifServerBacklog.MaximumSize = new System.Drawing.Size(500, 37);
-            this.ifServerBacklog.MinimumSize = new System.Drawing.Size(20, 37);
-            this.ifServerBacklog.Name = "ifServerBacklog";
-            this.ifServerBacklog.Size = new System.Drawing.Size(83, 37);
-            this.ifServerBacklog.TabIndex = 14;
-            this.ifServerBacklog.Text = "1";
-            this.ifServerBacklog.Title = "Backlog";
-            // 
-            // ifServerMaxClients
-            // 
-            this.ifServerMaxClients.Location = new System.Drawing.Point(86, 48);
-            this.ifServerMaxClients.MaximumSize = new System.Drawing.Size(500, 37);
-            this.ifServerMaxClients.MinimumSize = new System.Drawing.Size(20, 37);
-            this.ifServerMaxClients.Name = "ifServerMaxClients";
-            this.ifServerMaxClients.Size = new System.Drawing.Size(102, 37);
-            this.ifServerMaxClients.TabIndex = 13;
-            this.ifServerMaxClients.Text = "10";
-            this.ifServerMaxClients.Title = "Max Connections";
-            // 
-            // ifServerPort
-            // 
-            this.ifServerPort.Location = new System.Drawing.Point(99, 5);
-            this.ifServerPort.MaximumSize = new System.Drawing.Size(500, 37);
-            this.ifServerPort.MinimumSize = new System.Drawing.Size(20, 37);
-            this.ifServerPort.Name = "ifServerPort";
-            this.ifServerPort.Size = new System.Drawing.Size(64, 37);
-            this.ifServerPort.TabIndex = 12;
-            this.ifServerPort.Text = "4545";
-            this.ifServerPort.Title = "Port";
-            // 
-            // ifServerIp
-            // 
-            this.ifServerIp.Location = new System.Drawing.Point(7, 5);
-            this.ifServerIp.MaximumSize = new System.Drawing.Size(500, 37);
-            this.ifServerIp.MinimumSize = new System.Drawing.Size(20, 37);
-            this.ifServerIp.Name = "ifServerIp";
-            this.ifServerIp.Size = new System.Drawing.Size(86, 37);
-            this.ifServerIp.TabIndex = 11;
-            this.ifServerIp.Text = "192.168.2.2";
-            this.ifServerIp.Title = "IP";
-            // 
-            // ifClientTimeout
-            // 
-            this.ifClientTimeout.Location = new System.Drawing.Point(88, 48);
-            this.ifClientTimeout.MaximumSize = new System.Drawing.Size(500, 37);
-            this.ifClientTimeout.MinimumSize = new System.Drawing.Size(20, 37);
-            this.ifClientTimeout.Name = "ifClientTimeout";
-            this.ifClientTimeout.Size = new System.Drawing.Size(83, 37);
-            this.ifClientTimeout.TabIndex = 18;
-            this.ifClientTimeout.Text = "5000";
-            this.ifClientTimeout.Title = "Timeout";
-            // 
-            // icClientBufferOptions
-            // 
-            this.icClientBufferOptions.DataSource = null;
-            this.icClientBufferOptions.Location = new System.Drawing.Point(169, 5);
-            this.icClientBufferOptions.MaximumSize = new System.Drawing.Size(500, 40);
-            this.icClientBufferOptions.MinimumSize = new System.Drawing.Size(20, 40);
-            this.icClientBufferOptions.Name = "icClientBufferOptions";
-            this.icClientBufferOptions.Size = new System.Drawing.Size(111, 40);
-            this.icClientBufferOptions.TabIndex = 17;
-            this.icClientBufferOptions.Title = "Buffer Options";
-            // 
-            // ifClientBufferSize
-            // 
-            this.ifClientBufferSize.Location = new System.Drawing.Point(7, 48);
-            this.ifClientBufferSize.MaximumSize = new System.Drawing.Size(500, 37);
-            this.ifClientBufferSize.MinimumSize = new System.Drawing.Size(20, 37);
-            this.ifClientBufferSize.Name = "ifClientBufferSize";
-            this.ifClientBufferSize.Size = new System.Drawing.Size(73, 37);
-            this.ifClientBufferSize.TabIndex = 16;
-            this.ifClientBufferSize.Text = "4096";
-            this.ifClientBufferSize.Title = "Buffer Size";
-            // 
-            // ifClientPort
-            // 
-            this.ifClientPort.Location = new System.Drawing.Point(99, 5);
-            this.ifClientPort.MaximumSize = new System.Drawing.Size(500, 37);
-            this.ifClientPort.MinimumSize = new System.Drawing.Size(20, 37);
-            this.ifClientPort.Name = "ifClientPort";
-            this.ifClientPort.Size = new System.Drawing.Size(64, 37);
-            this.ifClientPort.TabIndex = 13;
-            this.ifClientPort.Text = "4545";
-            this.ifClientPort.Title = "Port";
-            // 
-            // ifClientIp
-            // 
-            this.ifClientIp.Location = new System.Drawing.Point(7, 5);
-            this.ifClientIp.MaximumSize = new System.Drawing.Size(500, 37);
-            this.ifClientIp.MinimumSize = new System.Drawing.Size(20, 37);
-            this.ifClientIp.Name = "ifClientIp";
-            this.ifClientIp.Size = new System.Drawing.Size(86, 37);
-            this.ifClientIp.TabIndex = 12;
-            this.ifClientIp.Text = "172.29.92.30";
-            this.ifClientIp.Title = "IP";
-            // 
-            // btnClearLogs
-            // 
-            this.btnClearLogs.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnClearLogs.Location = new System.Drawing.Point(391, 6);
-            this.btnClearLogs.Name = "btnClearLogs";
-            this.btnClearLogs.Size = new System.Drawing.Size(84, 19);
-            this.btnClearLogs.TabIndex = 35;
-            this.btnClearLogs.Text = "Clear Logs";
-            this.btnClearLogs.UseVisualStyleBackColor = true;
-            this.btnClearLogs.Click += new System.EventHandler(this.btnClearLogs_Click);
-            // 
             // FrameInterceptor_v2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -921,6 +1148,9 @@ namespace FrameInterceptor
             this.Name = "FrameInterceptor_v2";
             this.Text = "FrameInterceptor";
             this.tabSettings.ResumeLayout(false);
+            this.tabSerial.ResumeLayout(false);
+            this.groupBox6.ResumeLayout(false);
+            this.groupBox6.PerformLayout();
             this.tabServer.ResumeLayout(false);
             this.tabClient.ResumeLayout(false);
             this.tabSettingsTab.ResumeLayout(false);
@@ -1006,6 +1236,24 @@ namespace FrameInterceptor
         private CustomControls.InputFiled ifClientIp;
         private CustomControls.InputFiled ifClientTimeout;
         internal System.Windows.Forms.Button btnClearLogs;
+        internal CustomControls.InputCombo icSerialPort;
+        internal CustomControls.InputCombo icSerialBaudRate;
+        internal CustomControls.InputCombo icSerialHandshake;
+        internal CustomControls.InputCombo icSerialParity;
+        internal CustomControls.InputCombo icSerialStopBits;
+        internal CustomControls.InputCombo icSerialDataBits;
+        internal System.Windows.Forms.Button btnSerialOpen;
+        private System.Windows.Forms.GroupBox groupBox6;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label1;
+        internal CustomControls.Led ldCD;
+        internal CustomControls.Led ldRI;
+        internal CustomControls.Led ldDSR;
+        internal CustomControls.Led ldCTS;
+        internal System.Windows.Forms.CheckBox chkDTR;
+        internal System.Windows.Forms.CheckBox chkRTS;
     }
 }
 

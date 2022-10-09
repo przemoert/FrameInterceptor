@@ -49,11 +49,5 @@
     <Compile Include="SocketClient.cs" />
     <Compile Include="Validation.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Globals\Globals.csproj">
-      <Project>{3e241cf4-5551-4b13-8ee8-62f0108e691d}</Project>
-      <Name>Globals</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

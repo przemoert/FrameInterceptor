@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Globalization;
+using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -29,7 +30,8 @@ namespace FrameInterceptor
     {
         private TcpClientCommunication _tcpClient;
         private TcpServerCommunication _tcpServer;
-        private BindingSource ClientsBindigs = null;
+        private SerialCommunication _serial;
+        //private BindingSource ClientsBindigs = null;
         private bool _silentMode;
 
         public FrameInterceptor_v2()
@@ -46,44 +48,30 @@ namespace FrameInterceptor
         {
             this.icServerBufferOptions.DataSource = Enum.GetValues(typeof(BufferOptions));
             this.icClientBufferOptions.DataSource = Enum.GetValues(typeof(BufferOptions));
+            
+            this.icSerialPort.DataSource = SerialCommunication.GetPortNames();
+
+            this.icSerialBaudRate.DataSource = SerialCommunication.BaudRatesArray;
+            this.icSerialBaudRate.SelectedIndex = 4;
+
+            this.icSerialDataBits.DataSource = SerialCommunication.DataBits;
+            this.icSerialDataBits.SelectedIndex = 3;
+
+            this.icSerialHandshake.DataSource = Enum.GetValues(typeof(Handshake));
+
+            this.icSerialStopBits.DataSource = Enum.GetValues(typeof(StopBits));
+            this.icSerialStopBits.SelectedIndex = 1;
+
+            this.icSerialParity.DataSource = Enum.GetValues(typeof(Parity));
+
+            this.chkRTS.Enabled = false;
+            this.chkDTR.Enabled = false;
         }
 
         private void SetUpClientsDataSource()
         {
             this.dgClients.AutoGenerateColumns = false;
-
-            this.ClientsBindigs = new BindingSource();
-
-            ClientsBindigs.DataSource = this._tcpServer.Clients;
-            dgClients.DataSource = ClientsBindigs;
-        }
-
-        private async void UpdateClientsDataSource()
-        {
-            await Task.Delay(200);
-
-            if (this._tcpServer != null)
-            {
-                if (this._tcpServer.Server.Closing)
-                {
-                    this.dgClients.DataSource = null;
-                    this.dgClients.DataSource = ClientsBindigs;
-                }
-
-                if (this.dgClients.Rows.Count != this._tcpServer.Clients.Count)
-                    if (this._tcpServer.Clients.Count > 0)
-                        this.ClientsBindigs.ResetBindings(false);
-
-
-                this.UpdateClientsDataSource();
-            }
-        }
-
-        internal void ResetClientsBindings()
-        {
-            //this._tcpServer.Clients = new BindingList<SocketClient>(this._tcpServer.Server.Clients);
-
-            this.ClientsBindigs.ResetBindings(false);
+            dgClients.DataSource = this._tcpServer.Clients;
         }
 
         internal void ResultLog(ConnectionResult result, object sender = null)
@@ -100,14 +88,6 @@ namespace FrameInterceptor
 
         internal void Log(string msg, object sender = null)
         {
-            //Invokes no logner required
-
-            //if (InvokeRequired)
-            //{
-            //    this.Invoke(new Action<string>(Log), new object[] { msg });
-            //    return;
-            //}
-
             string l_Sender = String.Empty;
 
             if (sender is SocketClient c)
@@ -229,6 +209,29 @@ namespace FrameInterceptor
             this.Send(sender, Encoding.UTF8.GetBytes(this.tbSend.Text));
         }
 
+        public void SerialChangeStatus(bool IsClosing)
+        {
+            if (!IsClosing)
+            {
+                this.btnSerialOpen.Text = "Close";
+                this.chkDTR.Enabled = true;
+
+                if (this._serial.RtsAllowed)
+                    this.chkRTS.Enabled = true;
+            }
+            else
+            {
+                this.btnSerialOpen.Text = "Open";
+                this.chkDTR.Enabled = false;
+                this.chkRTS.Enabled = false;
+
+                this.ldCD.On = false;
+                this.ldCTS.On = false;
+                this.ldDSR.On = false;
+                this.ldRI.On = false;
+            }
+        }
+
         private void btnClientSend_Click(object sender, EventArgs e)
         {
             if (!String.IsNullOrEmpty(this.tbSend.Text))
@@ -337,6 +340,24 @@ namespace FrameInterceptor
             }
         }
 
+        private void btnSerialOpen_Click(object sender, EventArgs e)
+        {
+            if (this.btnSerialOpen.Text == "Open")
+            {
+                this._serial = new SerialCommunication(this);
+                this._serial.Open();
+
+                if (this._serial.ConenctionResult == ConnectionResult.Success)
+                    this.SerialChangeStatus(false);
+            }
+            else
+            {
+                this._serial.Close();
+
+                this.SerialChangeStatus(true);
+            }
+        }
+
         private async void btnClientConnect_Click(object sender, EventArgs e)
         {
             if (this.btnClientConnect.Text == "Connect")
@@ -346,11 +367,8 @@ namespace FrameInterceptor
             }
             else
             {
-                if (this._tcpClient.Client.Connected)
-                {
-                    await this._tcpClient.Close();
-                    this._tcpClient = null;
-                }
+                await this._tcpClient.Close();
+                this._tcpClient = null;
             }
         }
 
@@ -397,8 +415,8 @@ namespace FrameInterceptor
                 this.btnServerOpen.Enabled = false;
 
                 await this._tcpServer.Close();
-
-                this.ClientsBindigs.Dispose();
+                this.dgClients.DataSource = null;
+                this._tcpServer = null;
 
                 this.btnServerOpen.Text = "Open";
                 this.btnServerOpen.Enabled = true;
@@ -433,6 +451,17 @@ namespace FrameInterceptor
 
             GC.Collect();
             GC.WaitForPendingFinalizers();
+            GC.Collect();
+        }
+
+        private void chkDTR_CheckedChanged(object sender, EventArgs e)
+        {
+            this._serial.SerialDtr = ((CheckBox)sender).Checked;
+        }
+
+        private void chkRTS_CheckedChanged(object sender, EventArgs e)
+        {
+            this._serial.SerialRts = ((CheckBox)sender).Checked;
         }
     }
 }

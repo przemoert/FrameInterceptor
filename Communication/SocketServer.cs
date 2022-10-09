@@ -11,8 +11,6 @@ namespace Communication
 {
     public class SocketServer : IDisposable, IDisposer
     {
-        public event EventHandler ClientsListChanged;
-
         private Socket _socket;
         private List<SocketClient> _clients = new List<SocketClient>();
         private IPEndPoint _socketEP;
@@ -351,8 +349,6 @@ namespace Communication
             {
                 this._clients.Remove(iClient);
             }
-
-            this.OnClientsListChanged();
         }
 
         public void AddClient(SocketClient iClient)
@@ -361,13 +357,6 @@ namespace Communication
             {
                 this._clients.Add(iClient);
             }
-
-            this.OnClientsListChanged();
-        }
-
-        private void OnClientsListChanged()
-        {
-            this.ClientsListChanged?.Invoke(this, new EventArgs());
         }
 
 
@@ -376,7 +365,9 @@ namespace Communication
         public void CloseListener()
         {
             this._closing = true;
-            this._socket.Close();
+
+            if (this._socket != null)
+                this._socket.Close();
         }
 
         public async Task Close()
@@ -392,8 +383,8 @@ namespace Communication
                 }
             }
 
-            this._socket.Close();
-            this._socket.Dispose();
+            if (this._socket != null)
+                this._socket.Close();
 
             this.Dispose();
 
@@ -405,8 +396,8 @@ namespace Communication
             if (this.Disposed)
                 throw new ObjectDisposedException(this.GetType().FullName);
 
-            if (this._socket == null)
-                throw new ObjectDisposedException(this._socket.GetType().FullName);
+            //if (this._socket == null)
+            //    throw new ObjectDisposedException(this._socket.GetType().FullName);
 
 
             if (Interlocked.CompareExchange(ref this._disposed, 1, 0) == 0)
@@ -415,11 +406,15 @@ namespace Communication
                 {
                     foreach (SocketClient c in this._clients.ToList())
                     {
+                        if (!c.Closed)
+                            c.Close().Wait();
+
                         c.Dispose();
                     }
                 }
 
-                this._socket.Dispose();
+                if (this._socket != null)
+                    this._socket.Dispose();
             }
         }
     }

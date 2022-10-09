@@ -15,6 +15,7 @@ namespace FrameInterceptor.CustomControls
         public string Title { get => this.groupBox1.Text; set => this.groupBox1.Text = value; }
         public object DataSource { get => this.comboBox1.DataSource; set => this.comboBox1.DataSource = value; }
         public object Value { get => this.comboBox1.SelectedItem; }
+        public int SelectedIndex { get => this.comboBox1.SelectedIndex; set => this.comboBox1.SelectedIndex = value; }
 
         public InputCombo()
         {

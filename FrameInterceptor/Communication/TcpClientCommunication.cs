@@ -85,7 +85,8 @@ namespace FrameInterceptor.Communication
 
         public async Task Close()
         {
-            await this._socketClient.Close();
+            if (this.Connected)
+                await this._socketClient.Close();
 
             this._owningForm.btnClientConnect.Text = "Connect";
         }

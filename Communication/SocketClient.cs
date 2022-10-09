@@ -62,6 +62,10 @@ namespace Communication
                 {
                     return null;
                 }
+                catch (ObjectDisposedException)
+                {
+                    return null;
+                }
 
 
             }
@@ -631,6 +635,11 @@ namespace Communication
 
                 if (!this.Disposed)
                     this.Dispose();
+            }
+            else
+            {
+                if (this.Owner != null)
+                    this.Owner.RemoveClient(this);
             }
         }
 

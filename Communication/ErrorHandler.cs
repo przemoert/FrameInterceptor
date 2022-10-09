@@ -32,7 +32,11 @@ namespace Communication
         ServerListening = 1017,
         BufferSizeExceeded = 1018,
         DataReceivedWhileFlushing = 1019,
-        UnknownAddressContext = 1020
+        UnknownAddressContext = 1020,
+        SerialAccessDenied = 1021,
+        SerialIOInterrupted = 1022,
+        SerialClosed = 2023,
+        SerialNotExists = 2024
     }
 
 
