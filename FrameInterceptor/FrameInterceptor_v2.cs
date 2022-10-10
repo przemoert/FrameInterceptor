@@ -13,6 +13,7 @@ using System.Windows.Forms;
 using Communication;
 using FrameInterceptor.Communication;
 using FrameInterceptor.CustomControls;
+using FrameInterceptor.Utils;
 
 
 //Connected = -1,
@@ -33,15 +34,20 @@ namespace FrameInterceptor
         private SerialCommunication _serial;
         //private BindingSource ClientsBindigs = null;
         private bool _silentMode;
+        private BindingList<MacroCommand> _macroCommandsBinding = new BindingList<MacroCommand>();
+        private BindingList<MacroCommand> _macroResponsesBinding = new BindingList<MacroCommand>();
+        private bool _macroRunning;
+        private MacroRun _macroRun;
 
         public FrameInterceptor_v2()
         {
             InitializeComponent();
 
-            SetupControls();
+            this.SetupControls();
+            this.SetupMacroBindings();
 
             this._silentMode = this.chkSilentMode.Checked;
-
+            this._macroRunning = false;
         }
 
         private void SetupControls()
@@ -74,6 +80,50 @@ namespace FrameInterceptor
             dgClients.DataSource = this._tcpServer.Clients;
         }
 
+        private void SetupMacroBindings()
+        {
+            this.dgMacroCommands.AutoGenerateColumns = false;
+            this.dgMacroCommands.DataSource = this._macroCommandsBinding;
+
+            this.dgMacroReponses.AutoGenerateColumns = false;
+            this.dgMacroReponses.DataSource = this._macroResponsesBinding;
+
+            //TESTS
+            //this.AddMacroCommand("Test1");
+            //this.AddMacroCommand("Test2");
+            //this.AddMacroCommand("Test3");
+            //this.AddMacroCommand("Test4");
+            //this.AddMacroCommand("Test5");
+            //this.AddMacroCommand("Test6");
+
+            //byte[] t = new byte[] { 6 };
+            //this.AddMacroResponse(Encoding.UTF8.GetString(t));
+        }
+
+        private void AddMacroCommand(string iCommand)
+        {
+            this._macroCommandsBinding.Add(new MacroCommand(iCommand));
+        }
+
+        private void AddMacroResponse(string iCommand)
+        {
+            this._macroResponsesBinding.Add(new MacroCommand(iCommand));
+        }
+
+        private void RemoveSelectedMacro()
+        {
+            if (this.dgMacroCommands.SelectedRows.Count > 0)
+            {
+                this.dgMacroCommands.Rows.RemoveAt(this.dgMacroCommands.SelectedRows[0].Index);
+            }
+            else if (this.dgMacroReponses.SelectedRows.Count > 0)
+            {
+                this.dgMacroReponses.Rows.RemoveAt(this.dgMacroReponses.SelectedRows[0].Index);
+            }
+
+            this.DeselectMacroGrids();
+        }
+
         internal void ResultLog(ConnectionResult result, object sender = null)
         {
             string l_Sender = String.Empty;
@@ -100,6 +150,9 @@ namespace FrameInterceptor
 
         internal async Task ComLog(byte[] iData, int iLength, bool isNotIncomingButOutgoing, SocketClient iSender = null)
         {
+            if (this._macroRunning && !isNotIncomingButOutgoing)
+                this.MacroNext(iData);
+
             if (this._silentMode)
                 return;
 
@@ -162,7 +215,7 @@ namespace FrameInterceptor
                     return this._tcpClient;
                 }
             }
-            if (this.tabSettings.SelectedIndex == 1)
+            else if (this.tabSettings.SelectedIndex == 1)
             {
                 if (this._tcpServer != null)
                 {
@@ -172,23 +225,18 @@ namespace FrameInterceptor
                     }
                 }
             }
+            else if (this.tabSettings.SelectedIndex == 0)
+            {
+                if (this._serial != null)
+                {
+                    if (this._serial.IsOpen)
+                    {
+                        return this._serial;
+                    }
+                }
+            }
 
             return sender;
-        }
-
-        private void ShortcutManager(byte iByte)
-        {
-            byte[] data = new byte[] { iByte };
-
-            if (this.chkSend.Checked)
-            {
-                this.Send(this.GetSender(), data);
-            }
-            else
-            {
-                this.tbSend.AppendText(Encoding.UTF8.GetString(data));
-                this.tbSend.Focus();
-            }
         }
 
         private void Send(object sender, byte[] iData)
@@ -200,6 +248,10 @@ namespace FrameInterceptor
             else if (sender is TcpServerCommunication s)
             {
                 s.Send(iData, (SocketClient)this.dgClients.SelectedRows[0].Cells["colSocketClient"].Value);
+            }
+            else if (sender is SerialCommunication r)
+            {
+                r.Send(iData);
             }
 
         }
@@ -245,98 +297,18 @@ namespace FrameInterceptor
             }
         }
 
-        private void btnShortcut_Click(object sender, EventArgs e)
+        private void OnTypeAreaButtonClicked(object sender, TypeAreaEventArgs e)
         {
-            Button button = (Button)sender;
+            byte[] l_DataToSend = new byte[] { e.Code };
 
-            switch (button.Name)
+            if (this.tpShortcuts.SendCheckboxChecked)
             {
-                case "btnSOH":
-                    this.ShortcutManager(1);
-                    break;
-                case "btnSTX":
-                    this.ShortcutManager(2);
-                    break;
-                case "btnETX":
-                    this.ShortcutManager(3);
-                    break;
-                case "btnEOT":
-                    this.ShortcutManager(4);
-                    break;
-                case "btnENQ":
-                    this.ShortcutManager(5);
-                    break;
-                case "btnACK":
-                    this.ShortcutManager(6);
-                    break;
-                case "btnBEL":
-                    this.ShortcutManager(7);
-                    break;
-                case "btnBS":
-                    this.ShortcutManager(8);
-                    break;
-                case "btnHT":
-                    this.ShortcutManager(9);
-                    break;
-                case "btnLF":
-                    this.ShortcutManager(10);
-                    break;
-                case "btnVT":
-                    this.ShortcutManager(11);
-                    break;
-                case "btnFF":
-                    this.ShortcutManager(12);
-                    break;
-                case "btnCR":
-                    this.ShortcutManager(13);
-                    break;
-                case "btnSO":
-                    this.ShortcutManager(14);
-                    break;
-                case "btnSI":
-                    this.ShortcutManager(15);
-                    break;
-                case "btnDLE":
-                    this.ShortcutManager(16);
-                    break;
-                case "btnNAK":
-                    this.ShortcutManager(21);
-                    break;
-                case "btnSYN":
-                    this.ShortcutManager(22);
-                    break;
-                case "btnETB":
-                    this.ShortcutManager(23);
-                    break;
-                case "btnCAN":
-                    this.ShortcutManager(24);
-                    break;
-                case "btnEM":
-                    this.ShortcutManager(25);
-                    break;
-                case "btnSUB":
-                    this.ShortcutManager(26);
-                    break;
-                case "btnESC":
-                    this.ShortcutManager(27);
-                    break;
-                case "btnFS":
-                    this.ShortcutManager(28);
-                    break;
-                case "btnGS":
-                    this.ShortcutManager(29);
-                    break;
-                case "btnRS":
-                    this.ShortcutManager(30);
-                    break;
-                case "btnUS":
-                    this.ShortcutManager(31);
-                    break;
-                case "btnDEL":
-                    this.ShortcutManager(127);
-                    break;
-                default:
-                    break;
+                this.Send(this.GetSender(), l_DataToSend);
+            }
+            else
+            {
+                this.tbSend.AppendText(Encoding.UTF8.GetString(l_DataToSend));
+                this.tbSend.Focus();
             }
         }
 
@@ -462,6 +434,90 @@ namespace FrameInterceptor
         private void chkRTS_CheckedChanged(object sender, EventArgs e)
         {
             this._serial.SerialRts = ((CheckBox)sender).Checked;
+        }
+
+        private void btnMacroAddCommand_Click(object sender, EventArgs e)
+        {
+            if (!String.IsNullOrEmpty(this.tbSend.Text))
+            {
+                this.AddMacroCommand(this.tbSend.Text);
+            }
+
+            this.DeselectMacroGrids();
+        }
+        private void btnMacroAddResponse_Click(object sender, EventArgs e)
+        {
+            if (!String.IsNullOrEmpty(this.tbSend.Text))
+            {
+                this.AddMacroResponse(this.tbSend.Text);
+            }
+
+            this.DeselectMacroGrids();
+        }
+
+        private void btnMacroRemove_Click(object sender, EventArgs e)
+        {
+            this.RemoveSelectedMacro();
+        }
+
+        private void MacroDataGrid_Click(object sender, EventArgs e)
+        {
+            this.DeselectMacroGrids(sender);
+        }
+
+        private void DeselectMacroGrids(object iSender = null)
+        {
+            DataGridView[] l_Grids = FormHelper.GetAllControls<DataGridView>(this.gbMacros);
+
+            foreach (DataGridView d in l_Grids)
+            {
+                if (!object.ReferenceEquals(d, iSender))
+                {
+                    d.ClearSelection();
+                }
+            }
+        }
+
+        private void btnRunMacro_Click(object sender, EventArgs e)
+        {
+            if (this._macroCommandsBinding.Count > 0)
+            {
+                this._macroRunning = true;
+
+                this.RunMacro();
+            }
+        }
+
+        private void RunMacro()
+        {
+            this._macroRun = new MacroRun(this._macroCommandsBinding.ToList(), this._macroResponsesBinding.ToList());
+
+            this.MacroNext();
+        }
+
+        private void MacroNext(byte[] iMessage = null)
+        {
+            if (this._macroRun == null)
+                throw new ArgumentNullException();
+
+            byte[] l_DataToSend = new byte[this._macroRun.NextLength];
+
+            if (this._macroRun.FirstRun)
+            {
+                this._macroRun.Next(out l_DataToSend);
+                this.Send(this.GetSender(), l_DataToSend);
+            }
+            else if (this._macroRun.IsAccepted(iMessage))
+            {
+                this._macroRun.Next(out l_DataToSend);
+                this.Send(this.GetSender(), l_DataToSend);
+            }
+
+            if (this._macroRun.Completed)
+            {
+                this._macroRunning = false;
+                this._macroRun = null;
+            }                
         }
     }
 }

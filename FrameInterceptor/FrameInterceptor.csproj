@@ -72,6 +72,12 @@
     <Compile Include="CustomControls\Led.Designer.cs">
       <DependentUpon>Led.cs</DependentUpon>
     </Compile>
+    <Compile Include="CustomControls\TypeAreaUC.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CustomControls\TypeAreaUC.Designer.cs">
+      <DependentUpon>TypeAreaUC.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrameInterceptor_v2.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -80,12 +86,19 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\FormHelper.cs" />
+    <Compile Include="Utils\MacroCommand.cs" />
+    <Compile Include="Utils\MacroRun.cs" />
     <Compile Include="Utils\SerialPortComparer.cs" />
+    <Compile Include="Utils\TypeAreaEventArgs.cs" />
     <EmbeddedResource Include="CustomControls\InputCombo.resx">
       <DependentUpon>InputCombo.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="CustomControls\InputFiled.resx">
       <DependentUpon>InputFiled.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CustomControls\TypeAreaUC.resx">
+      <DependentUpon>TypeAreaUC.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FrameInterceptor_v2.resx">
       <DependentUpon>FrameInterceptor_v2.cs</DependentUpon>

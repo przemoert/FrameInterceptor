@@ -65,17 +65,18 @@ namespace FrameInterceptor.Communication
             {
                 
             }
+            //Must verify state every time. Simple indicator's state change failed when simulated unstable voltage directly to pin.
             else if (l_PinChange == SerialPinChange.CDChanged)
             {
-                this._owningForm.ldCD.On = (this._owningForm.ldCD.On) ? false : true;
+                this._owningForm.ldCD.On = this._serialPort.CDHolding; //(this._owningForm.ldCD.On) ? false : true;
             }
             else if (l_PinChange == SerialPinChange.CtsChanged)
             {
-                this._owningForm.ldCTS.On = (this._owningForm.ldCTS.On) ? false : true;
+                this._owningForm.ldCTS.On = this._serialPort.CtsHolding; //(this._owningForm.ldCTS.On) ? false : true;
             }
             else if (l_PinChange == SerialPinChange.DsrChanged)
             {
-                this._owningForm.ldDSR.On = (this._owningForm.ldDSR.On) ? false : true;
+                this._owningForm.ldDSR.On = this._serialPort.DsrHolding; //(this._owningForm.ldDSR.On) ? false : true;
             }
             else if (l_PinChange == SerialPinChange.Ring)
             {
@@ -85,8 +86,6 @@ namespace FrameInterceptor.Communication
 
         public void Open()
         {
-
-
             try
             {
                 this._serialPort.Open();
@@ -145,7 +144,13 @@ namespace FrameInterceptor.Communication
                 return;
             }
 
-            //Cant tell if this is possible
+            //Means data arrived before port closed. That posibility was suspected, noone cares, just return...
+            if (!this._serialPort.IsOpen)
+                return;
+
+
+            //Cant tell if this is possible.
+            //Tested, not possible even with random voltage provided directly to Rx pin.
             if (l_BytesTransfered == 0)
                 this.Receive();
 
@@ -170,6 +175,37 @@ namespace FrameInterceptor.Communication
             this.ResetBuffer();
 
             this.Receive();
+        }
+
+        public async void Send(byte[] iData)
+        {
+            int l_BytesTransfered = await Task<int>.Run(() =>
+            {
+                return this.Send(iData, 0, iData.Length);
+            });
+
+            await this._owningForm.ComLog(iData, l_BytesTransfered, true);
+        }
+
+        private int Send(byte[] iData, int offset, int count)
+        {
+            if (!this._serialPort.IsOpen)
+                return -1;
+
+            try
+            {
+                this._serialPort.Write(iData, offset, count);
+            }
+            catch (IOException)
+            {
+                return -1;
+            }
+            catch (InvalidOperationException)
+            {
+                return -1;
+            }
+
+            return count;
         }
 
         private void ResizeBuffer(byte[] iData, int iNewSize)
@@ -223,12 +259,15 @@ namespace FrameInterceptor.Communication
         {
             if (Interlocked.CompareExchange(ref this._disposed, 1, 0) == 0)
             {
+                this._serialPort.PinChanged -= new SerialPinChangedEventHandler(this.OnPinStateChange);
+
                 this._serialPort.Dispose();
             }
         }
 
         public static int[] BaudRatesArray { get => BAUD_RATES; }
         public static int[] DataBits { get => DATA_BITS; }
+        public bool IsOpen { get => this._serialPort.IsOpen; }
         public ConnectionResult ConenctionResult { get => _conenctionResult; }
         public bool SerialDtr { get => this._serialPort.DtrEnable; set => this._serialPort.DtrEnable = value; }
         public bool SerialRts 

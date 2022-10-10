@@ -29,7 +29,9 @@ namespace FrameInterceptor
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             this.tabSettings = new System.Windows.Forms.TabControl();
             this.tabSerial = new System.Windows.Forms.TabPage();
             this.chkDTR = new System.Windows.Forms.CheckBox();
@@ -71,36 +73,6 @@ namespace FrameInterceptor
             this.tbConnectionLog = new System.Windows.Forms.TextBox();
             this.tbSend = new System.Windows.Forms.TextBox();
             this.btnSend = new System.Windows.Forms.Button();
-            this.btnSOH = new System.Windows.Forms.Button();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.btnDEL = new System.Windows.Forms.Button();
-            this.btnUS = new System.Windows.Forms.Button();
-            this.btnRS = new System.Windows.Forms.Button();
-            this.btnGS = new System.Windows.Forms.Button();
-            this.btnFS = new System.Windows.Forms.Button();
-            this.btnESC = new System.Windows.Forms.Button();
-            this.btnEM = new System.Windows.Forms.Button();
-            this.chkSend = new System.Windows.Forms.CheckBox();
-            this.btnSUB = new System.Windows.Forms.Button();
-            this.btnCAN = new System.Windows.Forms.Button();
-            this.btnETB = new System.Windows.Forms.Button();
-            this.btnSYN = new System.Windows.Forms.Button();
-            this.btnNAK = new System.Windows.Forms.Button();
-            this.btnDLE = new System.Windows.Forms.Button();
-            this.btnSI = new System.Windows.Forms.Button();
-            this.btnSO = new System.Windows.Forms.Button();
-            this.btnCR = new System.Windows.Forms.Button();
-            this.btnFF = new System.Windows.Forms.Button();
-            this.btnVT = new System.Windows.Forms.Button();
-            this.btnLF = new System.Windows.Forms.Button();
-            this.btnHT = new System.Windows.Forms.Button();
-            this.btnBS = new System.Windows.Forms.Button();
-            this.btnBEL = new System.Windows.Forms.Button();
-            this.btnACK = new System.Windows.Forms.Button();
-            this.btnENQ = new System.Windows.Forms.Button();
-            this.btnEOT = new System.Windows.Forms.Button();
-            this.btnETX = new System.Windows.Forms.Button();
-            this.btnSTX = new System.Windows.Forms.Button();
             this.tbRawData = new System.Windows.Forms.TextBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.tbClearData = new System.Windows.Forms.TextBox();
@@ -114,18 +86,36 @@ namespace FrameInterceptor
             this.btnKickClient = new System.Windows.Forms.Button();
             this.chkClearSend = new System.Windows.Forms.CheckBox();
             this.chkAutoResponse = new System.Windows.Forms.CheckBox();
+            this.gbMacros = new System.Windows.Forms.GroupBox();
+            this.btnMacroAddResponse = new System.Windows.Forms.Button();
+            this.btnRunMacro = new System.Windows.Forms.Button();
+            this.btnMacroRemove = new System.Windows.Forms.Button();
+            this.gbMacroResponses = new System.Windows.Forms.GroupBox();
+            this.dgMacroReponses = new System.Windows.Forms.DataGridView();
+            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.btnMacroAddCommand = new System.Windows.Forms.Button();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.dgMacroCommands = new System.Windows.Forms.DataGridView();
+            this.colByteData = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colStringData = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.tpShortcuts = new FrameInterceptor.CustomControls.TypeAreaUC();
             this.tabSettings.SuspendLayout();
             this.tabSerial.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.tabServer.SuspendLayout();
             this.tabClient.SuspendLayout();
             this.tabSettingsTab.SuspendLayout();
-            this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgClients)).BeginInit();
+            this.gbMacros.SuspendLayout();
+            this.gbMacroResponses.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgMacroReponses)).BeginInit();
+            this.groupBox4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgMacroCommands)).BeginInit();
             this.SuspendLayout();
             // 
             // tabSettings
@@ -134,7 +124,7 @@ namespace FrameInterceptor
             this.tabSettings.Controls.Add(this.tabServer);
             this.tabSettings.Controls.Add(this.tabClient);
             this.tabSettings.Controls.Add(this.tabSettingsTab);
-            this.tabSettings.Location = new System.Drawing.Point(595, 11);
+            this.tabSettings.Location = new System.Drawing.Point(394, 11);
             this.tabSettings.Margin = new System.Windows.Forms.Padding(2);
             this.tabSettings.Name = "tabSettings";
             this.tabSettings.SelectedIndex = 0;
@@ -577,7 +567,7 @@ namespace FrameInterceptor
             this.tbConnectionLog.BackColor = System.Drawing.SystemColors.HighlightText;
             this.tbConnectionLog.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.tbConnectionLog.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.tbConnectionLog.Location = new System.Drawing.Point(595, 138);
+            this.tbConnectionLog.Location = new System.Drawing.Point(394, 137);
             this.tbConnectionLog.Margin = new System.Windows.Forms.Padding(2);
             this.tbConnectionLog.Multiline = true;
             this.tbConnectionLog.Name = "tbConnectionLog";
@@ -589,7 +579,7 @@ namespace FrameInterceptor
             // tbSend
             // 
             this.tbSend.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.tbSend.Location = new System.Drawing.Point(595, 239);
+            this.tbSend.Location = new System.Drawing.Point(394, 237);
             this.tbSend.Margin = new System.Windows.Forms.Padding(2);
             this.tbSend.Name = "tbSend";
             this.tbSend.Size = new System.Drawing.Size(275, 17);
@@ -598,7 +588,7 @@ namespace FrameInterceptor
             // btnSend
             // 
             this.btnSend.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnSend.Location = new System.Drawing.Point(874, 238);
+            this.btnSend.Location = new System.Drawing.Point(673, 236);
             this.btnSend.Margin = new System.Windows.Forms.Padding(2);
             this.btnSend.Name = "btnSend";
             this.btnSend.Size = new System.Drawing.Size(57, 19);
@@ -606,362 +596,6 @@ namespace FrameInterceptor
             this.btnSend.Text = "Send";
             this.btnSend.UseVisualStyleBackColor = true;
             this.btnSend.Click += new System.EventHandler(this.btnClientSend_Click);
-            // 
-            // btnSOH
-            // 
-            this.btnSOH.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnSOH.Location = new System.Drawing.Point(11, 32);
-            this.btnSOH.Name = "btnSOH";
-            this.btnSOH.Size = new System.Drawing.Size(40, 20);
-            this.btnSOH.TabIndex = 10;
-            this.btnSOH.Text = "SOH";
-            this.btnSOH.UseVisualStyleBackColor = true;
-            this.btnSOH.Click += new System.EventHandler(this.btnShortcut_Click);
-            // 
-            // groupBox4
-            // 
-            this.groupBox4.Controls.Add(this.btnDEL);
-            this.groupBox4.Controls.Add(this.btnUS);
-            this.groupBox4.Controls.Add(this.btnRS);
-            this.groupBox4.Controls.Add(this.btnGS);
-            this.groupBox4.Controls.Add(this.btnFS);
-            this.groupBox4.Controls.Add(this.btnESC);
-            this.groupBox4.Controls.Add(this.btnEM);
-            this.groupBox4.Controls.Add(this.chkSend);
-            this.groupBox4.Controls.Add(this.btnSUB);
-            this.groupBox4.Controls.Add(this.btnCAN);
-            this.groupBox4.Controls.Add(this.btnETB);
-            this.groupBox4.Controls.Add(this.btnSYN);
-            this.groupBox4.Controls.Add(this.btnNAK);
-            this.groupBox4.Controls.Add(this.btnDLE);
-            this.groupBox4.Controls.Add(this.btnSI);
-            this.groupBox4.Controls.Add(this.btnSO);
-            this.groupBox4.Controls.Add(this.btnCR);
-            this.groupBox4.Controls.Add(this.btnFF);
-            this.groupBox4.Controls.Add(this.btnVT);
-            this.groupBox4.Controls.Add(this.btnLF);
-            this.groupBox4.Controls.Add(this.btnHT);
-            this.groupBox4.Controls.Add(this.btnBS);
-            this.groupBox4.Controls.Add(this.btnBEL);
-            this.groupBox4.Controls.Add(this.btnACK);
-            this.groupBox4.Controls.Add(this.btnENQ);
-            this.groupBox4.Controls.Add(this.btnEOT);
-            this.groupBox4.Controls.Add(this.btnETX);
-            this.groupBox4.Controls.Add(this.btnSTX);
-            this.groupBox4.Controls.Add(this.btnSOH);
-            this.groupBox4.Location = new System.Drawing.Point(595, 284);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(336, 147);
-            this.groupBox4.TabIndex = 15;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "Shortcuts";
-            // 
-            // btnDEL
-            // 
-            this.btnDEL.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnDEL.Location = new System.Drawing.Point(287, 110);
-            this.btnDEL.Name = "btnDEL";
-            this.btnDEL.Size = new System.Drawing.Size(40, 20);
-            this.btnDEL.TabIndex = 16;
-            this.btnDEL.Text = "DEL";
-            this.btnDEL.UseVisualStyleBackColor = true;
-            this.btnDEL.Click += new System.EventHandler(this.btnShortcut_Click);
-            // 
-            // btnUS
-            // 
-            this.btnUS.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnUS.Location = new System.Drawing.Point(241, 110);
-            this.btnUS.Name = "btnUS";
-            this.btnUS.Size = new System.Drawing.Size(40, 20);
-            this.btnUS.TabIndex = 37;
-            this.btnUS.Text = "US";
-            this.btnUS.UseVisualStyleBackColor = true;
-            this.btnUS.Click += new System.EventHandler(this.btnShortcut_Click);
-            // 
-            // btnRS
-            // 
-            this.btnRS.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnRS.Location = new System.Drawing.Point(195, 110);
-            this.btnRS.Name = "btnRS";
-            this.btnRS.Size = new System.Drawing.Size(40, 20);
-            this.btnRS.TabIndex = 36;
-            this.btnRS.Text = "RS";
-            this.btnRS.UseVisualStyleBackColor = true;
-            this.btnRS.Click += new System.EventHandler(this.btnShortcut_Click);
-            // 
-            // btnGS
-            // 
-            this.btnGS.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnGS.Location = new System.Drawing.Point(149, 110);
-            this.btnGS.Name = "btnGS";
-            this.btnGS.Size = new System.Drawing.Size(40, 20);
-            this.btnGS.TabIndex = 35;
-            this.btnGS.Text = "GS";
-            this.btnGS.UseVisualStyleBackColor = true;
-            this.btnGS.Click += new System.EventHandler(this.btnShortcut_Click);
-            // 
-            // btnFS
-            // 
-            this.btnFS.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnFS.Location = new System.Drawing.Point(103, 110);
-            this.btnFS.Name = "btnFS";
-            this.btnFS.Size = new System.Drawing.Size(40, 20);
-            this.btnFS.TabIndex = 34;
-            this.btnFS.Text = "FS";
-            this.btnFS.UseVisualStyleBackColor = true;
-            this.btnFS.Click += new System.EventHandler(this.btnShortcut_Click);
-            // 
-            // btnESC
-            // 
-            this.btnESC.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnESC.Location = new System.Drawing.Point(57, 110);
-            this.btnESC.Name = "btnESC";
-            this.btnESC.Size = new System.Drawing.Size(40, 20);
-            this.btnESC.TabIndex = 33;
-            this.btnESC.Text = "ESC";
-            this.btnESC.UseVisualStyleBackColor = true;
-            this.btnESC.Click += new System.EventHandler(this.btnShortcut_Click);
-            // 
-            // btnEM
-            // 
-            this.btnEM.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnEM.Location = new System.Drawing.Point(287, 84);
-            this.btnEM.Name = "btnEM";
-            this.btnEM.Size = new System.Drawing.Size(40, 20);
-            this.btnEM.TabIndex = 32;
-            this.btnEM.Text = "EM";
-            this.btnEM.UseVisualStyleBackColor = true;
-            this.btnEM.Click += new System.EventHandler(this.btnShortcut_Click);
-            // 
-            // chkSend
-            // 
-            this.chkSend.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.chkSend.Location = new System.Drawing.Point(279, 9);
-            this.chkSend.Name = "chkSend";
-            this.chkSend.Size = new System.Drawing.Size(51, 17);
-            this.chkSend.TabIndex = 31;
-            this.chkSend.Text = "Send";
-            this.chkSend.UseVisualStyleBackColor = true;
-            // 
-            // btnSUB
-            // 
-            this.btnSUB.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnSUB.Location = new System.Drawing.Point(11, 110);
-            this.btnSUB.Name = "btnSUB";
-            this.btnSUB.Size = new System.Drawing.Size(40, 20);
-            this.btnSUB.TabIndex = 30;
-            this.btnSUB.Text = "SUB";
-            this.btnSUB.UseVisualStyleBackColor = true;
-            this.btnSUB.Click += new System.EventHandler(this.btnShortcut_Click);
-            // 
-            // btnCAN
-            // 
-            this.btnCAN.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnCAN.Location = new System.Drawing.Point(241, 84);
-            this.btnCAN.Name = "btnCAN";
-            this.btnCAN.Size = new System.Drawing.Size(40, 20);
-            this.btnCAN.TabIndex = 29;
-            this.btnCAN.Text = "CAN";
-            this.btnCAN.UseVisualStyleBackColor = true;
-            this.btnCAN.Click += new System.EventHandler(this.btnShortcut_Click);
-            // 
-            // btnETB
-            // 
-            this.btnETB.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnETB.Location = new System.Drawing.Point(195, 84);
-            this.btnETB.Name = "btnETB";
-            this.btnETB.Size = new System.Drawing.Size(40, 20);
-            this.btnETB.TabIndex = 28;
-            this.btnETB.Text = "ETB";
-            this.btnETB.UseVisualStyleBackColor = true;
-            this.btnETB.Click += new System.EventHandler(this.btnShortcut_Click);
-            // 
-            // btnSYN
-            // 
-            this.btnSYN.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnSYN.Location = new System.Drawing.Point(149, 84);
-            this.btnSYN.Name = "btnSYN";
-            this.btnSYN.Size = new System.Drawing.Size(40, 20);
-            this.btnSYN.TabIndex = 27;
-            this.btnSYN.Text = "SYN";
-            this.btnSYN.UseVisualStyleBackColor = true;
-            this.btnSYN.Click += new System.EventHandler(this.btnShortcut_Click);
-            // 
-            // btnNAK
-            // 
-            this.btnNAK.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnNAK.Location = new System.Drawing.Point(103, 84);
-            this.btnNAK.Name = "btnNAK";
-            this.btnNAK.Size = new System.Drawing.Size(40, 20);
-            this.btnNAK.TabIndex = 26;
-            this.btnNAK.Text = "NAK";
-            this.btnNAK.UseVisualStyleBackColor = true;
-            this.btnNAK.Click += new System.EventHandler(this.btnShortcut_Click);
-            // 
-            // btnDLE
-            // 
-            this.btnDLE.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnDLE.Location = new System.Drawing.Point(57, 84);
-            this.btnDLE.Name = "btnDLE";
-            this.btnDLE.Size = new System.Drawing.Size(40, 20);
-            this.btnDLE.TabIndex = 25;
-            this.btnDLE.Text = "DLE";
-            this.btnDLE.UseVisualStyleBackColor = true;
-            this.btnDLE.Click += new System.EventHandler(this.btnShortcut_Click);
-            // 
-            // btnSI
-            // 
-            this.btnSI.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnSI.Location = new System.Drawing.Point(11, 84);
-            this.btnSI.Name = "btnSI";
-            this.btnSI.Size = new System.Drawing.Size(40, 20);
-            this.btnSI.TabIndex = 24;
-            this.btnSI.Text = "SI";
-            this.btnSI.UseVisualStyleBackColor = true;
-            this.btnSI.Click += new System.EventHandler(this.btnShortcut_Click);
-            // 
-            // btnSO
-            // 
-            this.btnSO.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnSO.Location = new System.Drawing.Point(287, 58);
-            this.btnSO.Name = "btnSO";
-            this.btnSO.Size = new System.Drawing.Size(40, 20);
-            this.btnSO.TabIndex = 23;
-            this.btnSO.Text = "SO";
-            this.btnSO.UseVisualStyleBackColor = true;
-            this.btnSO.Click += new System.EventHandler(this.btnShortcut_Click);
-            // 
-            // btnCR
-            // 
-            this.btnCR.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnCR.Location = new System.Drawing.Point(241, 58);
-            this.btnCR.Name = "btnCR";
-            this.btnCR.Size = new System.Drawing.Size(40, 20);
-            this.btnCR.TabIndex = 22;
-            this.btnCR.Text = "CR";
-            this.btnCR.UseVisualStyleBackColor = true;
-            this.btnCR.Click += new System.EventHandler(this.btnShortcut_Click);
-            // 
-            // btnFF
-            // 
-            this.btnFF.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnFF.Location = new System.Drawing.Point(195, 58);
-            this.btnFF.Name = "btnFF";
-            this.btnFF.Size = new System.Drawing.Size(40, 20);
-            this.btnFF.TabIndex = 21;
-            this.btnFF.Text = "FF";
-            this.btnFF.UseVisualStyleBackColor = true;
-            this.btnFF.Click += new System.EventHandler(this.btnShortcut_Click);
-            // 
-            // btnVT
-            // 
-            this.btnVT.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnVT.Location = new System.Drawing.Point(149, 58);
-            this.btnVT.Name = "btnVT";
-            this.btnVT.Size = new System.Drawing.Size(40, 20);
-            this.btnVT.TabIndex = 20;
-            this.btnVT.Text = "VT";
-            this.btnVT.UseVisualStyleBackColor = true;
-            this.btnVT.Click += new System.EventHandler(this.btnShortcut_Click);
-            // 
-            // btnLF
-            // 
-            this.btnLF.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnLF.Location = new System.Drawing.Point(103, 58);
-            this.btnLF.Name = "btnLF";
-            this.btnLF.Size = new System.Drawing.Size(40, 20);
-            this.btnLF.TabIndex = 19;
-            this.btnLF.Text = "LF";
-            this.btnLF.UseVisualStyleBackColor = true;
-            this.btnLF.Click += new System.EventHandler(this.btnShortcut_Click);
-            // 
-            // btnHT
-            // 
-            this.btnHT.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnHT.Location = new System.Drawing.Point(57, 58);
-            this.btnHT.Name = "btnHT";
-            this.btnHT.Size = new System.Drawing.Size(40, 20);
-            this.btnHT.TabIndex = 18;
-            this.btnHT.Text = "HT";
-            this.btnHT.UseVisualStyleBackColor = true;
-            this.btnHT.Click += new System.EventHandler(this.btnShortcut_Click);
-            // 
-            // btnBS
-            // 
-            this.btnBS.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnBS.Location = new System.Drawing.Point(11, 58);
-            this.btnBS.Name = "btnBS";
-            this.btnBS.Size = new System.Drawing.Size(40, 20);
-            this.btnBS.TabIndex = 17;
-            this.btnBS.Text = "BS";
-            this.btnBS.UseVisualStyleBackColor = true;
-            this.btnBS.Click += new System.EventHandler(this.btnShortcut_Click);
-            // 
-            // btnBEL
-            // 
-            this.btnBEL.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnBEL.Location = new System.Drawing.Point(287, 32);
-            this.btnBEL.Name = "btnBEL";
-            this.btnBEL.Size = new System.Drawing.Size(40, 20);
-            this.btnBEL.TabIndex = 16;
-            this.btnBEL.Text = "BEL";
-            this.btnBEL.UseVisualStyleBackColor = true;
-            this.btnBEL.Click += new System.EventHandler(this.btnShortcut_Click);
-            // 
-            // btnACK
-            // 
-            this.btnACK.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnACK.Location = new System.Drawing.Point(241, 32);
-            this.btnACK.Name = "btnACK";
-            this.btnACK.Size = new System.Drawing.Size(40, 20);
-            this.btnACK.TabIndex = 15;
-            this.btnACK.Text = "ACK";
-            this.btnACK.UseVisualStyleBackColor = true;
-            this.btnACK.Click += new System.EventHandler(this.btnShortcut_Click);
-            // 
-            // btnENQ
-            // 
-            this.btnENQ.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnENQ.Location = new System.Drawing.Point(195, 32);
-            this.btnENQ.Name = "btnENQ";
-            this.btnENQ.Size = new System.Drawing.Size(40, 20);
-            this.btnENQ.TabIndex = 14;
-            this.btnENQ.Text = "ENQ";
-            this.btnENQ.UseVisualStyleBackColor = true;
-            this.btnENQ.Click += new System.EventHandler(this.btnShortcut_Click);
-            // 
-            // btnEOT
-            // 
-            this.btnEOT.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnEOT.Location = new System.Drawing.Point(149, 32);
-            this.btnEOT.Name = "btnEOT";
-            this.btnEOT.Size = new System.Drawing.Size(40, 20);
-            this.btnEOT.TabIndex = 13;
-            this.btnEOT.Text = "EOT";
-            this.btnEOT.UseVisualStyleBackColor = true;
-            this.btnEOT.Click += new System.EventHandler(this.btnShortcut_Click);
-            // 
-            // btnETX
-            // 
-            this.btnETX.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnETX.Location = new System.Drawing.Point(103, 32);
-            this.btnETX.Name = "btnETX";
-            this.btnETX.Size = new System.Drawing.Size(40, 20);
-            this.btnETX.TabIndex = 12;
-            this.btnETX.Text = "ETX";
-            this.btnETX.UseVisualStyleBackColor = true;
-            this.btnETX.Click += new System.EventHandler(this.btnShortcut_Click);
-            // 
-            // btnSTX
-            // 
-            this.btnSTX.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnSTX.Location = new System.Drawing.Point(57, 32);
-            this.btnSTX.Name = "btnSTX";
-            this.btnSTX.Size = new System.Drawing.Size(40, 20);
-            this.btnSTX.TabIndex = 11;
-            this.btnSTX.Text = "STX";
-            this.btnSTX.UseVisualStyleBackColor = true;
-            this.btnSTX.Click += new System.EventHandler(this.btnShortcut_Click);
             // 
             // tbRawData
             // 
@@ -976,15 +610,15 @@ namespace FrameInterceptor
             this.tbRawData.Name = "tbRawData";
             this.tbRawData.ReadOnly = true;
             this.tbRawData.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.tbRawData.Size = new System.Drawing.Size(566, 107);
+            this.tbRawData.Size = new System.Drawing.Size(373, 107);
             this.tbRawData.TabIndex = 3;
             // 
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.tbRawData);
-            this.groupBox3.Location = new System.Drawing.Point(12, 299);
+            this.groupBox3.Location = new System.Drawing.Point(4, 299);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(578, 132);
+            this.groupBox3.Size = new System.Drawing.Size(385, 132);
             this.groupBox3.TabIndex = 9;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "RAW";
@@ -1002,15 +636,15 @@ namespace FrameInterceptor
             this.tbClearData.Name = "tbClearData";
             this.tbClearData.ReadOnly = true;
             this.tbClearData.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.tbClearData.Size = new System.Drawing.Size(566, 110);
+            this.tbClearData.Size = new System.Drawing.Size(374, 110);
             this.tbClearData.TabIndex = 3;
             // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.tbClearData);
-            this.groupBox2.Location = new System.Drawing.Point(11, 158);
+            this.groupBox2.Location = new System.Drawing.Point(4, 158);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(578, 135);
+            this.groupBox2.Size = new System.Drawing.Size(386, 135);
             this.groupBox2.TabIndex = 8;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Clear Incomming";
@@ -1028,15 +662,15 @@ namespace FrameInterceptor
             this.tbUserFriendlyData.Name = "tbUserFriendlyData";
             this.tbUserFriendlyData.ReadOnly = true;
             this.tbUserFriendlyData.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.tbUserFriendlyData.Size = new System.Drawing.Size(566, 116);
+            this.tbUserFriendlyData.Size = new System.Drawing.Size(373, 116);
             this.tbUserFriendlyData.TabIndex = 3;
             // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.tbUserFriendlyData);
-            this.groupBox1.Location = new System.Drawing.Point(12, 11);
+            this.groupBox1.Location = new System.Drawing.Point(4, 11);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(578, 141);
+            this.groupBox1.Size = new System.Drawing.Size(385, 141);
             this.groupBox1.TabIndex = 7;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Friendly Log";
@@ -1044,7 +678,7 @@ namespace FrameInterceptor
             // groupBox5
             // 
             this.groupBox5.Controls.Add(this.dgClients);
-            this.groupBox5.Location = new System.Drawing.Point(937, 138);
+            this.groupBox5.Location = new System.Drawing.Point(732, 138);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(147, 272);
             this.groupBox5.TabIndex = 16;
@@ -1063,14 +697,14 @@ namespace FrameInterceptor
             this.dgClients.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colSocketClient,
             this.colClientName});
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F);
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgClients.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F);
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgClients.DefaultCellStyle = dataGridViewCellStyle1;
             this.dgClients.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgClients.Location = new System.Drawing.Point(3, 16);
             this.dgClients.Name = "dgClients";
@@ -1100,7 +734,7 @@ namespace FrameInterceptor
             // btnKickClient
             // 
             this.btnKickClient.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnKickClient.Location = new System.Drawing.Point(937, 412);
+            this.btnKickClient.Location = new System.Drawing.Point(732, 412);
             this.btnKickClient.Name = "btnKickClient";
             this.btnKickClient.Size = new System.Drawing.Size(147, 19);
             this.btnKickClient.TabIndex = 17;
@@ -1111,7 +745,7 @@ namespace FrameInterceptor
             // chkClearSend
             // 
             this.chkClearSend.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.chkClearSend.Location = new System.Drawing.Point(595, 261);
+            this.chkClearSend.Location = new System.Drawing.Point(394, 259);
             this.chkClearSend.Name = "chkClearSend";
             this.chkClearSend.Size = new System.Drawing.Size(97, 17);
             this.chkClearSend.TabIndex = 32;
@@ -1121,23 +755,210 @@ namespace FrameInterceptor
             // chkAutoResponse
             // 
             this.chkAutoResponse.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.chkAutoResponse.Location = new System.Drawing.Point(687, 261);
+            this.chkAutoResponse.Location = new System.Drawing.Point(497, 260);
             this.chkAutoResponse.Name = "chkAutoResponse";
             this.chkAutoResponse.Size = new System.Drawing.Size(75, 17);
             this.chkAutoResponse.TabIndex = 33;
             this.chkAutoResponse.Text = "AutoResp";
             this.chkAutoResponse.UseVisualStyleBackColor = true;
             // 
+            // gbMacros
+            // 
+            this.gbMacros.Controls.Add(this.btnMacroAddResponse);
+            this.gbMacros.Controls.Add(this.btnRunMacro);
+            this.gbMacros.Controls.Add(this.btnMacroRemove);
+            this.gbMacros.Controls.Add(this.gbMacroResponses);
+            this.gbMacros.Controls.Add(this.btnMacroAddCommand);
+            this.gbMacros.Controls.Add(this.groupBox4);
+            this.gbMacros.Location = new System.Drawing.Point(884, 11);
+            this.gbMacros.Name = "gbMacros";
+            this.gbMacros.Size = new System.Drawing.Size(200, 420);
+            this.gbMacros.TabIndex = 35;
+            this.gbMacros.TabStop = false;
+            this.gbMacros.Text = "Macro";
+            // 
+            // btnMacroAddResponse
+            // 
+            this.btnMacroAddResponse.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.btnMacroAddResponse.Location = new System.Drawing.Point(74, 370);
+            this.btnMacroAddResponse.Name = "btnMacroAddResponse";
+            this.btnMacroAddResponse.Size = new System.Drawing.Size(62, 44);
+            this.btnMacroAddResponse.TabIndex = 28;
+            this.btnMacroAddResponse.Text = "Add Response";
+            this.btnMacroAddResponse.UseVisualStyleBackColor = true;
+            this.btnMacroAddResponse.Click += new System.EventHandler(this.btnMacroAddResponse_Click);
+            // 
+            // btnRunMacro
+            // 
+            this.btnRunMacro.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.btnRunMacro.Location = new System.Drawing.Point(142, 395);
+            this.btnRunMacro.Name = "btnRunMacro";
+            this.btnRunMacro.Size = new System.Drawing.Size(51, 19);
+            this.btnRunMacro.TabIndex = 27;
+            this.btnRunMacro.Text = "Run";
+            this.btnRunMacro.UseVisualStyleBackColor = true;
+            this.btnRunMacro.Click += new System.EventHandler(this.btnRunMacro_Click);
+            // 
+            // btnMacroRemove
+            // 
+            this.btnMacroRemove.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.btnMacroRemove.Location = new System.Drawing.Point(142, 370);
+            this.btnMacroRemove.Name = "btnMacroRemove";
+            this.btnMacroRemove.Size = new System.Drawing.Size(51, 19);
+            this.btnMacroRemove.TabIndex = 26;
+            this.btnMacroRemove.Text = "Remove";
+            this.btnMacroRemove.UseVisualStyleBackColor = true;
+            this.btnMacroRemove.Click += new System.EventHandler(this.btnMacroRemove_Click);
+            // 
+            // gbMacroResponses
+            // 
+            this.gbMacroResponses.Controls.Add(this.dgMacroReponses);
+            this.gbMacroResponses.Dock = System.Windows.Forms.DockStyle.Top;
+            this.gbMacroResponses.Location = new System.Drawing.Point(3, 165);
+            this.gbMacroResponses.Name = "gbMacroResponses";
+            this.gbMacroResponses.Size = new System.Drawing.Size(194, 79);
+            this.gbMacroResponses.TabIndex = 25;
+            this.gbMacroResponses.TabStop = false;
+            this.gbMacroResponses.Text = "Allowed Responses";
+            // 
+            // dgMacroReponses
+            // 
+            this.dgMacroReponses.AllowUserToAddRows = false;
+            this.dgMacroReponses.AllowUserToDeleteRows = false;
+            this.dgMacroReponses.AllowUserToResizeColumns = false;
+            this.dgMacroReponses.AllowUserToResizeRows = false;
+            this.dgMacroReponses.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dgMacroReponses.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
+            this.dgMacroReponses.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgMacroReponses.ColumnHeadersVisible = false;
+            this.dgMacroReponses.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.dataGridViewTextBoxColumn1,
+            this.dataGridViewTextBoxColumn2});
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F);
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgMacroReponses.DefaultCellStyle = dataGridViewCellStyle2;
+            this.dgMacroReponses.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgMacroReponses.Location = new System.Drawing.Point(3, 16);
+            this.dgMacroReponses.MultiSelect = false;
+            this.dgMacroReponses.Name = "dgMacroReponses";
+            this.dgMacroReponses.RowHeadersVisible = false;
+            this.dgMacroReponses.RowTemplate.Height = 17;
+            this.dgMacroReponses.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgMacroReponses.Size = new System.Drawing.Size(188, 60);
+            this.dgMacroReponses.TabIndex = 1;
+            this.dgMacroReponses.Click += new System.EventHandler(this.MacroDataGrid_Click);
+            // 
+            // dataGridViewTextBoxColumn1
+            // 
+            this.dataGridViewTextBoxColumn1.DataPropertyName = "ByteData";
+            this.dataGridViewTextBoxColumn1.HeaderText = "ByteData";
+            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
+            this.dataGridViewTextBoxColumn1.ReadOnly = true;
+            this.dataGridViewTextBoxColumn1.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridViewTextBoxColumn1.Visible = false;
+            // 
+            // dataGridViewTextBoxColumn2
+            // 
+            this.dataGridViewTextBoxColumn2.DataPropertyName = "StringData";
+            this.dataGridViewTextBoxColumn2.HeaderText = "StringData";
+            this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
+            this.dataGridViewTextBoxColumn2.ReadOnly = true;
+            // 
+            // btnMacroAddCommand
+            // 
+            this.btnMacroAddCommand.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.btnMacroAddCommand.Location = new System.Drawing.Point(6, 370);
+            this.btnMacroAddCommand.Name = "btnMacroAddCommand";
+            this.btnMacroAddCommand.Size = new System.Drawing.Size(62, 44);
+            this.btnMacroAddCommand.TabIndex = 24;
+            this.btnMacroAddCommand.Text = "Queue Command";
+            this.btnMacroAddCommand.UseVisualStyleBackColor = true;
+            this.btnMacroAddCommand.Click += new System.EventHandler(this.btnMacroAddCommand_Click);
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.dgMacroCommands);
+            this.groupBox4.Dock = System.Windows.Forms.DockStyle.Top;
+            this.groupBox4.Location = new System.Drawing.Point(3, 16);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(194, 149);
+            this.groupBox4.TabIndex = 0;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Commands";
+            // 
+            // dgMacroCommands
+            // 
+            this.dgMacroCommands.AllowUserToAddRows = false;
+            this.dgMacroCommands.AllowUserToDeleteRows = false;
+            this.dgMacroCommands.AllowUserToResizeColumns = false;
+            this.dgMacroCommands.AllowUserToResizeRows = false;
+            this.dgMacroCommands.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dgMacroCommands.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
+            this.dgMacroCommands.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgMacroCommands.ColumnHeadersVisible = false;
+            this.dgMacroCommands.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.colByteData,
+            this.colStringData});
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F);
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgMacroCommands.DefaultCellStyle = dataGridViewCellStyle3;
+            this.dgMacroCommands.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgMacroCommands.Location = new System.Drawing.Point(3, 16);
+            this.dgMacroCommands.MultiSelect = false;
+            this.dgMacroCommands.Name = "dgMacroCommands";
+            this.dgMacroCommands.RowHeadersVisible = false;
+            this.dgMacroCommands.RowTemplate.Height = 17;
+            this.dgMacroCommands.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgMacroCommands.Size = new System.Drawing.Size(188, 130);
+            this.dgMacroCommands.TabIndex = 0;
+            this.dgMacroCommands.Click += new System.EventHandler(this.MacroDataGrid_Click);
+            // 
+            // colByteData
+            // 
+            this.colByteData.DataPropertyName = "ByteData";
+            this.colByteData.HeaderText = "ByteData";
+            this.colByteData.Name = "colByteData";
+            this.colByteData.ReadOnly = true;
+            this.colByteData.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.colByteData.Visible = false;
+            // 
+            // colStringData
+            // 
+            this.colStringData.DataPropertyName = "StringData";
+            this.colStringData.HeaderText = "StringData";
+            this.colStringData.Name = "colStringData";
+            this.colStringData.ReadOnly = true;
+            // 
+            // tpShortcuts
+            // 
+            this.tpShortcuts.Location = new System.Drawing.Point(394, 284);
+            this.tpShortcuts.Name = "tpShortcuts";
+            this.tpShortcuts.SendCheckboxVisible = true;
+            this.tpShortcuts.Size = new System.Drawing.Size(336, 147);
+            this.tpShortcuts.TabIndex = 34;
+            this.tpShortcuts.ButtonClicked += new System.EventHandler<FrameInterceptor.Utils.TypeAreaEventArgs>(this.OnTypeAreaButtonClicked);
+            // 
             // FrameInterceptor_v2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1089, 456);
+            this.Controls.Add(this.gbMacros);
+            this.Controls.Add(this.tpShortcuts);
             this.Controls.Add(this.chkAutoResponse);
             this.Controls.Add(this.chkClearSend);
             this.Controls.Add(this.btnKickClient);
             this.Controls.Add(this.groupBox5);
-            this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
@@ -1154,7 +975,6 @@ namespace FrameInterceptor
             this.tabServer.ResumeLayout(false);
             this.tabClient.ResumeLayout(false);
             this.tabSettingsTab.ResumeLayout(false);
-            this.groupBox4.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.groupBox2.ResumeLayout(false);
@@ -1163,6 +983,11 @@ namespace FrameInterceptor
             this.groupBox1.PerformLayout();
             this.groupBox5.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgClients)).EndInit();
+            this.gbMacros.ResumeLayout(false);
+            this.gbMacroResponses.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dgMacroReponses)).EndInit();
+            this.groupBox4.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dgMacroCommands)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1175,36 +1000,6 @@ namespace FrameInterceptor
         private System.Windows.Forms.TabPage tabServer;
         private System.Windows.Forms.TabPage tabClient;
         private System.Windows.Forms.Button btnSend;
-        private System.Windows.Forms.Button btnSOH;
-        private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.CheckBox chkSend;
-        private System.Windows.Forms.Button btnSUB;
-        private System.Windows.Forms.Button btnCAN;
-        private System.Windows.Forms.Button btnETB;
-        private System.Windows.Forms.Button btnSYN;
-        private System.Windows.Forms.Button btnNAK;
-        private System.Windows.Forms.Button btnDLE;
-        private System.Windows.Forms.Button btnSI;
-        private System.Windows.Forms.Button btnSO;
-        private System.Windows.Forms.Button btnCR;
-        private System.Windows.Forms.Button btnFF;
-        private System.Windows.Forms.Button btnVT;
-        private System.Windows.Forms.Button btnLF;
-        private System.Windows.Forms.Button btnHT;
-        private System.Windows.Forms.Button btnBS;
-        private System.Windows.Forms.Button btnBEL;
-        private System.Windows.Forms.Button btnACK;
-        private System.Windows.Forms.Button btnENQ;
-        private System.Windows.Forms.Button btnEOT;
-        private System.Windows.Forms.Button btnETX;
-        private System.Windows.Forms.Button btnSTX;
-        private System.Windows.Forms.Button btnDEL;
-        private System.Windows.Forms.Button btnUS;
-        private System.Windows.Forms.Button btnRS;
-        private System.Windows.Forms.Button btnGS;
-        private System.Windows.Forms.Button btnFS;
-        private System.Windows.Forms.Button btnESC;
-        private System.Windows.Forms.Button btnEM;
         internal System.Windows.Forms.Button btnClientConnect;
         internal System.Windows.Forms.TextBox tbConnectionLog;
         private System.Windows.Forms.TextBox tbRawData;
@@ -1254,6 +1049,20 @@ namespace FrameInterceptor
         internal CustomControls.Led ldCTS;
         internal System.Windows.Forms.CheckBox chkDTR;
         internal System.Windows.Forms.CheckBox chkRTS;
+        private CustomControls.TypeAreaUC tpShortcuts;
+        private System.Windows.Forms.GroupBox gbMacros;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.GroupBox gbMacroResponses;
+        internal System.Windows.Forms.Button btnMacroAddCommand;
+        private System.Windows.Forms.DataGridView dgMacroCommands;
+        internal System.Windows.Forms.Button btnMacroRemove;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colByteData;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colStringData;
+        private System.Windows.Forms.DataGridView dgMacroReponses;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
+        internal System.Windows.Forms.Button btnMacroAddResponse;
+        internal System.Windows.Forms.Button btnRunMacro;
     }
 }
 
