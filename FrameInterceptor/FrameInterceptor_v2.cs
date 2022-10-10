@@ -316,11 +316,14 @@ namespace FrameInterceptor
         {
             if (this.btnSerialOpen.Text == "Open")
             {
-                this._serial = new SerialCommunication(this);
-                this._serial.Open();
+                if (this.icSerialPort.Count > 0)
+                {
+                    this._serial = new SerialCommunication(this);
+                    this._serial.Open();
 
-                if (this._serial.ConenctionResult == ConnectionResult.Success)
-                    this.SerialChangeStatus(false);
+                    if (this._serial.ConenctionResult == ConnectionResult.Success)
+                        this.SerialChangeStatus(false);
+                }
             }
             else
             {
