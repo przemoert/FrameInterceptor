@@ -89,15 +89,15 @@ namespace FrameInterceptor
             this.dgMacroReponses.DataSource = this._macroResponsesBinding;
 
             //TESTS
-            //this.AddMacroCommand("Test1");
-            //this.AddMacroCommand("Test2");
-            //this.AddMacroCommand("Test3");
-            //this.AddMacroCommand("Test4");
-            //this.AddMacroCommand("Test5");
-            //this.AddMacroCommand("Test6");
+            this.AddMacroCommand("Test1");
+            this.AddMacroCommand("Test2");
+            this.AddMacroCommand("Test3");
+            this.AddMacroCommand("Test4");
+            this.AddMacroCommand("Test5");
+            this.AddMacroCommand("Test6");
 
-            //byte[] t = new byte[] { 6 };
-            //this.AddMacroResponse(Encoding.UTF8.GetString(t));
+            byte[] t = new byte[] { 6 };
+            this.AddMacroResponse(Encoding.UTF8.GetString(t));
         }
 
         private void AddMacroCommand(string iCommand)
@@ -150,7 +150,7 @@ namespace FrameInterceptor
 
         internal async Task ComLog(byte[] iData, int iLength, bool isNotIncomingButOutgoing, SocketClient iSender = null)
         {
-            if (this._macroRunning && !isNotIncomingButOutgoing)
+            if (this._macroRunning && !this._macroRun.SerialSending && !isNotIncomingButOutgoing)
                 this.MacroNext(iData);
 
             if (this._silentMode)
@@ -505,22 +505,27 @@ namespace FrameInterceptor
 
             byte[] l_DataToSend = new byte[this._macroRun.NextLength];
 
-            if (this._macroRun.FirstRun)
+            if (this._macroRun.FirstRun || this._macroRun.IsAccepted(iMessage))
             {
                 this._macroRun.Next(out l_DataToSend);
                 this.Send(this.GetSender(), l_DataToSend);
             }
-            else if (this._macroRun.IsAccepted(iMessage))
-            {
-                this._macroRun.Next(out l_DataToSend);
-                this.Send(this.GetSender(), l_DataToSend);
-            }
+            //else if (this._macroRun.IsAccepted(iMessage))
+            //{
+            //    this._macroRun.Next(out l_DataToSend);
+            //    this.Send(this.GetSender(), l_DataToSend);
+            //}
 
             if (this._macroRun.Completed)
             {
                 this._macroRunning = false;
                 this._macroRun = null;
-            }                
+            }
+            else
+            {
+                if (this._macroRun.SerialSending)
+                    this.MacroNext();
+            }
         }
     }
 }

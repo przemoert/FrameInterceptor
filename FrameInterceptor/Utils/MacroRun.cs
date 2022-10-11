@@ -27,21 +27,20 @@ namespace FrameInterceptor.Utils
 
         public bool Next(out byte[] oMessage)
         {
-            if (this._completed)
-                throw new ObjectDisposedException(this.GetType().FullName);
-
             this._firstRun = false;
 
-            oMessage = this._commands[this._ptr].ByteData; 
+            oMessage = this._commands[this._ptr].ByteData;
 
             this._ptr++;
 
-            if (this._commands.Count == this._ptr + 1)
+            if (this._commands.Count == this._ptr)
             {
                 this._completed = true;
 
                 this.Dispose();
-            }
+
+                return false;
+            } 
 
             return true;
         }
@@ -80,5 +79,6 @@ namespace FrameInterceptor.Utils
         public int NextLength { get => this._commands[this._ptr].ByteData.Length; }
         public bool Completed { get => this._completed; }
         public bool FirstRun { get => this._firstRun; }
+        public bool SerialSending { get => this._responses.Count == 0; }
     }
 }
