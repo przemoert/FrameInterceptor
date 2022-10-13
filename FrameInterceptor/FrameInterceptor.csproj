@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{5DA8B7A2-DCC7-4C77-B7AE-16A0DE5CD690}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <RootNamespace>FrameInterceptor</RootNamespace>
     <AssemblyName>FrameInterceptor</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>

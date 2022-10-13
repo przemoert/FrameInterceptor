@@ -71,6 +71,7 @@ namespace FrameInterceptor.Utils
             this._ptr = 0;
             this._commands = null;
             this._responses = null;
+            this._completed = true;
 
             this._disposed = true;
         }
@@ -80,5 +81,6 @@ namespace FrameInterceptor.Utils
         public bool Completed { get => this._completed; }
         public bool FirstRun { get => this._firstRun; }
         public bool SerialSending { get => this._responses.Count == 0; }
+        public bool Disposed { get => this._disposed; }
     }
 }

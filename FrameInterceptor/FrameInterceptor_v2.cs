@@ -89,15 +89,15 @@ namespace FrameInterceptor
             this.dgMacroReponses.DataSource = this._macroResponsesBinding;
 
             //TESTS
-            this.AddMacroCommand("Test1");
-            this.AddMacroCommand("Test2");
-            this.AddMacroCommand("Test3");
-            this.AddMacroCommand("Test4");
-            this.AddMacroCommand("Test5");
-            this.AddMacroCommand("Test6");
+            //this.AddMacroCommand("Test1");
+            //this.AddMacroCommand("Test2");
+            //this.AddMacroCommand("Test3");
+            //this.AddMacroCommand("Test4");
+            //this.AddMacroCommand("Test5");
+            //this.AddMacroCommand("Test6");
 
-            byte[] t = new byte[] { 6 };
-            this.AddMacroResponse(Encoding.UTF8.GetString(t));
+            //byte[] t = new byte[] { 6 };
+            //this.AddMacroResponse(Encoding.UTF8.GetString(t));
         }
 
         private void AddMacroCommand(string iCommand)
@@ -485,6 +485,9 @@ namespace FrameInterceptor
         {
             if (this._macroCommandsBinding.Count > 0)
             {
+                if (this._macroRun != null && !this._macroRun.Disposed)
+                    this._macroRun.Dispose();
+
                 this._macroRunning = true;
 
                 this.RunMacro();
