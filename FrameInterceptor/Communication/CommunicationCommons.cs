@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Communication;
+using FrameInterceptor.Utils;
 
 namespace FrameInterceptor.Communication
 {
@@ -76,7 +77,8 @@ namespace FrameInterceptor.Communication
                 {
                     if (!String.IsNullOrEmpty(this._owningForm.tbSend.Text))
                     {
-                        byte[] l_ToSend = Encoding.UTF8.GetBytes(this._owningForm.tbSend.Text);
+                        //byte[] l_ToSend = Encoding.UTF8.GetBytes(this._owningForm.tbSend.Text);
+                        byte[] l_ToSend = Settings.Instance.Encoding.GetBytes(this._owningForm.tbSend.Text);
 
                         this.Send(l_ToSend, iClient);
                     }

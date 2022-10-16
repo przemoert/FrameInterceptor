@@ -38,6 +38,7 @@ namespace FrameInterceptor
         private BindingList<MacroCommand> _macroResponsesBinding = new BindingList<MacroCommand>();
         private bool _macroRunning;
         private MacroRun _macroRun;
+        private bool _formKeyDown = false;
 
         public FrameInterceptor_v2()
         {
@@ -46,12 +47,19 @@ namespace FrameInterceptor
             this.SetupControls();
             this.SetupMacroBindings();
 
-            this._silentMode = this.chkSilentMode.Checked;
+            Settings.Instance.CodePage = Int32.Parse(this.icEncoding.Value.ToString());
+
+            //this._globalKeys = new GlobalKeys();
+            //this._globalKeys.HookKeyboard();
+            this.KeyPreview = true;
             this._macroRunning = false;
         }
 
         private void SetupControls()
         {
+#if !DEBUG
+    this.tabSettings.TabPages.RemoveAt(4);
+#endif
             this.icServerBufferOptions.DataSource = Enum.GetValues(typeof(BufferOptions));
             this.icClientBufferOptions.DataSource = Enum.GetValues(typeof(BufferOptions));
             
@@ -72,6 +80,19 @@ namespace FrameInterceptor
 
             this.chkRTS.Enabled = false;
             this.chkDTR.Enabled = false;
+
+            this._silentMode = this.chkSilentMode.Checked;
+            this.tbSend.TranslateControlChars = this.chkTranslateSendChars.Checked;
+
+            this.SetupIcEncodingItems();
+        }
+
+        private void SetupIcEncodingItems()
+        {
+            int[] l_CodePages = { 1250, 1252, 65000, 65001, 1200, 20127 };
+
+            this.icEncoding.DataSource = l_CodePages;
+            this.icEncoding.SelectedIndex = 1;
         }
 
         private void SetUpClientsDataSource()
@@ -87,27 +108,59 @@ namespace FrameInterceptor
 
             this.dgMacroReponses.AutoGenerateColumns = false;
             this.dgMacroReponses.DataSource = this._macroResponsesBinding;
-
-            //TESTS
-            //this.AddMacroCommand("Test1");
-            //this.AddMacroCommand("Test2");
-            //this.AddMacroCommand("Test3");
-            //this.AddMacroCommand("Test4");
-            //this.AddMacroCommand("Test5");
-            //this.AddMacroCommand("Test6");
-
-            //byte[] t = new byte[] { 6 };
-            //this.AddMacroResponse(Encoding.UTF8.GetString(t));
         }
 
-        private void AddMacroCommand(string iCommand)
+        private void SaveLogs()
         {
-            this._macroCommandsBinding.Add(new MacroCommand(iCommand));
+            if (String.IsNullOrEmpty(tbUserFriendlyData.Text))
+                return;
+
+            string l_Directory = @"Logs\" + DateTime.Now.ToString("yyyyMMddHHmmss");
+
+            DFile l_FriendlyFile = new DFile(this.tbUserFriendlyData.Text);
+            l_FriendlyFile.Directory = l_Directory;
+            l_FriendlyFile.Name = "Friendly.txt";
+
+            DFile l_IncomingFile = new DFile(this.tbClearData.Text);
+            l_IncomingFile.Directory = l_Directory;
+            l_IncomingFile.Name = "ClearIncoming.txt";
+
+            DFile l_RawFile = new DFile(this.tbRawData.Text);
+            l_RawFile.Directory = l_Directory;
+            l_RawFile.Name = "Raw.txt";
+
+            l_FriendlyFile.WriteFile();
+            l_IncomingFile.WriteFile();
+            l_RawFile.WriteFile();
+
+            if (String.IsNullOrEmpty(this.tbConnectionLog.Text))
+                return;
+
+            DFile l_ConnectionLogFile = new DFile(this.tbConnectionLog.Text);
+            l_ConnectionLogFile.Directory = l_Directory;
+            l_ConnectionLogFile.Name = "ConnectionLog.txt";
+
+            l_ConnectionLogFile.WriteFile();
         }
 
-        private void AddMacroResponse(string iCommand)
+        private void AddMacroCommand()
         {
-            this._macroResponsesBinding.Add(new MacroCommand(iCommand));
+            if (!String.IsNullOrEmpty(this.tbSend.Text))
+            {
+                this._macroCommandsBinding.Add(new MacroCommand(this.tbSend.Text));
+            }
+
+            this.DeselectMacroGrids();
+        }
+
+        private void AddMacroResponse()
+        {
+            if (!String.IsNullOrEmpty(this.tbSend.Text))
+            {
+                this._macroResponsesBinding.Add(new MacroCommand(this.tbSend.Text));
+            }
+
+            this.DeselectMacroGrids();
         }
 
         private void RemoveSelectedMacro()
@@ -139,13 +192,19 @@ namespace FrameInterceptor
         internal void Log(string msg, object sender = null)
         {
             string l_Sender = String.Empty;
+            string l_Timestamp = String.Empty;
 
             if (sender is SocketClient c)
             {
                 l_Sender = c.IpAddressAndPortBuffered;
             }
 
-            this.tbConnectionLog.AppendText($"{l_Sender} {msg}".Trim() + "\r\n");
+            if (this.chkTimestamps.Checked)
+            {
+                l_Timestamp = "[" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + "]";
+            }
+
+            this.tbConnectionLog.AppendText($"{l_Timestamp} {l_Sender} {msg}".Trim() + "\r\n");
         }
 
         internal async Task ComLog(byte[] iData, int iLength, bool isNotIncomingButOutgoing, SocketClient iSender = null)
@@ -185,7 +244,8 @@ namespace FrameInterceptor
 
             msg = await Task<string>.Run(() =>
             {
-                return Encoding.UTF8.GetString(iData);
+                //return Encoding.UTF8.GetString(iData);
+                return Settings.Instance.Encoding.GetString(iData);
             });
 
             if (!isNotIncomingButOutgoing)
@@ -201,7 +261,7 @@ namespace FrameInterceptor
                 this.tbRawData.AppendText(msgBytes);
             }
 
-            this.tbUserFriendlyData.AppendText(prefix + ControlChars.ReplaceControlChars(msg) + "\r\n");
+            this.tbUserFriendlyData.AppendText("[" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture) + "] " + prefix + ControlChars.ReplaceControlChars(msg) + "\r\n");
         }
 
         private object GetSender()
@@ -235,30 +295,43 @@ namespace FrameInterceptor
                     }
                 }
             }
+            else
+            {
+                if (this._tcpServer != null)
+                {
+                    if (this._tcpServer.Clients.Count > 0)
+                    {
+                        return this._tcpServer;
+                    }
+                }
+            }
 
             return sender;
         }
 
-        private void Send(object sender, byte[] iData)
+        private void Send(byte[] iData)
         {
-            if (sender is TcpClientCommunication t)
+            object l_Sender = this.GetSender();
+
+            if (l_Sender is TcpClientCommunication t)
             {
                 t.Send(iData, t.Client);
             }
-            else if (sender is TcpServerCommunication s)
+            else if (l_Sender is TcpServerCommunication s)
             {
                 s.Send(iData, (SocketClient)this.dgClients.SelectedRows[0].Cells["colSocketClient"].Value);
             }
-            else if (sender is SerialCommunication r)
+            else if (l_Sender is SerialCommunication r)
             {
                 r.Send(iData);
             }
 
         }
 
-        private void Send(object sender, string iData)
+        private void Send(string iData)
         {
-            this.Send(sender, Encoding.UTF8.GetBytes(this.tbSend.Text));
+            //this.Send(Encoding.UTF8.GetBytes(iData));
+            this.Send(Settings.Instance.Encoding.GetBytes(iData));
         }
 
         public void SerialChangeStatus(bool IsClosing)
@@ -284,11 +357,62 @@ namespace FrameInterceptor
             }
         }
 
+        private void RunMacro()
+        {
+            this._macroRun = new MacroRun(this._macroCommandsBinding.ToList(), this._macroResponsesBinding.ToList());
+
+            this.MacroNext();
+        }
+
+        private void MacroNext(byte[] iMessage = null)
+        {
+            if (this._macroRun == null)
+                throw new ArgumentNullException();
+
+            byte[] l_DataToSend = new byte[this._macroRun.NextLength];
+
+            if (this._macroRun.FirstRun || this._macroRun.IsAccepted(iMessage))
+            {
+                this._macroRun.Next(out l_DataToSend);
+                this.Send(l_DataToSend);
+            }
+
+            if (this._macroRun.Completed)
+            {
+                this._macroRunning = false;
+                this._macroRun = null;
+            }
+            else
+            {
+                if (this._macroRun.SerialSending)
+                    this.MacroNext();
+            }
+        }
+
+        private void DeselectMacroGrids(object iSender = null)
+        {
+            DataGridView[] l_Grids = FormHelper.GetAllControls<DataGridView>(this.gbMacros);
+
+            foreach (DataGridView d in l_Grids)
+            {
+                if (!object.ReferenceEquals(d, iSender))
+                {
+                    //d.ClearSelection();
+
+                    //This is faster
+                    if (d.SelectedRows.Count > 0)
+                        d.Rows[d.SelectedRows[0].Index].Selected = false;
+                }
+            }
+        }
+
+#region Events
+
         private void btnClientSend_Click(object sender, EventArgs e)
         {
             if (!String.IsNullOrEmpty(this.tbSend.Text))
             {
-                this.Send(this.GetSender(), this.tbSend.Text);
+                this.Send(this.tbSend.Text);
 
                 if (this.chkClearSend.Checked && !this.chkAutoResponse.Checked)
                 {
@@ -303,11 +427,12 @@ namespace FrameInterceptor
 
             if (this.tpShortcuts.SendCheckboxChecked)
             {
-                this.Send(this.GetSender(), l_DataToSend);
+                this.Send(l_DataToSend);
             }
             else
             {
-                this.tbSend.AppendText(Encoding.UTF8.GetString(l_DataToSend));
+                //this.tbSend.AppendText(Encoding.UTF8.GetString(l_DataToSend));
+                this.tbSend.AppendText(Settings.Instance.Encoding.GetString(l_DataToSend));
                 this.tbSend.Focus();
             }
         }
@@ -441,21 +566,11 @@ namespace FrameInterceptor
 
         private void btnMacroAddCommand_Click(object sender, EventArgs e)
         {
-            if (!String.IsNullOrEmpty(this.tbSend.Text))
-            {
-                this.AddMacroCommand(this.tbSend.Text);
-            }
-
-            this.DeselectMacroGrids();
+            this.AddMacroCommand();
         }
         private void btnMacroAddResponse_Click(object sender, EventArgs e)
         {
-            if (!String.IsNullOrEmpty(this.tbSend.Text))
-            {
-                this.AddMacroResponse(this.tbSend.Text);
-            }
-
-            this.DeselectMacroGrids();
+                this.AddMacroResponse();
         }
 
         private void btnMacroRemove_Click(object sender, EventArgs e)
@@ -466,19 +581,6 @@ namespace FrameInterceptor
         private void MacroDataGrid_Click(object sender, EventArgs e)
         {
             this.DeselectMacroGrids(sender);
-        }
-
-        private void DeselectMacroGrids(object iSender = null)
-        {
-            DataGridView[] l_Grids = FormHelper.GetAllControls<DataGridView>(this.gbMacros);
-
-            foreach (DataGridView d in l_Grids)
-            {
-                if (!object.ReferenceEquals(d, iSender))
-                {
-                    d.ClearSelection();
-                }
-            }
         }
 
         private void btnRunMacro_Click(object sender, EventArgs e)
@@ -494,41 +596,123 @@ namespace FrameInterceptor
             }
         }
 
-        private void RunMacro()
+        private void btnMacroBottom_Click(object sender, EventArgs e)
         {
-            this._macroRun = new MacroRun(this._macroCommandsBinding.ToList(), this._macroResponsesBinding.ToList());
+            if (this.dgMacroCommands.SelectedRows.Count == 1 && this.dgMacroCommands.Rows.Count > 0)
+            {
+                int l_Index = this.dgMacroCommands.SelectedRows[0].Index;
 
-            this.MacroNext();
+                if (l_Index < this.dgMacroCommands.Rows.Count - 1)
+                {
+                    MacroCommand l_Tempt = this._macroCommandsBinding[l_Index + 1];
+
+                    this._macroCommandsBinding[l_Index + 1] = this._macroCommandsBinding[l_Index];
+                    this._macroCommandsBinding[l_Index] = l_Tempt;
+
+                    this.dgMacroCommands.Rows[l_Index + 1].Selected = true;
+                }
+            }
         }
 
-        private void MacroNext(byte[] iMessage = null)
+        private void btnMacroTop_Click(object sender, EventArgs e)
         {
-            if (this._macroRun == null)
-                throw new ArgumentNullException();
-
-            byte[] l_DataToSend = new byte[this._macroRun.NextLength];
-
-            if (this._macroRun.FirstRun || this._macroRun.IsAccepted(iMessage))
+            if (this.dgMacroCommands.SelectedRows.Count == 1 && this.dgMacroCommands.Rows.Count > 0)
             {
-                this._macroRun.Next(out l_DataToSend);
-                this.Send(this.GetSender(), l_DataToSend);
-            }
-            //else if (this._macroRun.IsAccepted(iMessage))
-            //{
-            //    this._macroRun.Next(out l_DataToSend);
-            //    this.Send(this.GetSender(), l_DataToSend);
-            //}
+                int l_Index = this.dgMacroCommands.SelectedRows[0].Index;
 
-            if (this._macroRun.Completed)
-            {
-                this._macroRunning = false;
-                this._macroRun = null;
+                if (l_Index > 0)
+                {
+                    MacroCommand l_Temp = this._macroCommandsBinding[l_Index - 1];
+
+                    this._macroCommandsBinding[l_Index - 1] = this._macroCommandsBinding[l_Index];
+                    this._macroCommandsBinding[l_Index] = l_Temp;
+
+                    this.dgMacroCommands.Rows[l_Index - 1].Selected = true;
+                }
             }
-            else
+        }
+
+        private void dgMacroCommands_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            ((DataGridView)sender).BeginEdit(true);
+        }
+
+        private void btnRefreshPorts_Click(object sender, EventArgs e)
+        {
+            string[] l_PortList = SerialCommunication.GetPortNames();
+
+            this.icSerialPort.DataSource = null;
+            this.icSerialPort.DataSource = l_PortList;
+
+            this.Log("Ports found:");
+
+            for (int i = 0; i < l_PortList.Length; i++)
             {
-                if (this._macroRun.SerialSending)
-                    this.MacroNext();
+                this.Log(l_PortList[i]);
             }
+        }
+        private void btnSaveLogs_Click(object sender, EventArgs e)
+        {
+            this.SaveLogs();
+        }
+        
+        private void chkTranslateSendChars_CheckedChanged(object sender, EventArgs e)
+        {
+            this.tbSend.TranslateControlChars = this.chkTranslateSendChars.Checked;
+        }
+
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            if (!this._formKeyDown)
+            {
+                this._formKeyDown = true;
+
+                if (e.KeyCode == Keys.F2)
+                {
+                    this.AddMacroCommand();
+                }
+                else if (e.KeyCode == Keys.F12)
+                {
+                    if (this.dgMacroCommands.Rows.Count > 0)
+                    {
+                        if (this.dgMacroCommands.SelectedRows.Count == 0)
+                            this.dgMacroCommands.Rows[0].Selected = true;
+
+                        int l_Index = this.dgMacroCommands.SelectedRows[0].Index;
+
+                        this.Send(this._macroCommandsBinding[l_Index].ByteData);
+
+                        int l_NextIndex = (l_Index + 1 == this.dgMacroCommands.Rows.Count) ? 0 : l_Index + 1;
+
+                        this.dgMacroCommands.Rows[l_NextIndex].Selected = true;
+                    }
+                }
+            }
+
+            base.OnKeyDown(e);
+        }
+
+        protected override void OnKeyUp(KeyEventArgs e)
+        {
+            this._formKeyDown = false;
+
+            base.OnKeyUp(e);
+        }
+
+        #endregion
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            string test = "tąś";
+
+            Encoding encode = Encoding.GetEncoding(1252);
+
+            byte[] t = encode.GetBytes(test);
+        }
+
+        private void icEncoding_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Settings.Instance.CodePage = Int32.Parse(this.icEncoding.Value.ToString());
         }
     }
 }

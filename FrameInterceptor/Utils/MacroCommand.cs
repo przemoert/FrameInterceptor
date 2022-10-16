@@ -17,23 +17,28 @@ namespace FrameInterceptor.Utils
             set
             {
                 this._stringData = value;
-                this._byteData = Encoding.UTF8.GetBytes(ControlChars.ReplaceControlCharsReversed(this._stringData));
+
+                //We cant access directive from here, so it has been decided to always replace when editing directly from datagrid.
+                //After all, auto-talking to medical equipement, thats what it was designed for.
+                //this._byteData = Encoding.UTF8.GetBytes(ControlChars.ReplaceControlCharsReversed(this._stringData));
+                this._byteData = Settings.Instance.Encoding.GetBytes(ControlChars.ReplaceControlCharsReversed(this._stringData));
             } 
         }
         public byte[] ByteData 
         {
             get => this._byteData;
-            set
-            {
-                this._byteData = value;
-                this._stringData = ControlChars.ReplaceControlChars(Encoding.UTF8.GetString(this._byteData));
-            } 
+            //set
+            //{
+            //    this._byteData = value;
+            //    this._stringData = ControlChars.ReplaceControlChars(Encoding.UTF8.GetString(this._byteData));
+            //} 
         }
 
         public MacroCommand(string iData)
         {
             this._stringData = ControlChars.ReplaceControlChars(iData);
-            this._byteData = Encoding.UTF8.GetBytes(ControlChars.ReplaceControlCharsReversed(this._stringData));
+            //this._byteData = Encoding.UTF8.GetBytes(iData);
+            this._byteData = Settings.Instance.Encoding.GetBytes(iData);
         }
     }
 }

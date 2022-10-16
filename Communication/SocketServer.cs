@@ -334,6 +334,7 @@ namespace Communication
             return l_client;
         }
 
+        //Deprecated. Preserved for future reference.
         public void ResetState()
         {
             //The only reason to reset ConnectionResult is to allow new clients to come. Any other scenario will result with exception.
@@ -361,7 +362,7 @@ namespace Communication
 
 
         //This method allows blocked OpenToClient method to unblock. Then OpenToClient returns null.
-        //Ones closed socket cant be used again so all closing stuff has to be handle manually.
+        //Once closed socket cant be used again so all closing stuff has to be handle manually.
         public void CloseListener()
         {
             this._closing = true;

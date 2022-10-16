@@ -190,6 +190,7 @@ namespace Communication
             if (!Validation.ValidatePort(l_Port))
                 throw new ArgumentOutOfRangeException("l_Port");
 
+
             string[] l_Parts = iIpAddress.Split('.');
 
             byte[] l_Bytes = new byte[4];
@@ -268,7 +269,7 @@ namespace Communication
 
                 return false;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
@@ -343,7 +344,6 @@ namespace Communication
             return l_Stream;
         }
 
-
         public int ReadSocket()
         {
             ConnectionResult l_ConnectionResult = 0;
@@ -359,6 +359,11 @@ namespace Communication
         {
             SocketError l_SocketError = SocketError.Fault;
             IAsyncResult l_AsyncResult = null;
+
+
+            //If this substractions result is negative (but it should not be less than 0) it means buffer is exceeded and there is no point to continue.
+            //We have no space to read anyway.
+            //Set proper result and return -1 to notify.
 
             int l_BufferSpaceAvailable = this._bufferSize - this._currentBufferSize;
 
@@ -381,11 +386,11 @@ namespace Communication
             {
                 this.ConnectionResult = ConnectionResult.HandlerDisposed;
             }
-            catch (NullReferenceException ex)
+            catch (NullReferenceException)
             {
                 //Reset. Will be translated;
             }
-            catch (ArgumentNullException ex)
+            catch (ArgumentNullException)
             {
                 //Reset. Will be translated;
             }
@@ -405,11 +410,11 @@ namespace Communication
                 if (this.ConnectionResult != ConnectionResult.HandlerDisposed)
                     this.ConnectionResult = ConnectionResult.ZeroLengthByteIgnored;
             }
-            catch (NullReferenceException ex)
+            catch (NullReferenceException)
             {
                 //Reset. Will be translated;
             }
-            catch (ArgumentNullException ex)
+            catch (ArgumentNullException)
             {
                 //Reset. Will be translated;
             }
