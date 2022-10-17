@@ -17,7 +17,7 @@ namespace Communication
         Dynamic
     }
 
-    public sealed class SocketClient : IDisposable, IDisposer
+    public sealed class SocketClient : IDisposable
     {
         private int _disposed = 0;
         private AddressFamily? _family = null;

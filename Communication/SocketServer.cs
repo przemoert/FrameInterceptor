@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Communication
 {
-    public class SocketServer : IDisposable, IDisposer
+    public class SocketServer : IDisposable
     {
         private Socket _socket;
         private List<SocketClient> _clients = new List<SocketClient>();
