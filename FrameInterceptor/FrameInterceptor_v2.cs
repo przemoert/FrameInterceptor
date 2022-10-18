@@ -58,6 +58,7 @@ namespace FrameInterceptor
         private void SetupControls()
         {
 #if !DEBUG
+    this.tabSettings.TabPages.RemoveAt(6);
     this.tabSettings.TabPages.RemoveAt(4);
 #endif
             this.icServerBufferOptions.DataSource = Enum.GetValues(typeof(BufferOptions));
@@ -83,6 +84,7 @@ namespace FrameInterceptor
 
             this._silentMode = this.chkSilentMode.Checked;
             this.tbSend.TranslateControlChars = this.chkTranslateSendChars.Checked;
+            this.tbCheckSumInput.TranslateControlChars = this.chkTranslateSendChars.Checked;
 
             this.SetupIcEncodingItems();
         }

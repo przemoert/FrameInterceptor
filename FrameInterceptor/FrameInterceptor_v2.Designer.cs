@@ -84,6 +84,7 @@ namespace FrameInterceptor
             this.ifSum8Xor = new FrameInterceptor.CustomControls.InputFiled();
             this.ifSum8Mod256 = new FrameInterceptor.CustomControls.InputFiled();
             this.tbCheckSumInput = new FrameInterceptor.CustomControls.TranslatedTextBox();
+            this.tabAstm = new System.Windows.Forms.TabPage();
             this.tbConnectionLog = new System.Windows.Forms.TextBox();
             this.btnSend = new System.Windows.Forms.Button();
             this.tbRawData = new System.Windows.Forms.TextBox();
@@ -127,7 +128,6 @@ namespace FrameInterceptor
             this.panRightLeftTop = new System.Windows.Forms.Panel();
             this.panMacro = new System.Windows.Forms.Panel();
             this.panLeftFill = new System.Windows.Forms.Panel();
-            this.tabAstm = new System.Windows.Forms.TabPage();
             this.tabSettings.SuspendLayout();
             this.tabSerial.SuspendLayout();
             this.groupBox6.SuspendLayout();
@@ -749,7 +749,7 @@ namespace FrameInterceptor
             this.tabChecksum.Padding = new System.Windows.Forms.Padding(3);
             this.tabChecksum.Size = new System.Drawing.Size(480, 96);
             this.tabChecksum.TabIndex = 5;
-            this.tabChecksum.Text = "checkSum";
+            this.tabChecksum.Text = "Checksum";
             // 
             // ifSum2sComp
             // 
@@ -797,6 +797,17 @@ namespace FrameInterceptor
             this.tbCheckSumInput.TabIndex = 0;
             this.tbCheckSumInput.TranslateControlChars = false;
             this.tbCheckSumInput.TextChanged += new System.EventHandler(this.tbCheckSumInput_TextChanged);
+            // 
+            // tabAstm
+            // 
+            this.tabAstm.AutoScroll = true;
+            this.tabAstm.BackColor = System.Drawing.SystemColors.Control;
+            this.tabAstm.Location = new System.Drawing.Point(4, 22);
+            this.tabAstm.Name = "tabAstm";
+            this.tabAstm.Padding = new System.Windows.Forms.Padding(3);
+            this.tabAstm.Size = new System.Drawing.Size(480, 96);
+            this.tabAstm.TabIndex = 6;
+            this.tabAstm.Text = "ASTM Tools";
             // 
             // tbConnectionLog
             // 
@@ -1355,17 +1366,6 @@ namespace FrameInterceptor
             this.panLeftFill.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
             this.panLeftFill.Size = new System.Drawing.Size(482, 436);
             this.panLeftFill.TabIndex = 37;
-            // 
-            // tabAstm
-            // 
-            this.tabAstm.AutoScroll = true;
-            this.tabAstm.BackColor = System.Drawing.SystemColors.Control;
-            this.tabAstm.Location = new System.Drawing.Point(4, 22);
-            this.tabAstm.Name = "tabAstm";
-            this.tabAstm.Padding = new System.Windows.Forms.Padding(3);
-            this.tabAstm.Size = new System.Drawing.Size(480, 96);
-            this.tabAstm.TabIndex = 6;
-            this.tabAstm.Text = "ASTM Tools";
             // 
             // FrameInterceptor_v2
             // 
