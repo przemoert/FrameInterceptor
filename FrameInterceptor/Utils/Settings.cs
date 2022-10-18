@@ -9,6 +9,7 @@ namespace FrameInterceptor.Utils
     public sealed class Settings
     {
         private static Settings _instance;
+        private static object _syncRoot = new object();
 
         private Settings()
         {
@@ -19,8 +20,15 @@ namespace FrameInterceptor.Utils
         {
             get
             {
+                //Locking is heavy. This way we wont lock when singleton was already created, since we only need to lock when first instatiating.
                 if (_instance == null)
-                    _instance = new Settings();
+                {
+                    lock(_syncRoot)
+                    {
+                        if (_instance == null)
+                            _instance = new Settings();
+                    }
+                }
 
                 return _instance;
             }

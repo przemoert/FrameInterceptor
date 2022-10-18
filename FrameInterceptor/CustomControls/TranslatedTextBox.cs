@@ -27,5 +27,19 @@ namespace FrameInterceptor.CustomControls
                 base.OnTextChanged(EventArgs.Empty);
             }
         }
+
+        protected override void WndProc(ref Message m)
+        {
+            //We have to override paste event, because of textbox ignores some special characters. Not sure about CodePage - needs tests.
+            if (m.Msg == 0x302 && Clipboard.ContainsText())
+            {
+                byte[] test = Encoding.UTF8.GetBytes(Clipboard.GetText());
+
+                this.SelectedText = Clipboard.GetText();
+                return;
+            }
+
+            base.WndProc(ref m);
+        }
     }
 }

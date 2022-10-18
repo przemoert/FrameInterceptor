@@ -43,7 +43,6 @@
   <ItemGroup>
     <Compile Include="ErrorHandler.cs" />
     <Compile Include="SocketServer.cs" />
-    <Compile Include="EndPointDevice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SocketClient.cs" />
     <Compile Include="Validation.cs" />

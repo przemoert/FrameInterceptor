@@ -22,6 +22,11 @@ namespace FrameInterceptor.CustomControls
 
         public string Title { get => this.groupBox1.Text; set => this.groupBox1.Text = value; }
 
+        public new bool Enabled { get => this.textBox1.Enabled; set => this.textBox1.Enabled = value; }
+        public new Color BackColor { get => this.textBox1.BackColor; set => this.textBox1.BackColor = value; }
+        public bool ReadOnly { get => this.textBox1.ReadOnly; set => this.textBox1.ReadOnly = value; }
+        public HorizontalAlignment TextAlign { get => this.textBox1.TextAlign; set => this.textBox1.TextAlign = value; }
+
         public InputFiled()
         {
             InitializeComponent();

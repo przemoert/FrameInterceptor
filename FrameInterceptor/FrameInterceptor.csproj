@@ -67,6 +67,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Astm\AstmFrame.cs" />
     <Compile Include="Communication\CommunicationCommons.cs" />
     <Compile Include="Communication\ControlChars.cs" />
     <Compile Include="Communication\SerialCommunication.cs" />
@@ -105,6 +106,7 @@
     <Compile Include="FrameInterceptor_v2.Designer.cs">
       <DependentUpon>FrameInterceptor_v2.cs</DependentUpon>
     </Compile>
+    <Compile Include="Frames\Frame.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\Checksum.cs" />

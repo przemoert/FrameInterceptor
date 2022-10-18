@@ -714,5 +714,17 @@ namespace FrameInterceptor
         {
             Settings.Instance.CodePage = Int32.Parse(this.icEncoding.Value.ToString());
         }
+
+        private void tbCheckSumInput_TextChanged(object sender, EventArgs e)
+        {
+            //if (String.IsNullOrEmpty(this.tbCheckSumInput.Text))
+            //    return;
+
+            Checksum l_CheckSum = new Checksum(this.tbCheckSumInput.Text);
+
+            this.ifSum8Mod256.Text = l_CheckSum.CheckSum8Mod256_Hex;
+            this.ifSum8Xor.Text = l_CheckSum.CheckSum8Xor_Hex;
+            this.ifSum2sComp.Text = l_CheckSum.CheckSum2sComp_Hex;
+        }
     }
 }

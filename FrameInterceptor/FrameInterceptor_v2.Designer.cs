@@ -77,7 +77,13 @@ namespace FrameInterceptor
             this.btnClearLogs = new System.Windows.Forms.Button();
             this.chkSilentMode = new System.Windows.Forms.CheckBox();
             this.tabTests = new System.Windows.Forms.TabPage();
+            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.button1 = new System.Windows.Forms.Button();
+            this.tabChecksum = new System.Windows.Forms.TabPage();
+            this.ifSum2sComp = new FrameInterceptor.CustomControls.InputFiled();
+            this.ifSum8Xor = new FrameInterceptor.CustomControls.InputFiled();
+            this.ifSum8Mod256 = new FrameInterceptor.CustomControls.InputFiled();
+            this.tbCheckSumInput = new FrameInterceptor.CustomControls.TranslatedTextBox();
             this.tbConnectionLog = new System.Windows.Forms.TextBox();
             this.btnSend = new System.Windows.Forms.Button();
             this.tbRawData = new System.Windows.Forms.TextBox();
@@ -121,6 +127,7 @@ namespace FrameInterceptor
             this.panRightLeftTop = new System.Windows.Forms.Panel();
             this.panMacro = new System.Windows.Forms.Panel();
             this.panLeftFill = new System.Windows.Forms.Panel();
+            this.tabAstm = new System.Windows.Forms.TabPage();
             this.tabSettings.SuspendLayout();
             this.tabSerial.SuspendLayout();
             this.groupBox6.SuspendLayout();
@@ -128,6 +135,7 @@ namespace FrameInterceptor
             this.tabClient.SuspendLayout();
             this.tabSettingsTab.SuspendLayout();
             this.tabTests.SuspendLayout();
+            this.tabChecksum.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -158,6 +166,8 @@ namespace FrameInterceptor
             this.tabSettings.Controls.Add(this.tabClient);
             this.tabSettings.Controls.Add(this.tabSettingsTab);
             this.tabSettings.Controls.Add(this.tabTests);
+            this.tabSettings.Controls.Add(this.tabChecksum);
+            this.tabSettings.Controls.Add(this.tabAstm);
             this.tabSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabSettings.Location = new System.Drawing.Point(0, 0);
             this.tabSettings.Margin = new System.Windows.Forms.Padding(2);
@@ -439,9 +449,11 @@ namespace FrameInterceptor
             this.ifServerBufferSize.MaximumSize = new System.Drawing.Size(500, 37);
             this.ifServerBufferSize.MinimumSize = new System.Drawing.Size(20, 37);
             this.ifServerBufferSize.Name = "ifServerBufferSize";
+            this.ifServerBufferSize.ReadOnly = false;
             this.ifServerBufferSize.Size = new System.Drawing.Size(73, 37);
             this.ifServerBufferSize.TabIndex = 15;
             this.ifServerBufferSize.Text = "4096";
+            this.ifServerBufferSize.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.ifServerBufferSize.Title = "Buffer Size";
             // 
             // ifServerBacklog
@@ -451,9 +463,11 @@ namespace FrameInterceptor
             this.ifServerBacklog.MaximumSize = new System.Drawing.Size(500, 37);
             this.ifServerBacklog.MinimumSize = new System.Drawing.Size(20, 37);
             this.ifServerBacklog.Name = "ifServerBacklog";
+            this.ifServerBacklog.ReadOnly = false;
             this.ifServerBacklog.Size = new System.Drawing.Size(83, 37);
             this.ifServerBacklog.TabIndex = 14;
             this.ifServerBacklog.Text = "1";
+            this.ifServerBacklog.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.ifServerBacklog.Title = "Backlog";
             // 
             // ifServerMaxClients
@@ -463,9 +477,11 @@ namespace FrameInterceptor
             this.ifServerMaxClients.MaximumSize = new System.Drawing.Size(500, 37);
             this.ifServerMaxClients.MinimumSize = new System.Drawing.Size(20, 37);
             this.ifServerMaxClients.Name = "ifServerMaxClients";
+            this.ifServerMaxClients.ReadOnly = false;
             this.ifServerMaxClients.Size = new System.Drawing.Size(102, 37);
             this.ifServerMaxClients.TabIndex = 13;
             this.ifServerMaxClients.Text = "10";
+            this.ifServerMaxClients.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.ifServerMaxClients.Title = "Max Connections";
             // 
             // ifServerPort
@@ -475,9 +491,11 @@ namespace FrameInterceptor
             this.ifServerPort.MaximumSize = new System.Drawing.Size(500, 37);
             this.ifServerPort.MinimumSize = new System.Drawing.Size(20, 37);
             this.ifServerPort.Name = "ifServerPort";
+            this.ifServerPort.ReadOnly = false;
             this.ifServerPort.Size = new System.Drawing.Size(64, 37);
             this.ifServerPort.TabIndex = 12;
             this.ifServerPort.Text = "4545";
+            this.ifServerPort.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.ifServerPort.Title = "Port";
             // 
             // ifServerIp
@@ -487,9 +505,11 @@ namespace FrameInterceptor
             this.ifServerIp.MaximumSize = new System.Drawing.Size(500, 37);
             this.ifServerIp.MinimumSize = new System.Drawing.Size(20, 37);
             this.ifServerIp.Name = "ifServerIp";
+            this.ifServerIp.ReadOnly = false;
             this.ifServerIp.Size = new System.Drawing.Size(86, 37);
             this.ifServerIp.TabIndex = 11;
             this.ifServerIp.Text = "192.168.2.2";
+            this.ifServerIp.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.ifServerIp.Title = "IP";
             // 
             // btnServerOpen
@@ -527,9 +547,11 @@ namespace FrameInterceptor
             this.ifClientTimeout.MaximumSize = new System.Drawing.Size(500, 37);
             this.ifClientTimeout.MinimumSize = new System.Drawing.Size(20, 37);
             this.ifClientTimeout.Name = "ifClientTimeout";
+            this.ifClientTimeout.ReadOnly = false;
             this.ifClientTimeout.Size = new System.Drawing.Size(83, 37);
             this.ifClientTimeout.TabIndex = 18;
             this.ifClientTimeout.Text = "5000";
+            this.ifClientTimeout.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.ifClientTimeout.Title = "Timeout";
             // 
             // icClientBufferOptions
@@ -552,9 +574,11 @@ namespace FrameInterceptor
             this.ifClientBufferSize.MaximumSize = new System.Drawing.Size(500, 37);
             this.ifClientBufferSize.MinimumSize = new System.Drawing.Size(20, 37);
             this.ifClientBufferSize.Name = "ifClientBufferSize";
+            this.ifClientBufferSize.ReadOnly = false;
             this.ifClientBufferSize.Size = new System.Drawing.Size(73, 37);
             this.ifClientBufferSize.TabIndex = 16;
             this.ifClientBufferSize.Text = "4096";
+            this.ifClientBufferSize.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.ifClientBufferSize.Title = "Buffer Size";
             // 
             // ifClientPort
@@ -564,9 +588,11 @@ namespace FrameInterceptor
             this.ifClientPort.MaximumSize = new System.Drawing.Size(500, 37);
             this.ifClientPort.MinimumSize = new System.Drawing.Size(20, 37);
             this.ifClientPort.Name = "ifClientPort";
+            this.ifClientPort.ReadOnly = false;
             this.ifClientPort.Size = new System.Drawing.Size(64, 37);
             this.ifClientPort.TabIndex = 13;
             this.ifClientPort.Text = "4545";
+            this.ifClientPort.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.ifClientPort.Title = "Port";
             // 
             // ifClientIp
@@ -576,9 +602,11 @@ namespace FrameInterceptor
             this.ifClientIp.MaximumSize = new System.Drawing.Size(500, 37);
             this.ifClientIp.MinimumSize = new System.Drawing.Size(20, 37);
             this.ifClientIp.Name = "ifClientIp";
+            this.ifClientIp.ReadOnly = false;
             this.ifClientIp.Size = new System.Drawing.Size(86, 37);
             this.ifClientIp.TabIndex = 12;
             this.ifClientIp.Text = "172.29.92.30";
+            this.ifClientIp.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.ifClientIp.Title = "IP";
             // 
             // btnClientConnect
@@ -681,6 +709,7 @@ namespace FrameInterceptor
             // tabTests
             // 
             this.tabTests.BackColor = System.Drawing.SystemColors.Control;
+            this.tabTests.Controls.Add(this.richTextBox1);
             this.tabTests.Controls.Add(this.button1);
             this.tabTests.Location = new System.Drawing.Point(4, 22);
             this.tabTests.Name = "tabTests";
@@ -688,6 +717,14 @@ namespace FrameInterceptor
             this.tabTests.Size = new System.Drawing.Size(480, 96);
             this.tabTests.TabIndex = 4;
             this.tabTests.Text = "Tests";
+            // 
+            // richTextBox1
+            // 
+            this.richTextBox1.Location = new System.Drawing.Point(24, 29);
+            this.richTextBox1.Name = "richTextBox1";
+            this.richTextBox1.Size = new System.Drawing.Size(259, 21);
+            this.richTextBox1.TabIndex = 1;
+            this.richTextBox1.Text = "";
             // 
             // button1
             // 
@@ -699,6 +736,67 @@ namespace FrameInterceptor
             this.button1.Text = "button1";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // tabChecksum
+            // 
+            this.tabChecksum.BackColor = System.Drawing.SystemColors.Control;
+            this.tabChecksum.Controls.Add(this.ifSum2sComp);
+            this.tabChecksum.Controls.Add(this.ifSum8Xor);
+            this.tabChecksum.Controls.Add(this.ifSum8Mod256);
+            this.tabChecksum.Controls.Add(this.tbCheckSumInput);
+            this.tabChecksum.Location = new System.Drawing.Point(4, 22);
+            this.tabChecksum.Name = "tabChecksum";
+            this.tabChecksum.Padding = new System.Windows.Forms.Padding(3);
+            this.tabChecksum.Size = new System.Drawing.Size(480, 96);
+            this.tabChecksum.TabIndex = 5;
+            this.tabChecksum.Text = "checkSum";
+            // 
+            // ifSum2sComp
+            // 
+            this.ifSum2sComp.Location = new System.Drawing.Point(178, 31);
+            this.ifSum2sComp.MaximumSize = new System.Drawing.Size(500, 37);
+            this.ifSum2sComp.MinimumSize = new System.Drawing.Size(20, 37);
+            this.ifSum2sComp.Name = "ifSum2sComp";
+            this.ifSum2sComp.ReadOnly = true;
+            this.ifSum2sComp.Size = new System.Drawing.Size(80, 37);
+            this.ifSum2sComp.TabIndex = 3;
+            this.ifSum2sComp.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.ifSum2sComp.Title = "2s Comp";
+            // 
+            // ifSum8Xor
+            // 
+            this.ifSum8Xor.Location = new System.Drawing.Point(92, 31);
+            this.ifSum8Xor.MaximumSize = new System.Drawing.Size(500, 37);
+            this.ifSum8Xor.MinimumSize = new System.Drawing.Size(20, 37);
+            this.ifSum8Xor.Name = "ifSum8Xor";
+            this.ifSum8Xor.ReadOnly = true;
+            this.ifSum8Xor.Size = new System.Drawing.Size(80, 37);
+            this.ifSum8Xor.TabIndex = 2;
+            this.ifSum8Xor.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.ifSum8Xor.Title = "Sum8 Xor";
+            // 
+            // ifSum8Mod256
+            // 
+            this.ifSum8Mod256.Location = new System.Drawing.Point(6, 31);
+            this.ifSum8Mod256.MaximumSize = new System.Drawing.Size(500, 37);
+            this.ifSum8Mod256.MinimumSize = new System.Drawing.Size(20, 37);
+            this.ifSum8Mod256.Name = "ifSum8Mod256";
+            this.ifSum8Mod256.ReadOnly = true;
+            this.ifSum8Mod256.Size = new System.Drawing.Size(80, 37);
+            this.ifSum8Mod256.TabIndex = 1;
+            this.ifSum8Mod256.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.ifSum8Mod256.Title = "Sum8 Mod256";
+            // 
+            // tbCheckSumInput
+            // 
+            this.tbCheckSumInput.AcceptsReturn = true;
+            this.tbCheckSumInput.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F);
+            this.tbCheckSumInput.Location = new System.Drawing.Point(6, 7);
+            this.tbCheckSumInput.Name = "tbCheckSumInput";
+            this.tbCheckSumInput.Size = new System.Drawing.Size(468, 17);
+            this.tbCheckSumInput.TabIndex = 0;
+            this.tbCheckSumInput.TranslateControlChars = false;
+            this.tbCheckSumInput.TextChanged += new System.EventHandler(this.tbCheckSumInput_TextChanged);
             // 
             // tbConnectionLog
             // 
@@ -1188,6 +1286,7 @@ namespace FrameInterceptor
             // 
             // tbSend
             // 
+            this.tbSend.AcceptsReturn = true;
             this.tbSend.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F);
             this.tbSend.Location = new System.Drawing.Point(0, 1);
             this.tbSend.Name = "tbSend";
@@ -1257,6 +1356,17 @@ namespace FrameInterceptor
             this.panLeftFill.Size = new System.Drawing.Size(482, 436);
             this.panLeftFill.TabIndex = 37;
             // 
+            // tabAstm
+            // 
+            this.tabAstm.AutoScroll = true;
+            this.tabAstm.BackColor = System.Drawing.SystemColors.Control;
+            this.tabAstm.Location = new System.Drawing.Point(4, 22);
+            this.tabAstm.Name = "tabAstm";
+            this.tabAstm.Padding = new System.Windows.Forms.Padding(3);
+            this.tabAstm.Size = new System.Drawing.Size(480, 96);
+            this.tabAstm.TabIndex = 6;
+            this.tabAstm.Text = "ASTM Tools";
+            // 
             // FrameInterceptor_v2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1276,6 +1386,8 @@ namespace FrameInterceptor
             this.tabClient.ResumeLayout(false);
             this.tabSettingsTab.ResumeLayout(false);
             this.tabTests.ResumeLayout(false);
+            this.tabChecksum.ResumeLayout(false);
+            this.tabChecksum.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.groupBox2.ResumeLayout(false);
@@ -1396,6 +1508,13 @@ namespace FrameInterceptor
         internal System.Windows.Forms.CheckBox chkTranslateSendChars;
         internal CustomControls.TranslatedTextBox tbSend;
         internal CustomControls.InputCombo icEncoding;
+        private System.Windows.Forms.TabPage tabChecksum;
+        private CustomControls.TranslatedTextBox tbCheckSumInput;
+        private CustomControls.InputFiled ifSum8Xor;
+        private CustomControls.InputFiled ifSum8Mod256;
+        private System.Windows.Forms.RichTextBox richTextBox1;
+        private CustomControls.InputFiled ifSum2sComp;
+        private System.Windows.Forms.TabPage tabAstm;
     }
 }
 
