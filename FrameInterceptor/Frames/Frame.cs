@@ -10,11 +10,16 @@ namespace FrameInterceptor.Frames
     public class Frame
     {
         private byte[] _content;
-
+        private List<FrameChar> _charsDefinition;
         
         public Frame(byte[] iFrame)
         {
             this._content = iFrame;
+        }
+
+        public void AddCharDefinition(FrameChar iChar)
+        {
+            this._charsDefinition.Add(iChar);
         }
 
         public byte[] Bytes { get => this._content; }

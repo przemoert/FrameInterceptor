@@ -13,6 +13,7 @@ using System.Windows.Forms;
 using Communication;
 using FrameInterceptor.Communication;
 using FrameInterceptor.CustomControls;
+using FrameInterceptor.Frames;
 using FrameInterceptor.Utils;
 
 
@@ -701,17 +702,6 @@ namespace FrameInterceptor
             base.OnKeyUp(e);
         }
 
-        #endregion
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            string test = "tąś";
-
-            Encoding encode = Encoding.GetEncoding(1252);
-
-            byte[] t = encode.GetBytes(test);
-        }
-
         private void icEncoding_SelectedIndexChanged(object sender, EventArgs e)
         {
             Settings.Instance.CodePage = Int32.Parse(this.icEncoding.Value.ToString());
@@ -727,6 +717,20 @@ namespace FrameInterceptor
             this.ifSum8Mod256.Text = l_CheckSum.CheckSum8Mod256_Hex;
             this.ifSum8Xor.Text = l_CheckSum.CheckSum8Xor_Hex;
             this.ifSum2sComp.Text = l_CheckSum.CheckSum2sComp_Hex;
+        }
+
+        #endregion
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Frame frame = "1TestTestTest" + (char)10;
+
+            FrameChar frameChar = new FrameChar(-1, 10);
+
+            if (frame == frameChar)
+            {
+
+            }
         }
     }
 }
