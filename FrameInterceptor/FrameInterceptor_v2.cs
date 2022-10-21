@@ -723,14 +723,21 @@ namespace FrameInterceptor
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Frame frame = "1TestTestTest" + (char)10;
+            String frame = @"H|^\&|TestPart|^^SubFiled1^|Field1|SubField2^|Costam|ICostam";
 
-            FrameChar frameChar = new FrameChar(-1, 10);
+            Node node = new Node(frame, new char[] { '|', '^' });
 
-            if (frame == frameChar)
+            Node l_Node = node;
+
+            do
             {
+                l_Node = l_Node.Next;
+            } while (l_Node != null);
 
-            }
+            //node.OneByOne(c => 
+            //{
+            //    c.Value = c.Value?.ToUpper();
+            //});
         }
     }
 }
