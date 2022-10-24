@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Communication;
@@ -16,6 +17,7 @@ namespace FrameInterceptor.Communication
         private string _remotePort;
         private int _timeout;
         private int _bufferSize;
+        private int _disposed = 0;
         private BufferOptions _bufferExceededOption;
 
         public TcpClientCommunication(FrameInterceptor_v2 iOwner, string iIpAddress, string iPort, string iBufferSize, string iTimeout) : base(iOwner)
@@ -43,6 +45,8 @@ namespace FrameInterceptor.Communication
         {
             bool l_result = false;
 
+
+            //Need to think about removing this try catch black. It may no longer needed.
             try
             {
                 this._owningForm.btnClientConnect.Enabled = false;
@@ -52,16 +56,19 @@ namespace FrameInterceptor.Communication
                     return this._socketClient.Connect(this._remoteAddress, this._remotePort);
                 });
             }
-            catch (ArgumentNullException)
+            catch (ArgumentOutOfRangeException)
             {
                 this._owningForm.btnClientConnect.Enabled = true;
 
-                return;
+                //return;
             }
 
             if (!l_result)
             {
-                this._owningForm.ResultLog(this._socketClient.ConnectionResult);
+                this._socketClient.Dispose();
+                await this.Close();
+
+                this._owningForm.ResultLog(this._socketClient.ConnectionResult, this);
                 this._owningForm.btnClientConnect.Enabled = true;
 
                 return;
@@ -69,13 +76,16 @@ namespace FrameInterceptor.Communication
 
             if (!this.Connected)
             {
-                this._owningForm.ResultLog(this._socketClient.ConnectionResult);
+                this._socketClient.Dispose();
+                await this.Close();
+
+                this._owningForm.ResultLog(this._socketClient.ConnectionResult, this);
                 this._owningForm.btnClientConnect.Enabled = true;
 
                 return;
             }
 
-            this._owningForm.Log($"Connected to {this.Client.IPAddress.ToString()}:{this.Client.Port}");
+            this._owningForm.Log($"{this.Client.IPAddress.ToString()}:{this.Client.Port} <- {this.Client.SelfIPAddress.ToString()}:{this.Client.SelfPort}", this);
 
             this._owningForm.btnClientConnect.Enabled = true;
             this._owningForm.btnClientConnect.Text = "Disconnect";
@@ -88,10 +98,29 @@ namespace FrameInterceptor.Communication
             if (this.Connected)
                 await this._socketClient.Close();
 
+            if (!this.Disposed)
+                this.Dispose();
+
             this._owningForm.btnClientConnect.Text = "Connect";
         }
 
+        public void Dispose()
+        {
+            if (this.Disposed)
+                throw new ObjectDisposedException(this.GetType().FullName);
+
+            if (Interlocked.CompareExchange(ref this._disposed, 1, 0) == 0)
+            {
+                //base.RemoveHandler();
+
+                if (this._socketClient != null && !this._socketClient.Disposed)
+                    this._socketClient.Dispose();
+            }
+        }
+
         public SocketClient Client { get => this._socketClient; }
+        public ConnectionResult ConnectionResult { get => this._socketClient.ConnectionResult; }
         public bool Connected { get => this._socketClient.Connected; }
+        public bool Disposed { get => this._disposed != 0; }
     }
 }

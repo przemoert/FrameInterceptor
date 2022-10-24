@@ -107,7 +107,7 @@ namespace FrameInterceptor.Communication
 
             if (this._conenctionResult != ConnectionResult.Success)
             {
-                this._owningForm.ResultLog(this._conenctionResult);
+                this._owningForm.ResultLog(this._conenctionResult, this);
 
                 return;
             }
@@ -132,11 +132,11 @@ namespace FrameInterceptor.Communication
             {
                 if (this._closing)
                 {
-                    this._owningForm.ResultLog(ConnectionResult.SerialClosed);
+                    this._owningForm.ResultLog(ConnectionResult.SerialClosed, this);
                 }
                 else
                 {
-                    this._owningForm.ResultLog(ConnectionResult.SerialIOInterrupted);
+                    this._owningForm.ResultLog(ConnectionResult.SerialIOInterrupted, this);
                 }
 
                 this._owningForm.SerialChangeStatus(true);

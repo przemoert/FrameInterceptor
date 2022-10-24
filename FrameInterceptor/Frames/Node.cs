@@ -16,9 +16,13 @@ namespace FrameInterceptor.Frames
         private Node _parent;
         private Node _current;
         private Node _root;
+        private NodeCoordinates _coods;
 
 
-        public Node() { }
+        public Node() 
+        {
+            this._root = this;
+        }
 
         public Node(string iData, char[] separators, Node iParent = null ,int iLevel = 0, int sIndex = 0)
         {
@@ -35,6 +39,7 @@ namespace FrameInterceptor.Frames
             this._parent = iParent;
             string[] parts = new string[] { iData };
             this._current = this;
+            this._coods = this.SetCoordinates(this);
 
             int tmpIndex = sIndex;
 
@@ -134,6 +139,27 @@ namespace FrameInterceptor.Frames
 
         #region Private Members
 
+        private NodeCoordinates SetCoordinates(Node node)
+        {
+            int[] l_Coords = new int[node.Level];
+
+            Node l_Node = node;
+
+            while (l_Node != node.Root)
+            {
+                int l_Index = 0;
+
+                if (l_Node.Parent != null && l_Node.Parent.HasChildren)
+                    l_Index = l_Node.Parent.LastChild.Index + 1;
+
+                l_Coords[l_Node.Level - 1] = l_Index;
+
+                l_Node = l_Node.Parent;
+            }
+
+            return new NodeCoordinates(l_Coords);
+        }
+
         private Node NextSiblingInternal()
         {
             Node l_Node = (this._parent == null) ? this._root : this._parent;
@@ -172,16 +198,18 @@ namespace FrameInterceptor.Frames
 
             if (l_Node.IsLastChild && !l_Node.HasChildren)
             {
-                if (l_Node.Parent.NextSibling != null)
-                    return l_Node.Parent.NextSibling;
+                Node l_Iterator = l_Node;
 
-                if (l_Node.Parent.NextSibling == null)
+                while (l_Node.Parent.NextSibling == null)
                 {
                     if (l_Node.Parent.IsRoot)
                         return null;
 
-                    return l_Node.Parent;
+                    l_Node = l_Node.Parent;
                 }
+
+                if (l_Node.Parent.NextSibling != null)
+                    return l_Node.Parent.NextSibling;
             }
 
             if (l_Node.HasChildren)
@@ -213,6 +241,7 @@ namespace FrameInterceptor.Frames
         public int Level { get => this._level; }
         public string Value { get => this._value; set => this._value = value; }
         public List<Node> Nodes { get => this._nodes; }
+        public List<Node> Children => Nodes;
         public int Length { get => this._nodes.Count; }
         public Node Parent { get => this._parent; }
         public Node Root { get => this._root; }
@@ -223,6 +252,8 @@ namespace FrameInterceptor.Frames
         public Node FirstChild { get => (this._nodes.Count > 0) ? this._nodes.First() : null; }
         public Node LastChild { get => (this._nodes.Count > 0) ? this._nodes.Last() : null; }
         public Node Next { get => this.NextInternal(); }
+        public NodeCoordinates Coordinates { get => this._coods; }
+        public NodeCoordinates Coords => Coordinates;
         public bool HasChildren { get => this._nodes.Count > 0; }
         public bool IsFirstChild { get => (this.Parent != null && object.ReferenceEquals(this, this.Parent.FirstChild)); }
         public bool IsLastChild { get => (this.Parent != null && object.ReferenceEquals(this, this.Parent.LastChild)); }
@@ -284,19 +315,6 @@ namespace FrameInterceptor.Frames
         public static implicit operator NodeCoordinates(int[] n)
         {
             return new NodeCoordinates(n);
-        }
-    }
-
-    public static class NodeExtensions
-    {
-        public static Node OneByOne(this Node iNode, Action<Node> lambda)
-        {
-            foreach (Node n in iNode.Nodes)
-            {
-                lambda(n);
-            }
-
-            return iNode;
         }
     }
 }

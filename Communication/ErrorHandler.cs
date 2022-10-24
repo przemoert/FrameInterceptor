@@ -36,7 +36,10 @@ namespace Communication
         SerialAccessDenied = 1021,
         SerialIOInterrupted = 1022,
         SerialClosed = 2023,
-        SerialNotExists = 2024
+        SerialNotExists = 2024,
+        HostnameUnresolved = 2025,
+        TcpPortOutOfRange = 2026,
+        IPAddressOutOfRange = 2027,
     }
 
 
@@ -177,7 +180,7 @@ namespace Communication
                     l_Reuslt = ConnectionResult.Unhandled;
                     break;
                 case SocketError.HostNotFound:
-                    l_Reuslt = ConnectionResult.Unhandled;
+                    l_Reuslt = ConnectionResult.HostnameUnresolved;
                     break;
                 case SocketError.TryAgain:
                     l_Reuslt = ConnectionResult.Unhandled;

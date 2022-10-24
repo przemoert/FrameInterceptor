@@ -455,6 +455,8 @@ namespace FrameInterceptor
             this.ifServerBufferSize.Text = "4096";
             this.ifServerBufferSize.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.ifServerBufferSize.Title = "Buffer Size";
+            this.ifServerBufferSize.ValidationType = FrameInterceptor.CustomControls.InputFiled.ValidationMode.Numeric;
+            this.ifServerBufferSize.TextHasChanged += new System.EventHandler(this.ValidateControlsInputsOnTextChange);
             // 
             // ifServerBacklog
             // 
@@ -469,6 +471,8 @@ namespace FrameInterceptor
             this.ifServerBacklog.Text = "1";
             this.ifServerBacklog.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.ifServerBacklog.Title = "Backlog";
+            this.ifServerBacklog.ValidationType = FrameInterceptor.CustomControls.InputFiled.ValidationMode.Numeric;
+            this.ifServerBacklog.TextHasChanged += new System.EventHandler(this.ValidateControlsInputsOnTextChange);
             // 
             // ifServerMaxClients
             // 
@@ -483,6 +487,8 @@ namespace FrameInterceptor
             this.ifServerMaxClients.Text = "10";
             this.ifServerMaxClients.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.ifServerMaxClients.Title = "Max Connections";
+            this.ifServerMaxClients.ValidationType = FrameInterceptor.CustomControls.InputFiled.ValidationMode.Numeric;
+            this.ifServerMaxClients.TextHasChanged += new System.EventHandler(this.ValidateControlsInputsOnTextChange);
             // 
             // ifServerPort
             // 
@@ -497,6 +503,8 @@ namespace FrameInterceptor
             this.ifServerPort.Text = "4545";
             this.ifServerPort.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.ifServerPort.Title = "Port";
+            this.ifServerPort.ValidationType = FrameInterceptor.CustomControls.InputFiled.ValidationMode.TcpPort;
+            this.ifServerPort.TextHasChanged += new System.EventHandler(this.ValidateControlsInputsOnTextChange);
             // 
             // ifServerIp
             // 
@@ -511,6 +519,8 @@ namespace FrameInterceptor
             this.ifServerIp.Text = "192.168.2.2";
             this.ifServerIp.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.ifServerIp.Title = "IP";
+            this.ifServerIp.ValidationType = FrameInterceptor.CustomControls.InputFiled.ValidationMode.IPAddress;
+            this.ifServerIp.TextHasChanged += new System.EventHandler(this.ValidateControlsInputsOnTextChange);
             // 
             // btnServerOpen
             // 
@@ -553,6 +563,8 @@ namespace FrameInterceptor
             this.ifClientTimeout.Text = "5000";
             this.ifClientTimeout.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.ifClientTimeout.Title = "Timeout";
+            this.ifClientTimeout.ValidationType = FrameInterceptor.CustomControls.InputFiled.ValidationMode.Numeric;
+            this.ifClientTimeout.TextHasChanged += new System.EventHandler(this.ValidateControlsInputsOnTextChange);
             // 
             // icClientBufferOptions
             // 
@@ -580,6 +592,8 @@ namespace FrameInterceptor
             this.ifClientBufferSize.Text = "4096";
             this.ifClientBufferSize.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.ifClientBufferSize.Title = "Buffer Size";
+            this.ifClientBufferSize.ValidationType = FrameInterceptor.CustomControls.InputFiled.ValidationMode.Numeric;
+            this.ifClientBufferSize.TextHasChanged += new System.EventHandler(this.ValidateControlsInputsOnTextChange);
             // 
             // ifClientPort
             // 
@@ -594,6 +608,8 @@ namespace FrameInterceptor
             this.ifClientPort.Text = "4545";
             this.ifClientPort.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.ifClientPort.Title = "Port";
+            this.ifClientPort.ValidationType = FrameInterceptor.CustomControls.InputFiled.ValidationMode.TcpPort;
+            this.ifClientPort.TextHasChanged += new System.EventHandler(this.ValidateControlsInputsOnTextChange);
             // 
             // ifClientIp
             // 
@@ -605,9 +621,10 @@ namespace FrameInterceptor
             this.ifClientIp.ReadOnly = false;
             this.ifClientIp.Size = new System.Drawing.Size(86, 37);
             this.ifClientIp.TabIndex = 12;
-            this.ifClientIp.Text = "172.29.92.30";
             this.ifClientIp.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.ifClientIp.Title = "IP";
+            this.ifClientIp.ValidationType = FrameInterceptor.CustomControls.InputFiled.ValidationMode.Domain;
+            this.ifClientIp.TextHasChanged += new System.EventHandler(this.ValidateControlsInputsOnTextChange);
             // 
             // btnClientConnect
             // 
@@ -762,6 +779,7 @@ namespace FrameInterceptor
             this.ifSum2sComp.TabIndex = 3;
             this.ifSum2sComp.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.ifSum2sComp.Title = "2s Comp";
+            this.ifSum2sComp.ValidationType = FrameInterceptor.CustomControls.InputFiled.ValidationMode.None;
             // 
             // ifSum8Xor
             // 
@@ -774,6 +792,7 @@ namespace FrameInterceptor
             this.ifSum8Xor.TabIndex = 2;
             this.ifSum8Xor.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.ifSum8Xor.Title = "Sum8 Xor";
+            this.ifSum8Xor.ValidationType = FrameInterceptor.CustomControls.InputFiled.ValidationMode.None;
             // 
             // ifSum8Mod256
             // 
@@ -786,6 +805,7 @@ namespace FrameInterceptor
             this.ifSum8Mod256.TabIndex = 1;
             this.ifSum8Mod256.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.ifSum8Mod256.Title = "Sum8 Mod256";
+            this.ifSum8Mod256.ValidationType = FrameInterceptor.CustomControls.InputFiled.ValidationMode.None;
             // 
             // tbCheckSumInput
             // 

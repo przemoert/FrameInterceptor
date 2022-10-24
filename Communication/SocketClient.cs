@@ -31,6 +31,7 @@ namespace Communication
         private int _socketBuffer = 0;
         private byte[] _buffer;
         private int _currentBufferSize = 0;
+        private bool _isDescendent;
 
         
 
@@ -44,6 +45,43 @@ namespace Communication
         public bool HasData { get => this.Connected && this._client.Available > 0; }
         public SocketServer Owner { get; private set; }
         public SocketClient Self { get => this; }
+        public IPAddress SelfIPAddress
+        {
+            get
+            {
+                try
+                {
+                    if (this.Client == null)
+                        return null;
+
+                    if (this.Client.LocalEndPoint == null)
+                        return null;
+
+                    return ((IPEndPoint)Client.LocalEndPoint).Address;
+                }
+                catch (NullReferenceException)
+                {
+                    return null;
+                }
+                catch (ObjectDisposedException)
+                {
+                    return null;
+                }
+            }
+        }
+        public int SelfPort
+        {
+            get
+            {
+                if (this.Client == null)
+                    return -1;
+
+                if (this.Client.RemoteEndPoint == null)
+                    return -1;
+
+                return ((IPEndPoint)Client.LocalEndPoint).Port;
+            }
+        }
         public IPAddress IPAddress
         {
             get
@@ -66,8 +104,6 @@ namespace Communication
                 {
                     return null;
                 }
-
-
             }
         }
         public int Port
@@ -154,8 +190,6 @@ namespace Communication
             }
         }
 
-
-
         public SocketClient(SocketServer iOwner, int iBufferSize, int iSocketBufferSize = -1)
         {
             this.Owner = iOwner;
@@ -163,6 +197,7 @@ namespace Communication
             this._socketBuffer = (iSocketBufferSize == -1) ? iBufferSize : iSocketBufferSize;
             this._buffer = new byte[this._bufferSize];
             this._currentBufferSize = 0;
+            this._isDescendent = true;
         }
 
         public SocketClient(int iBufferSize = 1024, int iSocketBufferSize = -1) : this(AddressFamily.InterNetwork) 
@@ -170,6 +205,7 @@ namespace Communication
             this._bufferSize = iBufferSize;
             this._socketBuffer = (iSocketBufferSize == -1) ? iBufferSize : iSocketBufferSize;
             this._buffer = new byte[this._bufferSize];
+            this._isDescendent = false;
         }
 
         private SocketClient(AddressFamily family)
@@ -177,36 +213,70 @@ namespace Communication
             this._family = family;
         }
 
-        public bool Connect(string iIpAddress, string iPort)
+        public bool Connect(string iHost, string iPort)
         {
-            if (!Validation.ValidateIp(iIpAddress))
-                throw new ArgumentOutOfRangeException("iIpAddress");
-
             int l_Port = 0;
 
             if (!Int32.TryParse(iPort, out l_Port))
-                throw new ArgumentOutOfRangeException("iPort");
-
-            if (!Validation.ValidatePort(l_Port))
-                throw new ArgumentOutOfRangeException("l_Port");
-
-
-            string[] l_Parts = iIpAddress.Split('.');
-
-            byte[] l_Bytes = new byte[4];
-
-            for (int i = 0; i < l_Parts.Length; i++)
             {
-                l_Bytes[i] = byte.Parse(l_Parts[i]);
+                this.ConnectionResult = ConnectionResult.TcpPortOutOfRange;
+
+                throw new ArgumentOutOfRangeException("iPort");
             }
 
-            return Connect(l_Bytes, l_Port);
+            if (!Validation.ValidatePort(l_Port))
+            {
+                this.ConnectionResult = ConnectionResult.TcpPortOutOfRange;
+
+                throw new ArgumentOutOfRangeException("l_Port");
+            }
+
+
+            if (Validation.ValidateIp(iHost))
+            {
+                string[] l_Parts = iHost.Split('.');
+
+                byte[] l_Bytes = new byte[4];
+
+                for (int i = 0; i < l_Parts.Length; i++)
+                {
+                    l_Bytes[i] = byte.Parse(l_Parts[i]);
+                }
+
+
+                return Connect(l_Bytes, l_Port);
+            }
+
+
+            IPAddress[] l_Addresses = null;
+
+            try
+            {
+                l_Addresses = Dns.GetHostAddresses(iHost);
+            }
+            catch (SocketException ex)
+            {
+                this.ConnectionResult = ErrorHandler.TranslateSocketError((SocketError)ex.ErrorCode);
+
+                return false;
+            }
+
+            foreach (IPAddress b_Address in l_Addresses)
+            {
+                return this.Connect(b_Address, l_Port);
+            }
+
+            return false;
         }
 
         public bool Connect(byte[] iIpAddress, int iPort)
         {
             if (!Validation.ValidateIp(iIpAddress))
+            {
+                this.ConnectionResult = ConnectionResult.IPAddressOutOfRange;
+
                 throw new ArgumentOutOfRangeException("iIpAddress");
+            }
 
             return this.Connect(new IPAddress(iIpAddress), iPort);
         }
@@ -232,6 +302,9 @@ namespace Communication
         {
             if (this.Disposed)
                 throw new ObjectDisposedException(this.GetType().FullName);
+
+            if (this._isDescendent)
+                throw new InvalidOperationException("Client is descendent");
 
             if (iRemoteEP == null)
                 throw new ArgumentNullException("iRemoteEP");
@@ -263,7 +336,7 @@ namespace Communication
             {
                 throw;
             }
-            catch (ObjectDisposedException ex)
+            catch (ObjectDisposedException)
             {
                 this.ConnectionResult = ConnectionResult.HandlerDisposed;
 
@@ -619,8 +692,11 @@ namespace Communication
 
                 try
                 {
-                    this._client.Shutdown(SocketShutdown.Send);
-                    await Task.Delay(timeout);
+                    if (!this.Disposed)
+                    {
+                        this._client.Shutdown(SocketShutdown.Send);
+                        await Task.Delay(timeout);
+                    }
                 }
                 catch (SocketException ex)
                 {

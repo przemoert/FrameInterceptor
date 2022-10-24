@@ -180,27 +180,44 @@ namespace FrameInterceptor
             this.DeselectMacroGrids();
         }
 
-        internal void ResultLog(ConnectionResult result, object sender = null)
+        private string TranslateSenderToString(object iSender)
         {
+            if (iSender == null)
+                return String.Empty;
+
             string l_Sender = String.Empty;
 
-            if (sender is SocketClient c)
+            if (iSender is SocketClient c)
             {
                 l_Sender = c.IpAddressAndPortBuffered;
             }
+            else if (iSender is TcpServerCommunication)
+            {
+                l_Sender = "[SERVER]";
+            }
+            else if (iSender is SerialCommunication)
+            {
+                l_Sender = "[SERIAL]";
+            }
+            else if (iSender is TcpClientCommunication)
+            {
+                l_Sender = "[CLIENT]";
+            }
+
+            return l_Sender;
+        }
+
+        internal void ResultLog(ConnectionResult result, object sender = null)
+        {
+            string l_Sender = this.TranslateSenderToString(sender);
 
             this.Log($"{l_Sender} Connection has updated with result code: {(int)result} ({result})".Trim());
         }
 
         internal void Log(string msg, object sender = null)
         {
-            string l_Sender = String.Empty;
+            string l_Sender = this.TranslateSenderToString(sender);
             string l_Timestamp = String.Empty;
-
-            if (sender is SocketClient c)
-            {
-                l_Sender = c.IpAddressAndPortBuffered;
-            }
 
             if (this.chkTimestamps.Checked)
             {
@@ -316,15 +333,20 @@ namespace FrameInterceptor
         {
             object l_Sender = this.GetSender();
 
-            if (l_Sender is TcpClientCommunication t)
+            this.Send(iData, l_Sender);
+        }
+
+        private void Send(byte[] iData, object iSender)
+        {
+            if (iSender is TcpClientCommunication t)
             {
                 t.Send(iData, t.Client);
             }
-            else if (l_Sender is TcpServerCommunication s)
+            else if (iSender is TcpServerCommunication s)
             {
                 s.Send(iData, (SocketClient)this.dgClients.SelectedRows[0].Cells["colSocketClient"].Value);
             }
-            else if (l_Sender is SerialCommunication r)
+            else if (iSender is SerialCommunication r)
             {
                 r.Send(iData);
             }
@@ -335,6 +357,11 @@ namespace FrameInterceptor
         {
             //this.Send(Encoding.UTF8.GetBytes(iData));
             this.Send(Settings.Instance.Encoding.GetBytes(iData));
+        }
+
+        private void Send(string iData, object iSender)
+        {
+            this.Send(Settings.Instance.Encoding.GetBytes(iData), iSender);
         }
 
         public void SerialChangeStatus(bool IsClosing)
@@ -465,7 +492,18 @@ namespace FrameInterceptor
         {
             if (this.btnClientConnect.Text == "Connect")
             {
-                this._tcpClient = new TcpClientCommunication(this, this.ifClientIp.Text, this.ifClientPort.Text, this.ifClientBufferSize.Text, this.ifClientTimeout.Text);
+                if ((false).AnyOf(this.ifClientIp.IsValid, this.ifClientPort.IsValid, this.ifClientBufferSize.IsValid, this.ifClientTimeout.IsValid, this.ifClientPort.IsValid))
+                    return;
+
+                try
+                {
+                    this._tcpClient = new TcpClientCommunication(this, this.ifClientIp.Text, this.ifClientPort.Text, this.ifClientBufferSize.Text, this.ifClientTimeout.Text);
+                }
+                catch (ArgumentOutOfRangeException)
+                {
+                    return;
+                }
+
                 this._tcpClient.Connect();
             }
             else
@@ -479,6 +517,9 @@ namespace FrameInterceptor
         {
             if (this.btnServerOpen.Text == "Open")
             {
+                if ((false).AnyOf(this.ifServerIp.IsValid, this.ifServerPort.IsValid, this.ifServerBufferSize.IsValid, this.ifServerMaxClients.IsValid, this.ifServerBacklog.IsValid))
+                    return;
+
                 try
                 {
                     this._tcpServer = new TcpServerCommunication(this, this.ifServerIp.Text, this.ifServerPort.Text, this.ifServerBufferSize.Text, this.ifServerMaxClients.Text, this.ifServerBacklog.Text);
@@ -495,7 +536,7 @@ namespace FrameInterceptor
 
                 if (this._tcpServer.ConnectionResult != ConnectionResult.Success)
                 {
-                    this.ResultLog(this._tcpServer.ConnectionResult);
+                    this.ResultLog(this._tcpServer.ConnectionResult, this._tcpServer);
 
                     return;
                 }
@@ -504,12 +545,12 @@ namespace FrameInterceptor
 
                 if (this._tcpServer.ConnectionResult != ConnectionResult.ServerListening)
                 {
-                    this.ResultLog(this._tcpServer.ConnectionResult);
+                    this.ResultLog(this._tcpServer.ConnectionResult, this._tcpServer);
 
                     return;
                 }
 
-                this.ResultLog(this._tcpServer.ConnectionResult);
+                this.ResultLog(this._tcpServer.ConnectionResult, this._tcpServer);
 
                 this._tcpServer.Open();
             }
@@ -551,6 +592,8 @@ namespace FrameInterceptor
             this.tbUserFriendlyData.Text = String.Empty;
             this.tbClearData.Text = String.Empty;
             this.tbRawData.Text = String.Empty;
+
+
 
             GC.Collect();
             GC.WaitForPendingFinalizers();
@@ -719,25 +762,42 @@ namespace FrameInterceptor
             this.ifSum2sComp.Text = l_CheckSum.CheckSum2sComp_Hex;
         }
 
+        private void ValidateControlsInputsOnTextChange(object sender, EventArgs e)
+        {
+            if (sender is InputFiled i)
+            {
+                if (!i.IsValid)
+                {
+                    i.BackColor = Color.FromArgb(255, 163, 163);
+                }
+                else
+                {
+                    i.BackColor = SystemColors.Window;
+                }
+            }
+        }
+
         #endregion
 
         private void button1_Click(object sender, EventArgs e)
         {
-            String frame = @"H|^\&|TestPart|^^SubFiled1^|Field1|SubField2^|Costam|ICostam";
+            String frame = @"H|^\&|TestPart|^^SubFiled1^|Field1|SubField2^|Costam|ICostam|^Aasd^^SMG^*Test1*Test2*Test3";
 
-            Node node = new Node(frame, new char[] { '|', '^' });
+            Node node = new Node(frame, new char[] { '|', '^', '*' });
 
             Node l_Node = node;
 
             do
             {
+                l_Node.Value += "[tset]";
+
                 l_Node = l_Node.Next;
             } while (l_Node != null);
 
-            //node.OneByOne(c => 
-            //{
-            //    c.Value = c.Value?.ToUpper();
-            //});
+
+            int test = 5;
+
+            bool a = test.AnyOf(1, 2, 3, 5, 4);
         }
     }
 }

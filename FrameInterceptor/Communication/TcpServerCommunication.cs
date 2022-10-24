@@ -86,7 +86,7 @@ namespace FrameInterceptor.Communication
             //ActiveConnectionsLimit is handled later.
             if (!l_GoodToGo)
             {
-                this._owningForm.ResultLog(this.ConnectionResult);
+                this._owningForm.ResultLog(this.ConnectionResult, this);
 
                 return;
             }
@@ -101,7 +101,7 @@ namespace FrameInterceptor.Communication
             //ActiveConnectionsLimit is handled later.
             if (!l_GoodToGo)
             {
-                this._owningForm.ResultLog(this.ConnectionResult);
+                this._owningForm.ResultLog(this.ConnectionResult, this);
                 this._owningForm.btnServerOpen.Enabled = true;
 
                 return;
@@ -115,7 +115,7 @@ namespace FrameInterceptor.Communication
             {
                 if (this.ConnectionResult == ConnectionResult.ActiveConnectionsLimit && this.Server.LastConnectionResult != this.ConnectionResult)
                 {
-                    this._owningForm.ResultLog(this.ConnectionResult);
+                    this._owningForm.ResultLog(this.ConnectionResult, this);
                 }
 
                 await Task.Delay(2000);
@@ -128,7 +128,7 @@ namespace FrameInterceptor.Communication
             {
                 if (this.Server.LastConnectionResult == ConnectionResult.ActiveConnectionsLimit)
                 {
-                    this._owningForm.ResultLog(this.ConnectionResult);
+                    this._owningForm.ResultLog(this.ConnectionResult, this);
                 }
             }
 
@@ -150,7 +150,7 @@ namespace FrameInterceptor.Communication
                 this.Clients.Add(l_Client);
                 //this._owningForm.ResetClientsBindings();
 
-                this._owningForm.Log($"{l_Client.IpAddressAndPort} -> {this.Server.IpAddressAndPort}");
+                this._owningForm.Log($"{l_Client.IpAddressAndPort} -> {this.Server.IpAddressAndPort}", this);
 
                 this.Open();
 
@@ -198,7 +198,7 @@ namespace FrameInterceptor.Communication
 
             this.Dispose();
 
-            this._owningForm.ResultLog(this._socketServer.ConnectionResult);
+            this._owningForm.ResultLog(this._socketServer.ConnectionResult, this);
         }
 
         public void Dispose()
