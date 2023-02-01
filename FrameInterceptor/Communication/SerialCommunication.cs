@@ -13,7 +13,7 @@ namespace FrameInterceptor.Communication
 {
     internal class SerialCommunication : IDisposable
     {
-        private static readonly int[] BAUD_RATES = { 300, 600, 1200, 2400, 9600, 14400, 19200, 38400, 57600, 115200 };
+        private static readonly int[] BAUD_RATES = { 300, 600, 1200, 2400, 4800, 9600, 14400, 19200, 38400, 57600, 115200 };
         private static readonly int[] DATA_BITS = { 5, 6, 7, 8 };
 
         private SerialPort _serialPort;
