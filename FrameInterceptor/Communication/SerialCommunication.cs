@@ -117,6 +117,8 @@ namespace FrameInterceptor.Communication
 
         public async void Receive()
         {
+            await Task.Delay(20);
+
             //Temporary buffer to fill with first byte when data arrives.
             byte[] l_TempBuffer = new byte[1];
             int l_BytesTransfered = 0;

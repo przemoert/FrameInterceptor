@@ -48,7 +48,7 @@ namespace FrameInterceptor
             this.SetupControls();
             this.SetupMacroBindings();
 
-            Settings.Instance.CodePage = Int32.Parse(this.icEncoding.Value.ToString());
+            Settings.Instance.CodePage = Int32.Parse(this.icEncoding.SelectedValue.ToString());
 
             //this._globalKeys = new GlobalKeys();
             //this._globalKeys.HookKeyboard();
@@ -68,7 +68,7 @@ namespace FrameInterceptor
             this.icSerialPort.DataSource = SerialCommunication.GetPortNames();
 
             this.icSerialBaudRate.DataSource = SerialCommunication.BaudRatesArray;
-            this.icSerialBaudRate.SelectedIndex = 4;
+            this.icSerialBaudRate.SelectedIndex = 5;
 
             this.icSerialDataBits.DataSource = SerialCommunication.DataBits;
             this.icSerialDataBits.SelectedIndex = 3;
@@ -92,10 +92,18 @@ namespace FrameInterceptor
 
         private void SetupIcEncodingItems()
         {
-            int[] l_CodePages = { 1250, 1252, 65000, 65001, 1200, 20127 };
+            //int[] l_CodePages = { 1250, 1252, 65000, 65001, 1200, 20127 };
 
-            this.icEncoding.DataSource = l_CodePages;
-            this.icEncoding.SelectedIndex = 1;
+            EncodingInfo[] l_EncodingInfo = Encoding.GetEncodings();
+
+            var l_Encodings = (from e in l_EncodingInfo select new { CodePage = e.GetEncoding().CodePage, Name = e.GetEncoding().CodePage + " " + e.GetEncoding().EncodingName }).ToArray();
+
+            int l_DefaultIndex = Array.FindIndex(l_Encodings, e => e.CodePage == 1250);
+
+            this.icEncoding.DataSource = l_Encodings;
+            this.icEncoding.DisplayMember = "Name";
+            this.icEncoding.ValueMember = "CodePage";
+            this.icEncoding.SelectedIndex = l_DefaultIndex;
         }
 
         private void SetUpClientsDataSource()

@@ -12,13 +12,16 @@ namespace FrameInterceptor.CustomControls
 {
     public partial class InputCombo : UserControl
     {
-        public event EventHandler SelectedIndexChanged;
+        public event EventHandler SelectionCommittedChanged;
         
         public string Title { get => this.groupBox1.Text; set => this.groupBox1.Text = value; }
         public object DataSource { get => this.comboBox1.DataSource; set => this.comboBox1.DataSource = value; }
         public object Value { get => this.comboBox1.SelectedItem; }
         public int SelectedIndex { get => this.comboBox1.SelectedIndex; set => this.comboBox1.SelectedIndex = value; }
         public int Count { get => this.comboBox1.Items.Count; }
+        public string DisplayMember { get => this.comboBox1.DisplayMember; set => this.comboBox1.DisplayMember = value; }
+        public string ValueMember { get => this.comboBox1.ValueMember; set => this.comboBox1.ValueMember = value; }
+        public object SelectedValue { get => this.comboBox1.SelectedValue; }
 
         public InputCombo()
         {
@@ -28,9 +31,9 @@ namespace FrameInterceptor.CustomControls
             this.MinimumSize = new Size(20, this.comboBox1.Height + this.comboBox1.Location.Y + 5);
         }
 
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        private void comboBox1_SelectionChangeCommitted(object sender, EventArgs e)
         {
-            this.SelectedIndexChanged?.Invoke(sender, e);
+            this.SelectionCommittedChanged?.Invoke(sender, e);
         }
     }
 }
