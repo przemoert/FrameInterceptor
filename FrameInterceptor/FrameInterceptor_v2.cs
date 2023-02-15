@@ -755,7 +755,7 @@ namespace FrameInterceptor
 
         private void icEncoding_SelectedIndexChanged(object sender, EventArgs e)
         {
-            Settings.Instance.CodePage = Int32.Parse(this.icEncoding.Value.ToString());
+            Settings.Instance.CodePage = Int32.Parse(this.icEncoding.SelectedValue.ToString());
         }
 
         private void tbCheckSumInput_TextChanged(object sender, EventArgs e)
