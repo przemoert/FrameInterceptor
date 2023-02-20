@@ -504,8 +504,8 @@ namespace Communication
 
             if (this.HasData)
             {
-                if (this.BufferExceededOption != BufferOptions.Dynamic)
-                    this.ConnectionResult = ConnectionResult.BufferSizeExceeded;
+                //if (this.BufferExceededOption != BufferOptions.Dynamic)
+                //    this.ConnectionResult = ConnectionResult.BufferSizeExceeded;
 
                 if (this.BufferExceededOption != BufferOptions.Preserve)
                 {

@@ -156,12 +156,29 @@ namespace FrameInterceptor
 
         private void AddMacroCommand()
         {
-            if (!String.IsNullOrEmpty(this.tbSend.Text))
+            if (this.tbSend.Focused)
             {
-                this._macroCommandsBinding.Add(new MacroCommand(this.tbSend.Text));
+                if (!String.IsNullOrEmpty(this.tbSend.Text))
+                {
+                    this._macroCommandsBinding.Add(new MacroCommand(this.tbSend.Text));
+                }
             }
+            else if (this.tbCheckSumInput.Focused)
+            {
+                if (!String.IsNullOrEmpty(this.tbCheckSumInput.Text))
+                {
+                    this._macroCommandsBinding.Add(new MacroCommand(this.WraptWithASTMControlChars(this.tbCheckSumInput.Text)));
+                }
+            } 
 
             this.DeselectMacroGrids();
+        }
+
+        private string WraptWithASTMControlChars(string iInput)
+        {
+            string l_Output = ControlChars.STX + iInput + this.ifSum8Mod256.Text + ControlChars.CR + ControlChars.LF;
+
+            return l_Output;
         }
 
         private void AddMacroResponse()
