@@ -13,6 +13,7 @@ namespace FrameInterceptor.Utils
         private string _extension;
         private string _name;
         private string _directory;
+        private bool test;
 
         public DFile(byte[] b)
         {
